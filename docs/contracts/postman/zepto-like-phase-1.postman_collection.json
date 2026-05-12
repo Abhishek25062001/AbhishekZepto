@@ -1,0 +1,159 @@
+{
+  "info": {
+    "_postman_id": "1c5fe974-4a0f-4c0f-82b4-phase1contract",
+    "name": "Zepto-like Phase 1 API Contract",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    }
+  ],
+  "item": [
+    {
+      "name": "Public APIs",
+      "item": [
+        {
+          "name": "Health",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/public/health"
+          }
+        },
+        {
+          "name": "Version",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/public/version"
+          }
+        },
+        {
+          "name": "System Info",
+          "request": {
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/public/system-info"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Auth Placeholder APIs",
+      "item": [
+        {
+          "name": "Request OTP",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9999999999\",\n  \"role\": \"customer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp"
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9999999999\",\n  \"role\": \"customer\",\n  \"otp\": \"123456\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp"
+          }
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"phase1-refresh-token-placeholder\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/public/auth/refresh-token"
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"phase1-refresh-token-placeholder\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/public/auth/logout"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Internal Test APIs",
+      "item": [
+        {
+          "name": "Database Write Check",
+          "request": {
+            "method": "POST",
+            "url": "{{baseUrl}}/api/v1/internal/system/database-write-check"
+          }
+        },
+        {
+          "name": "Auth Test Protected",
+          "request": {
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer phase1-access-token-placeholder"
+              }
+            ],
+            "method": "GET",
+            "url": "{{baseUrl}}/api/v1/internal/auth/test-protected"
+          }
+        }
+      ]
+    }
+  ]
+}

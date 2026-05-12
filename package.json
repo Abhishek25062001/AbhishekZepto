@@ -1,0 +1,32 @@
+{
+  "name": "zepto-like-system",
+  "version": "1.0.0",
+  "private": true,
+  "workspaces": [
+    "backend/api",
+    "apps/customer-app",
+    "apps/delivery-agent-app",
+    "apps/vendor-panel",
+    "apps/admin-dashboard",
+    "packages/shared"
+  ],
+  "scripts": {
+    "dev:backend": "npm run dev -w backend/api",
+    "dev:vendor": "npm run dev -w apps/vendor-panel",
+    "dev:admin": "npm run dev -w apps/admin-dashboard",
+    "check:health": "sh scripts/check-backend-health.sh",
+    "check:system-info": "sh scripts/check-backend-system-info.sh",
+    "check:observability": "sh scripts/check-local-observability.sh",
+    "check:secrets": "sh scripts/check-secret-leaks.sh",
+    "check:security-headers": "sh scripts/check-security-headers.sh",
+    "check:cors": "sh scripts/check-cors.sh",
+    "check:frontend-secrets": "sh scripts/check-frontend-secrets.sh",
+    "audit:all": "npm audit --workspaces",
+    "audit:backend": "npm audit -w backend/api",
+    "audit:web": "npm audit -w apps/vendor-panel && npm audit -w apps/admin-dashboard",
+    "audit:mobile": "npm audit -w apps/customer-app && npm audit -w apps/delivery-agent-app",
+    "typecheck": "npm run typecheck --workspaces",
+    "lint": "npm run lint --workspaces",
+    "format": "prettier --write ."
+  }
+}

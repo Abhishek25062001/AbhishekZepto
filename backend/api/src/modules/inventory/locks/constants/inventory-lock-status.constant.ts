@@ -1,0 +1,19 @@
+export const INVENTORY_LOCK_STATUS = {
+  ACTIVE: 'active',
+  RELEASED: 'released',
+  CONFIRMED: 'confirmed',
+  EXPIRED: 'expired',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed',
+} as const;
+
+export const INVENTORY_LOCK_STATUS_VALUES = [
+  INVENTORY_LOCK_STATUS.ACTIVE,
+  INVENTORY_LOCK_STATUS.RELEASED,
+  INVENTORY_LOCK_STATUS.CONFIRMED,
+  INVENTORY_LOCK_STATUS.EXPIRED,
+  INVENTORY_LOCK_STATUS.CANCELLED,
+  INVENTORY_LOCK_STATUS.FAILED,
+] as const;
+
+export type InventoryLockStatus = (typeof INVENTORY_LOCK_STATUS_VALUES)[number];

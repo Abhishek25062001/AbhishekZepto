@@ -3,22 +3,21 @@ import type { SchemaOptions } from 'mongoose';
 import { baseSchemaFields } from '../../../database/base-schema-fields';
 import { baseSchemaOptions } from '../../../database/base-schema-options';
 import { COLLECTION_NAMES } from '../../../database/constants/collection-names.constants';
+import {
+  AUTH_APP_SURFACES,
+  AUTH_DEVICE_TYPES,
+} from '../constants/auth-otp.constants';
 import { AUTH_ROLES } from '../constants/auth-role.constants';
 import type { AuthRole } from '../types/auth-role.types';
-
-export type AuthDeviceType = 'android' | 'ios' | 'web' | 'unknown';
-
-export type AuthAppSurface =
-  | 'customer_app'
-  | 'delivery_agent_app'
-  | 'vendor_panel'
-  | 'admin_dashboard';
+import type { AuthAppSurface, AuthDeviceType } from '../types/otp.types';
 
 export type AuthSessionRecord = {
   userId: Types.ObjectId;
   role: AuthRole;
   refreshTokenHash: string;
+  refreshTokenRotatedAt: Date | null;
   deviceId: string | null;
+  deviceName: string | null;
   deviceType: AuthDeviceType;
   appSurface: AuthAppSurface;
   appVersion: string | null;
@@ -53,19 +52,28 @@ const AuthSessionSchema = new Schema<AuthSessionRecord>(
       required: true,
       index: true,
     },
+    refreshTokenRotatedAt: {
+      type: Date,
+      default: null,
+    },
     deviceId: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    deviceName: {
       type: String,
       default: null,
       trim: true,
     },
     deviceType: {
       type: String,
-      enum: ['android', 'ios', 'web', 'unknown'],
-      default: 'unknown',
+      enum: AUTH_DEVICE_TYPES,
+      default: AUTH_DEVICE_TYPES[3],
     },
     appSurface: {
       type: String,
-      enum: ['customer_app', 'delivery_agent_app', 'vendor_panel', 'admin_dashboard'],
+      enum: AUTH_APP_SURFACES,
       required: true,
     },
     appVersion: {

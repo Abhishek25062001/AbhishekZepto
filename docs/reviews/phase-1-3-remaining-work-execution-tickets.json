@@ -1,0 +1,599 @@
+{
+  "meta": {
+    "title": "Phase 1–3 Remaining Work Execution Tickets",
+    "generatedAt": "2026-05-18",
+    "sources": [
+      "docs/reviews/phase-1-3-local-audit.json",
+      "docs/reviews/phase-1-3-verified-completion-matrix.md",
+      "project-context/PHASE_HANDOFFS/PHASE_3_HANDOFF.md",
+      "projectin micro/docthree/PhaesDetail3.pdf",
+      "docs/contracts/catalog-customer-api-contract.md",
+      "docs/contracts/catalog-vendor-api-contract.md"
+    ],
+    "scope": "Partial and Not Started gaps only — excludes Completed modules (e.g. Admin P3_M12)",
+    "statusLegend": "PENDING | IN_PROGRESS | DONE",
+    "estimatedHoursPerTicket": "1–3 (seeds/API batches may be 3–4)"
+  },
+  "executionOrder": [
+    "RW-01",
+    "RW-02",
+    "RW-03",
+    "RW-04",
+    "RW-05",
+    "RW-06",
+    "RW-13",
+    "RW-07",
+    "RW-08",
+    "RW-09",
+    "RW-10",
+    "RW-11",
+    "RW-12",
+    "RW-14",
+    "RW-15"
+  ],
+  "tickets": [
+    {
+      "id": "RW-01",
+      "name": "P3_M02_P3_M05_catalog_master_seed",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Backend",
+      "phaseModule": "P3_M02, P3_M03, P3_M04, P3_M05",
+      "objective": "Replace catalog/unit seed placeholders with idempotent upserts for categories, brands, units, products, and variants.",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json (notes: seed-units placeholder)",
+        "docs/database/catalog-seed-data-plan.md",
+        "docs/handoffs/category-management-backend-complete.md"
+      ],
+      "filesToCreateUpdate": [
+        "backend/api/src/database/seeds/seed-catalog.ts",
+        "backend/api/src/database/seeds/seed-units.ts",
+        "backend/api/src/database/seeds/seed-default-settings.ts"
+      ],
+      "apiEndpoints": [],
+      "dbCollectionsFields": [
+        "categories (slug unique)",
+        "brands (slug unique)",
+        "product_units (code unique)",
+        "products (slug unique)",
+        "product_variants (sku unique)"
+      ],
+      "dependencies": [],
+      "acceptanceCriteria": [
+        "seed-catalog.ts upserts sample catalog data idempotently",
+        "seed-units.ts performs real upserts (no placeholder log)",
+        "Second seed run creates no duplicate catalog rows"
+      ],
+      "testCommands": [
+        "npm run test:seed-matrix -w backend/api",
+        "npm run seed -w backend/api",
+        "npm run seed -w backend/api"
+      ]
+    },
+    {
+      "id": "RW-02",
+      "name": "P3_M07_P3_M08_seed_runner_store_inventory",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Backend",
+      "phaseModule": "P3_M07, P3_M08",
+      "objective": "Wire seed-runner order and remove skip logic so store-product and inventory seeds run after catalog seed.",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json",
+        "backend/api/src/database/seeds/seed-store-products.ts",
+        "backend/api/src/database/seeds/seed-inventory.ts"
+      ],
+      "filesToCreateUpdate": [
+        "backend/api/src/database/seeds/seed-runner.ts",
+        "backend/api/src/database/seeds/seed-store-products.ts",
+        "backend/api/src/database/seeds/seed-inventory.ts"
+      ],
+      "apiEndpoints": [],
+      "dbCollectionsFields": [
+        "store_products",
+        "inventory_stocks",
+        "inventory_movements (opening movement once)"
+      ],
+      "dependencies": ["RW-01"],
+      "acceptanceCriteria": [
+        "seed-runner invokes seed-catalog before seed-store-products",
+        "seed-store-products no longer logs catalog-not-configured skip",
+        "seed-inventory creates stocks when store products exist",
+        "Full seed twice is idempotent for store_products and inventory_stocks"
+      ],
+      "testCommands": [
+        "npm run seed -w backend/api",
+        "npm run test:store-products -w backend/api",
+        "npm run test:inventory -w backend/api"
+      ]
+    },
+    {
+      "id": "RW-03",
+      "name": "P3_M14_customer_catalog_categories_brands",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Backend",
+      "phaseModule": "P3_M14",
+      "objective": "Mount customer GET categories and brands with visibility filters per catalog-customer-api-contract.",
+      "sources": [
+        "docs/contracts/catalog-customer-api-contract.md",
+        "docs/reviews/phase-1-3-local-audit.json (P3_M14 Partial)",
+        "projectin micro/docthree/PhaesDetail3.pdf"
+      ],
+      "filesToCreateUpdate": [
+        "backend/api/src/modules/catalog/search/controllers/catalog-search-customer.controller.ts",
+        "backend/api/src/modules/catalog/search/routes/catalog-search-customer.routes.ts",
+        "backend/api/src/modules/catalog/search/services/catalog-search.service.ts",
+        "docs/contracts/catalog-customer-api-contract.md",
+        "docs/contracts/backend-route-registry.md"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/customer/catalog/categories",
+        "GET /api/v1/customer/catalog/brands"
+      ],
+      "dbCollectionsFields": [
+        "categories.status",
+        "categories.isVisible",
+        "categories.isDeleted",
+        "brands.status",
+        "brands.isVisible",
+        "brands.isDeleted"
+      ],
+      "dependencies": ["RW-01"],
+      "acceptanceCriteria": [
+        "Authenticated customer receives only active, visible, non-deleted categories and brands",
+        "Routes registered on customer router with catalog:read",
+        "Route tests pass",
+        "Contract status updated for these two endpoints"
+      ],
+      "testCommands": [
+        "npm run test:catalog-search -w backend/api",
+        "npm run build -w backend/api && node --test dist/modules/catalog/search/controllers/catalog-search.routes.test.js"
+      ]
+    },
+    {
+      "id": "RW-04",
+      "name": "P3_M14_customer_product_detail_variants",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Backend",
+      "phaseModule": "P3_M14",
+      "objective": "Mount customer GET product detail and variants with approval/visibility rules.",
+      "sources": [
+        "docs/contracts/catalog-customer-api-contract.md",
+        "docs/reviews/phase-1-3-local-audit.json"
+      ],
+      "filesToCreateUpdate": [
+        "backend/api/src/modules/catalog/search/controllers/catalog-search-customer.controller.ts",
+        "backend/api/src/modules/catalog/search/routes/catalog-search-customer.routes.ts",
+        "backend/api/src/modules/catalog/search/validators/catalog-search.validators.ts",
+        "docs/contracts/catalog-customer-api-contract.md"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/customer/catalog/products/:productId",
+        "GET /api/v1/customer/catalog/products/:productId/variants"
+      ],
+      "dbCollectionsFields": [
+        "products.status",
+        "products.approvalStatus",
+        "products.isVisible",
+        "product_variants.productId",
+        "product_variants.status",
+        "product_variants.isVisible"
+      ],
+      "dependencies": ["RW-01", "RW-03"],
+      "acceptanceCriteria": [
+        "Detail returns 404 for unapproved or invisible products",
+        "Variants list excludes deleted/invisible variants",
+        "No vendorId or internal audit fields in response DTO",
+        "Contract marks detail/variants IMPLEMENTED"
+      ],
+      "testCommands": [
+        "npm run test:catalog-search -w backend/api",
+        "npm run test:phase-3 -w backend/api"
+      ]
+    },
+    {
+      "id": "RW-05",
+      "name": "P3_M13_vendor_catalog_categories_brands",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Backend",
+      "phaseModule": "P3_M13",
+      "objective": "Mount vendor GET categories and brands (read-only, catalog:read).",
+      "sources": [
+        "docs/contracts/catalog-vendor-api-contract.md",
+        "docs/reviews/phase-1-3-local-audit.json (P3_M13 Partial)"
+      ],
+      "filesToCreateUpdate": [
+        "backend/api/src/modules/catalog/search/controllers/catalog-search-vendor.controller.ts",
+        "backend/api/src/modules/catalog/search/routes/catalog-search-vendor.routes.ts",
+        "docs/contracts/catalog-vendor-api-contract.md",
+        "docs/contracts/backend-route-registry.md"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/vendor/catalog/categories",
+        "GET /api/v1/vendor/catalog/brands"
+      ],
+      "dbCollectionsFields": [
+        "categories",
+        "brands (read filters per contract)"
+      ],
+      "dependencies": ["RW-01"],
+      "acceptanceCriteria": [
+        "Vendor with catalog:read receives category/brand lists",
+        "Unauthenticated request returns 401",
+        "Contract updated for categories/brands"
+      ],
+      "testCommands": [
+        "npm run test:catalog-search -w backend/api",
+        "npm run test:tenant-access -w backend/api"
+      ]
+    },
+    {
+      "id": "RW-06",
+      "name": "P3_M13_vendor_product_detail_variants",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Backend",
+      "phaseModule": "P3_M13",
+      "objective": "Mount vendor GET product detail and variants (read-only catalog).",
+      "sources": [
+        "docs/contracts/catalog-vendor-api-contract.md",
+        "docs/reviews/phase-1-3-local-audit.json"
+      ],
+      "filesToCreateUpdate": [
+        "backend/api/src/modules/catalog/search/controllers/catalog-search-vendor.controller.ts",
+        "backend/api/src/modules/catalog/search/routes/catalog-search-vendor.routes.ts",
+        "docs/contracts/catalog-vendor-api-contract.md"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/vendor/catalog/products/:productId",
+        "GET /api/v1/vendor/catalog/products/:productId/variants"
+      ],
+      "dbCollectionsFields": [
+        "products",
+        "product_variants"
+      ],
+      "dependencies": ["RW-01", "RW-05"],
+      "acceptanceCriteria": [
+        "Vendor can fetch product detail and variants for approved visible products",
+        "Vendor cannot mutate master catalog via these routes",
+        "Contract status PARTIAL removed when all vendor catalog routes mounted"
+      ],
+      "testCommands": [
+        "npm run test:catalog-search -w backend/api",
+        "npm run test:phase-3 -w backend/api"
+      ]
+    },
+    {
+      "id": "RW-07",
+      "name": "P3_M10_vendor_media_upload_ui",
+      "status": "DONE",
+      "priority": "Medium",
+      "appLayer": "Vendor Panel",
+      "phaseModule": "P3_M10",
+      "objective": "Add vendor media upload, list, and delete UI wired to existing vendor media APIs.",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json (P3_M10 Not Started vendor)",
+        "docs/contracts/media-file-upload-api.md",
+        "docs/handoffs/media-file-upload-foundation-complete.md"
+      ],
+      "filesToCreateUpdate": [
+        "apps/vendor-panel/src/modules/media/api/vendor-media.api.ts",
+        "apps/vendor-panel/src/modules/media/pages/VendorMediaListPage.tsx",
+        "apps/vendor-panel/src/modules/media/components/MediaUploadField.tsx",
+        "apps/vendor-panel/src/routes/vendor.routes.tsx",
+        "apps/vendor-panel/src/components/layout/Sidebar.tsx"
+      ],
+      "apiEndpoints": [
+        "POST /api/v1/vendor/media/upload",
+        "GET /api/v1/vendor/media/files",
+        "GET /api/v1/vendor/media/files/:mediaFileId",
+        "DELETE /api/v1/vendor/media/files/:mediaFileId"
+      ],
+      "dbCollectionsFields": [],
+      "dependencies": [],
+      "acceptanceCriteria": [
+        "Vendor user can upload image and see it in file list",
+        "Delete removes file from list",
+        "CanAccess gates media:read, media:upload, media:delete",
+        "npm run typecheck -w apps/vendor-panel passes"
+      ],
+      "testCommands": [
+        "npm run typecheck -w apps/vendor-panel",
+        "npm run test:media -w backend/api",
+        "Manual: vendor token + upload smoke"
+      ]
+    },
+    {
+      "id": "RW-08",
+      "name": "P3_M12_admin_stores_page_cleanup",
+      "status": "DONE",
+      "priority": "Low",
+      "appLayer": "Admin Dashboard",
+      "phaseModule": "P3_M12",
+      "objective": "Remove orphan StoresPage placeholder; ensure /stores uses modules/stores StoreListPage only.",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json (orphan StoresPage)",
+        "apps/admin-dashboard/src/pages/stores/StoresPage.tsx"
+      ],
+      "filesToCreateUpdate": [
+        "apps/admin-dashboard/src/pages/stores/StoresPage.tsx",
+        "apps/admin-dashboard/src/routes/admin.routes.tsx",
+        "apps/admin-dashboard/src/routes/store.routes.tsx"
+      ],
+      "apiEndpoints": [],
+      "dbCollectionsFields": [],
+      "dependencies": [],
+      "acceptanceCriteria": [
+        "No imports of pages/stores/StoresPage in routes",
+        "/stores renders modules/stores/pages/stores/StoreListPage.tsx",
+        "grep StoresPage returns no routed references"
+      ],
+      "testCommands": [
+        "npm run typecheck -w apps/admin-dashboard",
+        "grep -r StoresPage apps/admin-dashboard/src || true"
+      ]
+    },
+    {
+      "id": "RW-09",
+      "name": "P3_M11_admin_variant_crud_ui",
+      "status": "DONE",
+      "priority": "Low",
+      "appLayer": "Admin Dashboard",
+      "phaseModule": "P3_M11",
+      "objective": "Add admin UI to create, edit, and delete product variants (backend APIs exist).",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json (no variant CRUD pages)",
+        "docs/handoffs/product-variant-management-backend-complete.md",
+        "docs/contracts/product-variant-management-api.md"
+      ],
+      "filesToCreateUpdate": [
+        "apps/admin-dashboard/src/modules/catalog/pages/variants/VariantListPage.tsx",
+        "apps/admin-dashboard/src/modules/catalog/pages/variants/VariantCreatePage.tsx",
+        "apps/admin-dashboard/src/modules/catalog/pages/variants/VariantEditPage.tsx",
+        "apps/admin-dashboard/src/modules/catalog/forms/VariantForm.tsx",
+        "apps/admin-dashboard/src/modules/catalog/api/product.api.ts",
+        "apps/admin-dashboard/src/routes/catalog.routes.tsx",
+        "apps/admin-dashboard/src/modules/catalog/pages/products/ProductDetailPage.tsx"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/admin/catalog/products/:productId/variants",
+        "POST /api/v1/admin/catalog/products/:productId/variants",
+        "PATCH /api/v1/admin/catalog/products/:productId/variants/:variantId",
+        "DELETE /api/v1/admin/catalog/products/:productId/variants/:variantId"
+      ],
+      "dbCollectionsFields": [],
+      "dependencies": [],
+      "acceptanceCriteria": [
+        "Admin can list variants from product detail",
+        "Create, edit, delete variant flows work against API",
+        "CanAccess uses catalog permissions on routes",
+        "npm run test:catalog -w apps/admin-dashboard passes"
+      ],
+      "testCommands": [
+        "npm run typecheck -w apps/admin-dashboard",
+        "npm run test:catalog -w apps/admin-dashboard",
+        "npm run test:variants -w backend/api"
+      ]
+    },
+    {
+      "id": "RW-10",
+      "name": "P3_M14_customer_catalog_frontend_integration",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Customer App",
+      "phaseModule": "P3_M14, P3_M15",
+      "objective": "Verify and fix customer catalog screens against newly mounted categories, brands, detail, and variants APIs.",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json",
+        "docs/handoffs/customer-app-catalog-read-foundation-complete.md",
+        "apps/customer-app/src/modules/catalog/"
+      ],
+      "filesToCreateUpdate": [
+        "apps/customer-app/src/modules/catalog/screens/CatalogHomeScreen.tsx",
+        "apps/customer-app/src/modules/catalog/screens/CategoryProductsScreen.tsx",
+        "apps/customer-app/src/modules/catalog/screens/BrandProductsScreen.tsx",
+        "apps/customer-app/src/modules/catalog/screens/ProductDetailScreen.tsx",
+        "apps/customer-app/src/modules/catalog/hooks/useCustomerCategories.ts",
+        "apps/customer-app/src/modules/catalog/hooks/useCustomerBrands.ts",
+        "apps/customer-app/src/modules/catalog/hooks/useCustomerProductDetail.ts",
+        "apps/customer-app/src/modules/catalog/hooks/useCustomerProductVariants.ts",
+        "docs/testing/customer-app-catalog-verification.md"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/customer/catalog/categories",
+        "GET /api/v1/customer/catalog/brands",
+        "GET /api/v1/customer/catalog/products",
+        "GET /api/v1/customer/catalog/products/:productId",
+        "GET /api/v1/customer/catalog/products/:productId/variants",
+        "GET /api/v1/customer/catalog/search",
+        "GET /api/v1/customer/catalog/facets"
+      ],
+      "dbCollectionsFields": [],
+      "dependencies": ["RW-03", "RW-04"],
+      "acceptanceCriteria": [
+        "Catalog home loads categories and brands without API errors",
+        "Category and brand product lists render",
+        "Product detail loads by id",
+        "Variant selector populates from variants API",
+        "Existing catalog unit tests pass"
+      ],
+      "testCommands": [
+        "npm run typecheck -w apps/customer-app",
+        "npm run test:catalog -w apps/customer-app"
+      ]
+    },
+    {
+      "id": "RW-11",
+      "name": "P3_M14_customer_product_detail_cart_placeholder",
+      "status": "DONE",
+      "priority": "Medium",
+      "appLayer": "Customer App",
+      "phaseModule": "P3_M14",
+      "objective": "Polish ProductDetailScreen: wired detail/variants, explicit disabled Add to Cart until cart phase (no cart backend).",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json (Add to Cart TODO)",
+        "apps/customer-app/src/modules/catalog/screens/ProductDetailScreen.tsx"
+      ],
+      "filesToCreateUpdate": [
+        "apps/customer-app/src/modules/catalog/screens/ProductDetailScreen.tsx",
+        "apps/customer-app/src/modules/catalog/components/ProductVariantSelector.tsx",
+        "docs/contracts/customer-app-catalog-ui-contract.md"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/customer/catalog/products/:productId",
+        "GET /api/v1/customer/catalog/products/:productId/variants"
+      ],
+      "dbCollectionsFields": [],
+      "dependencies": ["RW-10"],
+      "acceptanceCriteria": [
+        "Add to Cart button remains disabled or shows Coming soon message",
+        "No cart API calls introduced",
+        "Detail shows price, images, variant selection when in stock scope allows",
+        "Document cart dependency in customer-app-catalog-ui-contract.md"
+      ],
+      "testCommands": [
+        "npm run test:catalog -w apps/customer-app",
+        "Manual: open product detail on device/simulator"
+      ]
+    },
+    {
+      "id": "RW-12",
+      "name": "P3_M13_vendor_catalog_frontend_integration",
+      "status": "DONE",
+      "priority": "High",
+      "appLayer": "Vendor Panel",
+      "phaseModule": "P3_M13, P3_M15",
+      "objective": "Verify vendor catalog detail and list pages against mounted PLANNED backend routes.",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json",
+        "docs/handoffs/vendor-panel-store-catalog-foundation-complete.md",
+        "apps/vendor-panel/src/modules/store-catalog/api/vendor-catalog.api.ts"
+      ],
+      "filesToCreateUpdate": [
+        "apps/vendor-panel/src/modules/store-catalog/pages/VendorCatalogProductListPage.tsx",
+        "apps/vendor-panel/src/modules/store-catalog/pages/VendorCatalogProductDetailPage.tsx",
+        "apps/vendor-panel/src/modules/store-catalog/hooks/useVendorCatalogProductDetail.ts",
+        "docs/testing/vendor-panel-store-catalog-verification.md"
+      ],
+      "apiEndpoints": [
+        "GET /api/v1/vendor/catalog/products",
+        "GET /api/v1/vendor/catalog/facets",
+        "GET /api/v1/vendor/catalog/products/:productId",
+        "GET /api/v1/vendor/catalog/products/:productId/variants"
+      ],
+      "dbCollectionsFields": [],
+      "dependencies": ["RW-05", "RW-06"],
+      "acceptanceCriteria": [
+        "Vendor catalog list and detail load without 404 on PLANNED paths",
+        "Facets and product search still work",
+        "npm run test:store-catalog -w apps/vendor-panel passes"
+      ],
+      "testCommands": [
+        "npm run typecheck -w apps/vendor-panel",
+        "npm run test:store-catalog -w apps/vendor-panel"
+      ]
+    },
+    {
+      "id": "RW-13",
+      "name": "P3_M15_openapi_route_registry_sync",
+      "status": "DONE",
+      "priority": "Medium",
+      "appLayer": "Backend",
+      "phaseModule": "P3_M15, P3_M16",
+      "objective": "Sync OpenAPI and backend-route-registry after mounting PLANNED catalog routes.",
+      "sources": [
+        "docs/reviews/phase-3-openapi-contract-review.md",
+        "docs/contracts/backend-route-registry.md"
+      ],
+      "filesToCreateUpdate": [
+        "backend/api/src/docs/openapi/",
+        "docs/contracts/backend-route-registry.md",
+        "docs/contracts/catalog-customer-api-contract.md",
+        "docs/contracts/catalog-vendor-api-contract.md"
+      ],
+      "apiEndpoints": [
+        "All newly mounted customer and vendor catalog read routes"
+      ],
+      "dbCollectionsFields": [],
+      "dependencies": ["RW-03", "RW-04", "RW-05", "RW-06"],
+      "acceptanceCriteria": [
+        "OpenAPI includes new customer/vendor catalog paths",
+        "Route registry PLANNED section updated to MOUNTED",
+        "validate postman phase-3 collection still valid"
+      ],
+      "testCommands": [
+        "npm run validate:postman:phase-3",
+        "npm run build -w backend/api"
+      ]
+    },
+    {
+      "id": "RW-14",
+      "name": "P3_M16_live_manual_postman_smoke",
+      "status": "DONE",
+      "priority": "Medium",
+      "appLayer": "All",
+      "phaseModule": "P3_M16, P3_M17",
+      "objective": "Execute and record live manual smoke checklist and Postman phase-3 collection (documentation only).",
+      "sources": [
+        "docs/reviews/phase-3-manual-smoke-checklist.md",
+        "docs/contracts/postman/zepto-like-phase-3.postman_collection.json",
+        "docs/handoffs/phase-3-testing-validation-complete.md"
+      ],
+      "filesToCreateUpdate": [
+        "docs/reviews/phase-3-manual-smoke-checklist.md",
+        "docs/testing/phase-1-3-live-smoke-results.md",
+        "docs/testing/phase-3-integration-review-verification.md"
+      ],
+      "apiEndpoints": [
+        "All Phase 3 admin, vendor, customer, internal endpoints in Postman collection"
+      ],
+      "dbCollectionsFields": [],
+      "dependencies": ["RW-01", "RW-02", "RW-03", "RW-04", "RW-05", "RW-06", "RW-10", "RW-12"],
+      "acceptanceCriteria": [
+        "Manual checklist has Executed/PASS/Date filled for admin, vendor, customer flows",
+        "Postman collection run documented with environment tokens",
+        "Live smoke results doc created with PASS/FAIL per flow",
+        "Known failures documented as tickets if any"
+      ],
+      "testCommands": [
+        "npm run validate:postman:phase-3",
+        "npm run check:health -w backend/api",
+        "npm run seed -w backend/api",
+        "Manual Postman + app walkthrough"
+      ]
+    },
+    {
+      "id": "RW-15",
+      "name": "P3_M17_gap_closeout_verification",
+      "status": "DONE",
+      "priority": "Low",
+      "appLayer": "Docs",
+      "phaseModule": "P3_M17",
+      "objective": "Update audit JSON and completion matrix after all RW tickets; mark Phase 1–3 gaps closed or document deferrals.",
+      "sources": [
+        "docs/reviews/phase-1-3-local-audit.json",
+        "docs/reviews/phase-1-3-verified-completion-matrix.md"
+      ],
+      "filesToCreateUpdate": [
+        "docs/reviews/phase-1-3-local-audit.json",
+        "docs/reviews/phase-1-3-verified-completion-matrix.md",
+        "project-context/CURRENT_PROGRESS.md"
+      ],
+      "apiEndpoints": [],
+      "dbCollectionsFields": [],
+      "dependencies": ["RW-01", "RW-02", "RW-03", "RW-04", "RW-05", "RW-06", "RW-07", "RW-08", "RW-09", "RW-10", "RW-11", "RW-12", "RW-13", "RW-14"],
+      "acceptanceCriteria": [
+        "local-audit.json reflects Completed for fixed gaps",
+        "Remaining deferrals listed (e.g. cart phase) with explicit next phase",
+        "CURRENT_PROGRESS notes gap remediation complete"
+      ],
+      "testCommands": [
+        "npm run test:phase-3 -w backend/api",
+        "npm run typecheck --workspaces"
+      ]
+    }
+  ]
+}

@@ -1,42 +1,155 @@
 import { AUTH_ROLE } from '../../modules/auth/constants/auth-role.constants';
-import { WILDCARD_PERMISSION } from '../../modules/auth/constants/auth-permission.constants';
-import { upsertSystemRole } from '../../modules/auth/repositories/role.repository';
+import {
+  AUTH_PERMISSION_ACTION,
+  AUTH_PERMISSION_RESOURCE,
+  WILDCARD_PERMISSION,
+} from '../../modules/auth/constants/auth-permission.constants';
+import {
+  upsertSystemRole,
+  type UpsertSystemRoleInput,
+} from '../../modules/auth/repositories/role.repository';
+import { createPermissionCode } from '../../modules/auth/utils/permission-code.util';
 
-const systemRoles = [
+export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
   {
     code: AUTH_ROLE.CUSTOMER,
     name: 'Customer',
-    permissions: ['auth:read'],
+    permissions: [
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.CUSTOMER,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+    ],
   },
   {
     code: AUTH_ROLE.DELIVERY_AGENT,
     name: 'Delivery Agent',
-    permissions: ['auth:read'],
+    permissions: [
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.DELIVERY,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+    ],
   },
   {
     code: AUTH_ROLE.VENDOR_OWNER,
     name: 'Vendor Owner',
-    permissions: ['auth:read'],
+    permissions: [
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.VENDOR,
+        AUTH_PERMISSION_ACTION.READ_STORE,
+      ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SETTINGS, AUTH_PERMISSION_ACTION.MANAGE),
+    ],
   },
   {
     code: AUTH_ROLE.STORE_MANAGER,
     name: 'Store Manager',
-    permissions: ['auth:read'],
+    permissions: [
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.VENDOR,
+        AUTH_PERMISSION_ACTION.READ_STORE,
+      ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.DELETE),
+    ],
   },
   {
     code: AUTH_ROLE.STORE_STAFF,
     name: 'Store Staff',
-    permissions: ['auth:read'],
+    permissions: [
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.VENDOR,
+        AUTH_PERMISSION_ACTION.READ_STORE,
+      ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
+    ],
   },
   {
     code: AUTH_ROLE.SUPPORT_ADMIN,
     name: 'Support Admin',
-    permissions: ['auth:read'],
+    permissions: [
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.AUTH, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.USERS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORES, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.LOCATIONS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.DELIVERY, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SUPPORT, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SETTINGS, AUTH_PERMISSION_ACTION.READ),
+    ],
   },
   {
     code: AUTH_ROLE.OPERATIONS_ADMIN,
     name: 'Operations Admin',
-    permissions: ['auth:read'],
+    permissions: [
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.AUTH, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.AUTH, AUTH_PERMISSION_ACTION.MANAGE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.USERS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORES, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.LOCATIONS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.ORDERS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.DELIVERY, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.CREATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.ADJUST),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.INVENTORY, AUTH_PERMISSION_ACTION.BULK_UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.CREATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.APPROVE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.LOCATIONS, AUTH_PERMISSION_ACTION.CREATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.LOCATIONS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.LOCATIONS, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORES, AUTH_PERMISSION_ACTION.CREATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORES, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORES, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.CREATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS,
+        AUTH_PERMISSION_ACTION.BULK_UPDATE,
+      ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.FINANCE, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPDATE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SETTINGS, AUTH_PERMISSION_ACTION.MANAGE),
+    ],
   },
   {
     code: AUTH_ROLE.SUPER_ADMIN,
@@ -48,12 +161,12 @@ const systemRoles = [
 export const seedRoles = async (dryRun: boolean): Promise<void> => {
   if (dryRun) {
     console.log(
-      `Dry run: roles seed skipped for ${systemRoles.map((role) => role.code).join(', ')}`,
+      `Dry run: roles seed skipped for ${systemRoleSeedMatrix.map((role) => role.code).join(', ')}`,
     );
     return;
   }
 
-  for (const role of systemRoles) {
+  for (const role of systemRoleSeedMatrix) {
     await upsertSystemRole({
       ...role,
       description: null,
@@ -62,5 +175,5 @@ export const seedRoles = async (dryRun: boolean): Promise<void> => {
     });
   }
 
-  console.log('Roles seed placeholder completed');
+  console.log('System roles seeded');
 };

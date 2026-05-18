@@ -32,3 +32,8 @@ Audit logs are stored in the `audit_logs` collection.
 ## API Endpoints
 
 No new API endpoints created in this task.
+
+## Phase 3 Catalog Audit Events
+
+Planned catalog event types are documented in `docs/security/catalog-audit-logging.md`
+(e.g. `catalog.category_created`, `catalog.product_approval_status_changed`).

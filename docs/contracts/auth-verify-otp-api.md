@@ -68,6 +68,74 @@ Allowed app surfaces:
 }
 ```
 
+## Customer App Verify Example
+
+```json
+{
+  "phone": "9999999999",
+  "role": "customer",
+  "otp": "123456",
+  "challengeId": "challenge_id",
+  "device": {
+    "deviceId": "customer-device-placeholder",
+    "deviceType": "android",
+    "appSurface": "customer_app",
+    "appVersion": "1.0.0"
+  }
+}
+```
+
+## Delivery Agent App Verify Example
+
+```json
+{
+  "phone": "6666666666",
+  "role": "delivery_agent",
+  "otp": "123456",
+  "challengeId": "challenge_id",
+  "device": {
+    "deviceId": "delivery-device-placeholder",
+    "deviceType": "android",
+    "appSurface": "delivery_agent_app",
+    "appVersion": "1.0.0"
+  }
+}
+```
+
+## Vendor Panel Verify Example
+
+```json
+{
+  "phone": "7777777777",
+  "role": "vendor_owner",
+  "otp": "123456",
+  "challengeId": "challenge_id",
+  "device": {
+    "deviceId": "vendor-web-browser",
+    "deviceType": "web",
+    "appSurface": "vendor_panel",
+    "appVersion": "1.0.0"
+  }
+}
+```
+
+## Admin Dashboard Verify Example
+
+```json
+{
+  "phone": "6666666666",
+  "role": "super_admin",
+  "otp": "123456",
+  "challengeId": "challenge_id",
+  "device": {
+    "deviceId": "admin-web-browser",
+    "deviceType": "web",
+    "appSurface": "admin_dashboard",
+    "appVersion": "1.0.0"
+  }
+}
+```
+
 ## Invalid OTP Error Response
 
 ```json

@@ -2,100 +2,59 @@
 
 ## Phase 1: Foundation & Core Architecture
 
-Status: completed.
+Status: **complete** for the documented foundation scope, with manual runtime caveats.
+
+Completed Modules 1–13 per Phase 1 handoff and verification docs.
+
+## Phase 2: User Access & Role-Based Entry
+
+Status: **complete for static/code/docs verification** (corrective Tickets 1–18 closed 2026-05-18).
+
+Completed modules (corrective closeout):
+
+- Module 2: Authentication Architecture
+- Module 3: Backend Auth Core
+- Module 4: OTP Login System
+- Module 5: Role & Permission System
+- Module 6: Tenant & Store Access Control
+- Module 7: Customer App Authentication
+- Module 8: Delivery Agent App Authentication
+- Module 9: Vendor Panel Authentication
+- Module 10: Admin Dashboard Authentication
+- Module 11: Session & Device Management
+- Module 12: Access Control Testing
+- Module 13: Phase 2 Integration & Review
+
+Verification summary:
+
+- Static inspection and automated tests pass in-repo (see `docs/reviews/phase-1-2-completion-verification.md`).
+- **Live environment verification remains required before production confidence.**
+- Source-PDF literal alignment items (per-surface session routes, permission namespace, mutation audit naming) are documented as `NEEDS VERIFICATION`, not open corrective implementation gaps.
+
+Primary artifacts:
+
+- `docs/handoffs/phase-2-release-notes.md`
+- `docs/contracts/postman/phase-2-verification.postman_collection.json`
+- `docs/contracts/postman/phase-2-access-control.postman_collection.json`
+
+## Phase 3: Store Foundation (Catalog & Inventory)
+
+Status: **in progress** — Module 1 Catalog Architecture **complete** (documentation/contracts only).
 
 Completed:
 
-- Module 1: System Architecture Foundation.
-- Module 2: Repository & Codebase Setup.
-- Module 3: Backend Core Foundation.
-- Module 4: Database Foundation.
-- Module 5: Authentication Foundation.
-- Module 6: Frontend Foundation — React Native Apps.
-- Module 7: Frontend Foundation — Web Panels.
-- Module 8: Shared UI & Design Foundation.
-- Module 9: API Contract Foundation, including successful runtime smoke verification on port `5020` with MongoDB reachable from this machine.
-- Module 10: DevOps & Local Development Foundation, completed for currently source-confirmed tickets.
-- Module 11: Logging, Monitoring & Debug Foundation.
-- Module 12: Security Foundation.
-- Module 13: Phase 1 Integration & Review.
+- Module 1: Catalog Architecture (`docs/handoffs/catalog-architecture-complete.md`)
 
-Active:
+Not started (runtime):
 
-- Phase 1 is complete. Phase 2 is not started and requires explicit user permission before any tickets are generated or executed.
+- Module 2: Category Management Backend and all later Phase 3 modules
 
-Source verification:
+Rule: Category Management Backend implementation requires explicit approval; Catalog Architecture added no runtime code.
 
-- `projectin micro/doctwo/PhaesDetail1&2.pdf` pages 272-311 confirm Module 13 and its ticket order.
-
-Backend live smoke on any machine still requires a reachable MongoDB at `DB_MONGO_URI` (local MongoDB, Docker, or Atlas with Network Access for that network). Docker runtime smoke for Module 10 Ticket 2 is still pending on this machine because the `docker` CLI is not installed. Module 11 local observability scripts and Module 12 security header/CORS scripts require a running backend at `API_BASE_URL` or `localhost:5000`.
-
-## Phase 2
+## Phase 4–12
 
 Status: not started.
-
-Details: needs verification from `projectin micro/doctwo/PhaesDetail1&2.pdf`.
-
-## Phase 3
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docthree/PhaesDetail3.pdf`.
-
-## Phase 4
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docfour/PhaesDetail4&5.pdf`.
-
-## Phase 5
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docfour/PhaesDetail4&5.pdf`.
-
-## Phase 6
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docfive/PhaesDetail6,7&8.pdf`.
-
-## Phase 7
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docfive/PhaesDetail6,7&8.pdf`.
-
-## Phase 8
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docfive/PhaesDetail6,7&8.pdf`.
-
-## Phase 9
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docsix/PhaesDetail9.pdf`.
-
-## Phase 10
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docseven/PhaesDetail10.pdf`.
-
-## Phase 11
-
-Status: not started.
-
-Details: needs verification from `projectin micro/doceight/PhaesDetail11.pdf`.
-
-## Phase 12
-
-Status: not started.
-
-Details: needs verification from `projectin micro/docnine/PhaesDetail12.pdf`.
 
 ## Rule
 
-Future work must start from the current phase/module/ticket listed in `CURRENT_PROGRESS.md`. If the next module is unclear, verify against the relevant phase micro-task PDF before creating or executing tickets.
+Future work must start from `project-context/CURRENT_PROGRESS.md`. Phase 3 implementation must not begin until the user explicitly approves.

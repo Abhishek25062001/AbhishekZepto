@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-stores-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/access-control/permission-visibility.util.ts",
+    "src/modules/stores/constants/**/*.ts",
+    "src/modules/stores/forms/**/*.schema.ts",
+    "src/modules/stores/**/*.test.ts",
+    "src/modules/stores/utils/store-*.ts",
+    "src/modules/stores/utils/store-*.test.ts"
+  ]
+}

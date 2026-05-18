@@ -1,19 +1,28 @@
 import { create } from 'zustand';
+import type { AuthRole, PermissionCode } from '../../../../packages/shared/api';
+
+const adminAuthRoles = ['support_admin', 'operations_admin', 'super_admin'] as const;
+
+export const isAdminAuthRole = (
+  role: AuthRole | null,
+): role is (typeof adminAuthRoles)[number] => {
+  return role !== null && adminAuthRoles.includes(role as (typeof adminAuthRoles)[number]);
+};
 
 type AuthSessionInput = {
   accessToken: string;
   refreshToken: string;
   adminId: string;
-  role?: string | null;
-  permissions?: string[];
+  role?: AuthRole | null;
+  permissions?: PermissionCode[];
 };
 
 type AuthStoreState = {
   accessToken: string | null;
   refreshToken: string | null;
   adminId: string | null;
-  role: string | null;
-  permissions: string[];
+  role: AuthRole | null;
+  permissions: PermissionCode[];
   isAuthenticated: boolean;
   setAuthSession: (session: AuthSessionInput) => void;
   clearAuthSession: () => void;

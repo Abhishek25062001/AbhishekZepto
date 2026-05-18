@@ -1,11 +1,15 @@
 import { Link } from 'react-router-dom';
+import type { PermissionCode } from '../../../../../packages/shared/api';
+import { CanAccess } from '../auth/CanAccess';
 
-const navigationLinks = [
-  { label: 'Dashboard', to: '/dashboard' },
-  { label: 'Orders', to: '/orders' },
-  { label: 'Inventory', to: '/inventory' },
-  { label: 'Products', to: '/products' },
-  { label: 'Settings', to: '/settings' },
+const navigationLinks: Array<{ label: string; to: string; permission: PermissionCode }> = [
+  { label: 'Dashboard', to: '/dashboard', permission: 'vendor:read_store' },
+  { label: 'Orders', to: '/orders', permission: 'orders:read' },
+  { label: 'Store Catalog', to: '/store-catalog/products', permission: 'catalog:read' },
+  { label: 'Store Products', to: '/store-products', permission: 'store_products:read' },
+  { label: 'Inventory', to: '/inventory/stocks', permission: 'inventory:read' },
+  { label: 'Media', to: '/media', permission: 'catalog:read' },
+  { label: 'Settings', to: '/settings', permission: 'settings:manage' },
 ];
 
 export function Sidebar() {
@@ -26,9 +30,9 @@ export function Sidebar() {
         }}
       >
         {navigationLinks.map((link) => (
-          <Link key={link.to} to={link.to}>
-            {link.label}
-          </Link>
+          <CanAccess key={link.to} permission={link.permission}>
+            <Link to={link.to}>{link.label}</Link>
+          </CanAccess>
         ))}
       </nav>
     </aside>

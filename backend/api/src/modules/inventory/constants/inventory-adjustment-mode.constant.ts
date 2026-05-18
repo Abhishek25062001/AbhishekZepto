@@ -1,0 +1,13 @@
+export const INVENTORY_ADJUSTMENT_MODE = {
+  INCREASE: 'increase',
+  DECREASE: 'decrease',
+  SET: 'set',
+} as const;
+
+export const INVENTORY_ADJUSTMENT_MODE_VALUES = [
+  INVENTORY_ADJUSTMENT_MODE.INCREASE,
+  INVENTORY_ADJUSTMENT_MODE.DECREASE,
+  INVENTORY_ADJUSTMENT_MODE.SET,
+] as const;
+
+export type InventoryAdjustmentMode = (typeof INVENTORY_ADJUSTMENT_MODE_VALUES)[number];

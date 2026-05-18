@@ -9,12 +9,37 @@ Customer App token storage keys:
 - `customer_access_token`
 - `customer_refresh_token`
 - `customer_id`
+- `customer_city_id`
+- `customer_role`
+- `customer_permissions`
 
 Delivery Agent App token storage keys:
 
 - `delivery_access_token`
 - `delivery_refresh_token`
 - `delivery_agent_id`
+- `delivery_city_id`
+- `delivery_role`
+- `delivery_permissions`
+
+Vendor Panel token storage keys:
+
+- `vendor.accessToken`
+- `vendor.refreshToken`
+- `vendor.userId`
+- `vendor.vendorId`
+- `vendor.storeId`
+- `vendor.cityId`
+- `vendor.role`
+- `vendor.permissions`
+
+Admin Dashboard token storage keys:
+
+- `admin.accessToken`
+- `admin.refreshToken`
+- `admin.adminId`
+- `admin.role`
+- `admin.permissions`
 
 ## Web Token Storage
 

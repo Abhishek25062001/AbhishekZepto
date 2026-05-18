@@ -1,0 +1,70 @@
+import type {
+  AdminCatalogSearchItem,
+  CatalogFacetResult,
+  CustomerCatalogSearchItem,
+  VendorCatalogSearchItem,
+} from '../types/catalog-search.types';
+
+export const mapAdminCatalogSearchItem = (item: AdminCatalogSearchItem) => ({
+  id: item.id,
+  name: item.name,
+  slug: item.slug,
+  categoryId: item.categoryId,
+  subcategoryId: item.subcategoryId,
+  brandId: item.brandId,
+  categoryName: item.categoryName,
+  brandName: item.brandName,
+  productType: item.productType,
+  foodType: item.foodType,
+  approvalStatus: item.approvalStatus,
+  status: item.status,
+  isVisible: item.isVisible,
+  isFeatured: item.isFeatured,
+  defaultImageUrl: item.defaultImageUrl,
+  createdAt: item.createdAt,
+  updatedAt: item.updatedAt,
+});
+
+export const mapVendorCatalogSearchItem = (item: VendorCatalogSearchItem) => ({
+  id: item.id,
+  storeProductId: item.storeProductId,
+  productId: item.productId,
+  variantId: item.variantId,
+  name: item.name,
+  sku: item.sku,
+  storeSku: item.storeSku,
+  categoryId: item.categoryId,
+  brandId: item.brandId,
+  mrp: item.mrp,
+  sellingPrice: item.sellingPrice,
+  finalPrice: item.finalPrice,
+  isAvailable: item.isAvailable,
+  isVisible: item.isVisible,
+  status: item.status,
+});
+
+export const mapCustomerCatalogSearchItem = (item: CustomerCatalogSearchItem) => ({
+  id: item.productId,
+  storeProductId: item.storeProductId,
+  productId: item.productId,
+  variantId: item.variantId,
+  name: item.name,
+  shortDescription: item.shortDescription,
+  category: item.categoryName,
+  brand: item.brandName,
+  categoryId: item.categoryId,
+  brandId: item.brandId,
+  defaultImageUrl: item.defaultImageUrl,
+  foodType: item.foodType,
+  mrp: item.mrp,
+  sellingPrice: item.sellingPrice,
+  finalPrice: item.finalPrice,
+  discountType: item.discountType,
+  discountValue: item.discountValue,
+  isAvailable: item.isAvailable,
+  isOutOfStock: item.isOutOfStock,
+  availableQuantity: item.availableQuantity,
+  isLowStock: item.isLowStock,
+});
+
+export const mapCatalogFacets = (facets: CatalogFacetResult) => facets;

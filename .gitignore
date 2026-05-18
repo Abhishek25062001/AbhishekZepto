@@ -9,8 +9,18 @@ node_modules/
 !.env.staging.example
 !.env.production.example
 
+# Local media uploads
+backend/api/uploads/
+
 # Build outputs
 dist/
+dist-access-control-smoke/
+dist-catalog-test/
+dist-stores-test/
+dist-inventory-test/
+dist-store-catalog-test/
+dist-store-inventory-test/
+dist-catalog-test/
 build/
 coverage/
 .turbo/

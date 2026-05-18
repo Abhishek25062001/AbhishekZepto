@@ -1,0 +1,29 @@
+export const MEDIA_OWNER_TYPE = {
+  CATEGORY: 'category',
+  BRAND: 'brand',
+  PRODUCT: 'product',
+  PRODUCT_VARIANT: 'product_variant',
+  STORE: 'store',
+  USER: 'user',
+  VENDOR: 'vendor',
+  DELIVERY_AGENT: 'delivery_agent',
+  ORDER: 'order',
+  SUPPORT_TICKET: 'support_ticket',
+  SYSTEM: 'system',
+} as const;
+
+export const MEDIA_OWNER_TYPE_VALUES = [
+  MEDIA_OWNER_TYPE.CATEGORY,
+  MEDIA_OWNER_TYPE.BRAND,
+  MEDIA_OWNER_TYPE.PRODUCT,
+  MEDIA_OWNER_TYPE.PRODUCT_VARIANT,
+  MEDIA_OWNER_TYPE.STORE,
+  MEDIA_OWNER_TYPE.USER,
+  MEDIA_OWNER_TYPE.VENDOR,
+  MEDIA_OWNER_TYPE.DELIVERY_AGENT,
+  MEDIA_OWNER_TYPE.ORDER,
+  MEDIA_OWNER_TYPE.SUPPORT_TICKET,
+  MEDIA_OWNER_TYPE.SYSTEM,
+] as const;
+
+export type MediaOwnerType = (typeof MEDIA_OWNER_TYPE_VALUES)[number];

@@ -99,3 +99,9 @@ Request body:
 The placeholder token values are not real credentials. Real OTP verification,
 JWT signing, refresh token rotation, session revocation, and provider delivery
 belong to later authentication modules.
+
+Current authenticated session-management endpoints are:
+
+- `GET /api/v1/auth/me/sessions`
+- `POST /api/v1/auth/logout-session`
+- `POST /api/v1/auth/logout-other-sessions`

@@ -3,192 +3,129 @@
 ## Current Completed Dependency Chain
 
 ```text
-System Architecture Foundation
--> Repository & Codebase Setup
--> Backend Core Foundation
--> Database Foundation
--> Authentication Foundation
--> Frontend Foundation — React Native Apps
--> Frontend Foundation — Web Panels
--> Shared UI & Design Foundation
--> API Contract Foundation
--> DevOps & Local Development Foundation
--> Logging, Monitoring & Debug Foundation
--> Security Foundation
--> Phase 1 Integration & Review
+Phase 1 complete
+-> Phase 2 Module 2 Authentication Architecture
+-> Phase 2 Module 3 Backend Auth Core
+-> Phase 2 Module 4 OTP Login System
+-> Phase 2 Module 5 Role & Permission System
+-> Phase 2 Module 6 Tenant & Store Access Control
+-> Phase 2 Module 7 Customer App Authentication
+-> Phase 2 Module 8 Delivery Agent App Authentication
+-> Phase 2 Module 9 Vendor Panel Authentication
+-> Phase 2 Module 10 Admin Dashboard Authentication
+-> Phase 2 Module 11 Session & Device Management
+-> Phase 2 Module 12 Access Control Testing
+-> Phase 2 Module 13 Phase 2 Integration & Review
 ```
 
 ## Current Next Step
 
-Phase 1 is complete. Do not start Phase 2 or any later module until the user
-explicitly gives permission.
+Phase 2 is complete. Do not start the next phase until the user explicitly
+gives permission.
 
 ```text
-await user permission for Phase 2
+await user permission for the first module of the next phase after completed Phase 2
 ```
 
-Last source-verified module:
+## Important Note On Naming Drift
+
+Some earlier Phase 2 work was discussed while the user accidentally referred to
+the older Phase 1 phase title. The execution order still followed the correct
+Phase 2 authentication and access-control chain, so the dependency order is not
+broken.
+
+## Current Ticket Status
 
 ```text
-projectin micro/doctwo/PhaesDetail1&2.pdf pages 272-311
+Phase 2 Module 2 Authentication Architecture -> completed
+Phase 2 Module 3 Backend Auth Core -> completed
+Phase 2 Module 4 OTP Login System -> completed
+Phase 2 Module 5 Role & Permission System -> completed
+Phase 2 Module 6 Tenant & Store Access Control -> completed
+Phase 2 Module 7 Customer App Authentication -> completed
+Phase 2 Module 8 Delivery Agent App Authentication -> completed
+Phase 2 Module 9 Vendor Panel Authentication -> completed
+Phase 2 Module 10 Admin Dashboard Authentication -> completed
+Phase 2 Module 11 Session & Device Management -> completed
+Phase 2 Module 12 Access Control Testing -> completed
+Phase 2 Module 13 Phase 2 Integration & Review -> completed
 ```
 
-Current ticket status:
+## Immediate Safe Next Action
 
 ```text
-Module 13 Ticket 1: Connectivity checklist and handoff — completed
-Module 13 Ticket 2: Folder structure review — completed
-Module 13 Ticket 3: Standards review — completed
-Module 13 Ticket 4: Quality gates — completed
-Module 13 Ticket 5: API contract review — completed
-Module 13 Ticket 6: Database review — completed
-Module 13 Ticket 7: Security baseline review — completed
-Module 13 Ticket 8: Frontend foundation review — completed
-Module 13 Ticket 9: Technical handoff — completed
-Module 13 Ticket 10: Final Phase 1 architecture review — completed
-Module 13 Ticket 11: Final docs index update — completed
+Wait for explicit user permission before creating or executing the first module of the next phase.
 ```
 
-Immediate safe next action:
+## Phase 2 Dependency Order Reached So Far
+
+The current repository now has these access-control dependencies available:
 
 ```text
-Wait for explicit user permission before creating or executing Phase 2 tickets.
+OTP auth architecture
+-> real backend auth core
+-> real OTP login flow across backend and four frontends
+-> role and permission enforcement
+-> vendor/store/city scope enforcement foundation
 ```
 
-Do not jump to Phase 2 or later modules without explicit user permission.
+## Available Now
 
-## General Backend Dependency Order
+- real OTP request, verify, refresh, and logout flows
+- real JWT signing and verification
+- auth session persistence
+- user identity, role, auth session, and OTP challenge models
+- role-permission seed matrix
+- backend permission middleware
+- backend vendor/store/city scope middleware
+- internal auth verification routes for permission and scope checks
+- shared auth API types for frontend surfaces
+- customer app OTP login flow
+- delivery agent app OTP login flow
+- vendor panel OTP login flow
+- admin dashboard OTP login flow
+- customer app customer-permissions fetch and auth restore flow
+- delivery agent app delivery-permissions fetch and auth restore flow
+- vendor panel auth restore, vendor-permissions fetch, and OTP login flow
+- vendor panel permission-aware protected entry
+- admin dashboard auth restore, admin-permissions fetch, and OTP login flow
+- admin dashboard permission-aware protected entry
+- vendor/store/city scope-aware protected entry foundations
+- auth audit logging for permission and scope denials
+- authenticated session listing and targeted session revocation
+- mobile and web session/device management surfaces
+- consolidated access-control verification and review coverage
 
-Future backend modules should generally follow this dependency logic:
+## Not Available Yet
 
-```text
-environment/config
--> response/error/validation/middleware
--> database connection
--> auth/session foundation
--> roles/permissions/scope checks
--> user/customer/vendor/store/delivery identities
--> catalog/store/inventory foundations
--> cart/checkout/order lifecycle
--> delivery lifecycle/tracking
--> payments/refunds
--> notifications/realtime
--> admin operations/audit logs/analytics/exports
-```
-
-This is a dependency guide, not a replacement for phase micro-task documents.
-
-## Completed Foundation Dependencies
-
-Already available:
-
-- monorepo structure
-- backend package skeleton
-- app package skeletons
-- shared package skeleton
-- backend environment validation
-- backend response envelope helpers
-- backend centralized errors
-- backend validation middleware
-- backend base middleware stack
-- backend route versioning
-- public backend health/version/system-info endpoints
-- backend module folder convention
-- backend database convention helpers
-- MongoDB connection lifecycle
-- database base schema utilities, plugins, query helpers, and error mapper
-- auth foundation models, repositories, validators, middleware, and placeholder routes
-- auth API contracts
-- React Native Customer App navigation, API client, state, secure storage, session restore, common UI, health hook, and error boundary foundation
-- React Native Delivery Agent App navigation, API client, state, secure storage, session restore, common UI, health hook, and error boundary foundation
-- Vendor Panel routing, API client, state, session storage, session restore, layout, common UI, health hook, permission visibility, and error boundary foundation
-- Admin Dashboard routing, API client, state, session storage, session restore, layout, common UI, health hook, permission visibility, and error boundary foundation
-- Mongo-backed runtime smoke verification against the approved Atlas development database
-- mobile Metro startup verification for both React Native apps
-- web Vite startup verification for Vendor Panel and Admin Dashboard
-- shared design tokens, themes, form foundations, and accessibility baseline across four surfaces
-- API contract docs, OpenAPI and Swagger docs routes, Postman collection, backend route registry, shared public API types, and frontend public API service contracts for public system and auth placeholder endpoints
-- Local development setup docs and env-file checker script from DevOps & Local Development Foundation Ticket 1
-- Docker Compose local MongoDB and backend API services from DevOps & Local Development Foundation Ticket 2
-- backend Dockerfile for local Docker backend service startup
-- backend Pino logger, Pino HTTP request logging, structured error logging, debug config, request tracing, and log file placeholders
-- public health monitoring fields with Redis placeholder status
-- frontend local error logging, API debug logging, and development-only debug placeholders across mobile and web surfaces
-- monitoring/debug strategy docs and local observability check scripts
-- security documentation, Helmet/CORS/body-size/request-sanitizer/rate-limit
-  baseline, secret checks, frontend config/token safety checks, audit log
-  foundation, access-denied audit hooks, dependency audit scripts, and CI
-  security check placeholders
-- Phase 1 connectivity checklist, folder/standards/API/database/security/frontend
-  reviews, quality gate results, technical handoff, final architecture review,
-  and docs indexes
-
-Not available yet:
-
+- domain-specific tenant/store ownership checks inside catalog, orders,
+  inventory, stores, or delivery modules
+- repository-level scope filters for non-auth business records
+- cross-tenant isolation inside later business services
 - CI workflows
-- non-auth business domain models
-- non-auth repositories
-- real JWT verification
-- real OTP provider integration
-- production auth session behavior
-- production browser session behavior
-- real vendor/admin login flows
-- Redis client
 - production monitoring stack
-- remote crash reporting
-- realtime server
 - queue worker
 - formal test framework
 
-## Surface Dependencies
+## Cross-Cutting Dependency Logic
 
-Customer App depends on:
+The current safe order for upcoming access and business modules is:
 
-- backend API contracts
-- auth/session APIs
-- location/serviceability APIs
-- catalog APIs
-- cart/checkout/order/payment/tracking APIs
-- notification setup
-
-Delivery Agent App depends on:
-
-- delivery-agent auth
-- availability APIs
-- assignment APIs
-- pickup and delivery lifecycle APIs
-- location update APIs
-- earnings APIs
-- realtime/push notification setup
-
-Vendor Panel depends on:
-
-- vendor/store auth and scope
-- catalog/store/inventory APIs
-- order queue APIs
-- picking/packing/ready-for-pickup APIs
-- settlement/report APIs
-
-Admin Dashboard depends on:
-
-- admin auth and RBAC
-- user/vendor/store/delivery-agent management APIs
-- catalog/inventory/order/delivery/payment/refund APIs
-- audit logs
-- analytics and exports
-
-## Cross-Cutting Dependencies
-
-Every feature module may depend on:
-
-- validation middleware
-- error handling
-- response format
-- auth/permission middleware once implemented
-- audit logging once implemented
-- shared DB field conventions
-- tests and docs
+```text
+auth/session
+-> roles/permissions
+-> tenant/store/city scope
+-> customer surface authentication
+-> delivery surface authentication
+-> vendor surface authentication
+-> admin surface authentication
+-> domain-specific ownership validation
+-> repository/service-level scoped data access
+-> later business workflows
+```
 
 ## Rule
 
-If a ticket requires a dependency that does not exist, create only the smallest dependency needed for that ticket and document it. Do not create broad future infrastructure early.
+If a ticket requires a dependency that does not exist, create only the smallest
+dependency needed for that ticket and document it. Do not create broad future
+infrastructure early.

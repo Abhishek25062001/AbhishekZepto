@@ -61,13 +61,13 @@ Refresh token storage hashing approach:
 
 Existing env fields to confirm:
 
-- `JWT_ACCESS_SECRET=change_me`
-- `JWT_REFRESH_SECRET=change_me`
+- `JWT access secret` should be set only in backend env files.
+- `JWT refresh secret` should be set only in backend env files.
 
 Planned env fields:
 
-- `JWT_ACCESS_EXPIRES_IN=15m`
-- `JWT_REFRESH_EXPIRES_IN=30d`
+- `JWT access expiry` should be `15m`.
+- `JWT refresh expiry` should be `30d`.
 
 Planned env validation:
 

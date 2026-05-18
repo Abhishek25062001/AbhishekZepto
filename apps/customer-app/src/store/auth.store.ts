@@ -1,15 +1,26 @@
 import { create } from 'zustand';
+import type { AuthRole, AuthScope, PermissionCode } from '../../../../packages/shared/api';
+
+export const isCustomerAuthRole = (
+  role: AuthRole | null,
+): role is 'customer' => role === 'customer';
 
 type AuthSessionInput = {
   accessToken: string;
+  cityId?: AuthScope['cityId'];
+  permissions?: PermissionCode[];
   refreshToken: string;
   customerId: string;
+  role?: AuthRole | null;
 };
 
 type AuthStoreState = {
   accessToken: string | null;
   refreshToken: string | null;
   customerId: string | null;
+  cityId: string | null;
+  role: AuthRole | null;
+  permissions: PermissionCode[];
   isAuthenticated: boolean;
   setAuthSession: (session: AuthSessionInput) => void;
   clearAuthSession: () => void;
@@ -19,12 +30,18 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
   accessToken: null,
   refreshToken: null,
   customerId: null,
+  cityId: null,
+  role: null,
+  permissions: [],
   isAuthenticated: false,
   setAuthSession: (session) =>
     set({
       accessToken: session.accessToken,
       refreshToken: session.refreshToken,
       customerId: session.customerId,
+      cityId: session.cityId ?? null,
+      role: session.role ?? null,
+      permissions: session.permissions ?? [],
       isAuthenticated: true,
     }),
   clearAuthSession: () =>
@@ -32,6 +49,9 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
       accessToken: null,
       refreshToken: null,
       customerId: null,
+      cityId: null,
+      role: null,
+      permissions: [],
       isAuthenticated: false,
     }),
 }));

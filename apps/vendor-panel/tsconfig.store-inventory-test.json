@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-store-inventory-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/access-control/permission-visibility.util.ts",
+    "src/modules/store-inventory/constants/**/*.ts",
+    "src/modules/store-inventory/forms/**/*.schema.ts",
+    "src/modules/store-inventory/**/*.test.ts",
+    "src/modules/store-inventory/**/*.test.tsx",
+    "src/modules/store-inventory/utils/vendor-inventory-*.ts"
+  ]
+}

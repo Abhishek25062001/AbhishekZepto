@@ -1,4 +1,10 @@
 import { authPaths } from './auth.paths';
+import { catalogPaths } from './catalog.paths';
+import { locationPaths } from './location.paths';
+import { inventoryPaths } from './inventory.paths';
+import { inventoryLockPaths } from './inventory-lock.paths';
+import { mediaPaths } from './media.paths';
+import { storeProductPaths } from './store-product.paths';
 import {
   ApiErrorResponseSchema,
   ApiSuccessResponseSchema,
@@ -14,6 +20,12 @@ export {
   ApiErrorResponseSchema,
   ApiSuccessResponseSchema,
   authPaths,
+  catalogPaths,
+  locationPaths,
+  inventoryPaths,
+  inventoryLockPaths,
+  mediaPaths,
+  storeProductPaths,
   HealthResponseSchema,
   openApiConfig,
   PaginationMetaSchema,
@@ -37,5 +49,11 @@ export const openApiDocument = {
   paths: {
     ...publicPaths,
     ...authPaths,
+    ...catalogPaths,
+    ...locationPaths,
+    ...storeProductPaths,
+    ...inventoryPaths,
+    ...inventoryLockPaths,
+    ...mediaPaths,
   },
 };

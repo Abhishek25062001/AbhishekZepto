@@ -2,6 +2,7 @@ import axios, { AxiosError } from 'axios';
 
 import { API_BASE_URL, isDevelopment } from '../../config/env';
 import type { ApiErrorResponse } from '../../types/api.types';
+import { useAuthStore } from '../../store/auth.store';
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
@@ -9,7 +10,16 @@ export const apiClient = axios.create({
 });
 
 apiClient.interceptors.request.use((config) => {
-  // Access token injection is added by the auth implementation module.
+  const accessToken = useAuthStore.getState().accessToken;
+
+  if (accessToken) {
+    config.headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  if (!config.headers['x-trace-id']) {
+    config.headers['x-trace-id'] = `customer-app-${Date.now()}`;
+  }
+
   if (isDevelopment) {
     console.debug('Customer App API request', {
       method: config.method,
@@ -37,7 +47,7 @@ apiClient.interceptors.response.use(
     return response;
   },
   (error: AxiosError<ApiErrorResponse>) => {
-    // Global API error mapping is added by the auth/session implementation modules.
+    // Automatic refresh on 401 is intentionally deferred to the session module.
     if (isDevelopment) {
       console.debug('Customer App API response error', {
         status: error.response?.status,

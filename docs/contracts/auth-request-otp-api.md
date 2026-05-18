@@ -40,6 +40,50 @@
 }
 ```
 
+## Customer App Request Example
+
+```json
+{
+  "phone": "9999999999",
+  "role": "customer",
+  "purpose": "login",
+  "deliveryChannel": "sms"
+}
+```
+
+## Delivery Agent App Request Example
+
+```json
+{
+  "phone": "6666666666",
+  "role": "delivery_agent",
+  "purpose": "login",
+  "deliveryChannel": "sms"
+}
+```
+
+## Vendor Panel Request Example
+
+```json
+{
+  "phone": "7777777777",
+  "role": "vendor_owner",
+  "purpose": "login",
+  "deliveryChannel": "sms"
+}
+```
+
+## Admin Dashboard Request Example
+
+```json
+{
+  "phone": "6666666666",
+  "role": "super_admin",
+  "purpose": "login",
+  "deliveryChannel": "sms"
+}
+```
+
 ## Validation Error Response
 
 ```json

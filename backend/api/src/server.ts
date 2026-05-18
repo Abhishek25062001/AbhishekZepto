@@ -1,6 +1,11 @@
 import app from './app';
 import { connectMongoDB, disconnectMongoDB } from './config/database';
 import { env } from './config/env';
+import { ensureMediaUploadDirectory } from './bootstrap/media-upload-dir.bootstrap';
+import {
+  startInventoryLockExpiryJob,
+  stopInventoryLockExpiryJob,
+} from './jobs/inventory-lock-expiry.job';
 
 const fallbackPort = 5000;
 
@@ -27,6 +32,7 @@ const gracefulShutdown = async (signal: NodeJS.Signals): Promise<void> => {
   console.log(`${signal} received. Shutting down backend API.`);
 
   try {
+    stopInventoryLockExpiryJob();
     await closeHttpServer();
     await disconnectMongoDB();
     process.exit(0);
@@ -40,9 +46,11 @@ export const startServer = async () => {
   const port = env.APP_PORT || fallbackPort;
 
   await connectMongoDB();
+  await ensureMediaUploadDirectory();
 
   server = app.listen(port, () => {
     console.log(`Backend API server started on port ${port}`);
+    startInventoryLockExpiryJob();
   });
 
   return server;

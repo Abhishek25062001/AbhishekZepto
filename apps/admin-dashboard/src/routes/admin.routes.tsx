@@ -1,15 +1,22 @@
 import { Navigate } from 'react-router-dom';
 
+import { CanAccess } from '../components/auth/CanAccess';
 import { DashboardLayout } from '../layouts/DashboardLayout';
 import { LoginPage } from '../pages/auth/LoginPage';
+import { OtpVerificationPage } from '../pages/auth/OtpVerificationPage';
 import { DashboardPage } from '../pages/dashboard/DashboardPage';
+import { AuthSmokeTestPage } from '../pages/debug/AuthSmokeTestPage';
 import { DebugPage } from '../pages/debug/DebugPage';
 import { DeliveryAgentsPage } from '../pages/delivery-agents/DeliveryAgentsPage';
 import { FinancePage } from '../pages/finance/FinancePage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
-import { ProductsPage } from '../pages/products/ProductsPage';
+import { catalogRoutes } from './catalog.routes';
+import { inventoryRoutes } from './inventory.routes';
+import { storeRoutes } from './store.routes';
 import { SettingsPage } from '../pages/settings/SettingsPage';
-import { StoresPage } from '../pages/stores/StoresPage';
+import { SessionsPage } from '../pages/settings/SessionsPage';
+import { UserSessionsPage } from '../pages/users/UserSessionsPage';
+import { CanAccessAny } from '../components/auth/CanAccessAny';
 import { SupportPage } from '../pages/support/SupportPage';
 import { UsersPage } from '../pages/users/UsersPage';
 import { isDevelopment } from '../config/env';
@@ -19,6 +26,10 @@ export const adminRoutes = [
   {
     path: '/login',
     element: <LoginPage />,
+  },
+  {
+    path: '/otp-verification',
+    element: <OtpVerificationPage />,
   },
   {
     path: '/',
@@ -33,45 +44,95 @@ export const adminRoutes = [
     children: [
       {
         path: '/dashboard',
-        element: <DashboardPage />,
+        element: (
+          <CanAccess fallback={<Navigate to="/orders" replace />} permission="auth:read">
+            <DashboardPage />
+          </CanAccess>
+        ),
       },
       {
         path: '/users',
-        element: <UsersPage />,
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="users:read">
+            <UsersPage />
+          </CanAccess>
+        ),
       },
       {
-        path: '/stores',
-        element: <StoresPage />,
+        path: '/users/:userId/sessions',
+        element: (
+          <CanAccessAny
+            fallback={<Navigate to="/users" replace />}
+            permissions={['auth:read', 'users:read', 'settings:manage']}
+          >
+            <UserSessionsPage />
+          </CanAccessAny>
+        ),
       },
       {
         path: '/products',
-        element: <ProductsPage />,
+        element: <Navigate replace to="/catalog/products" />,
       },
+      ...catalogRoutes,
+      ...storeRoutes,
+      ...inventoryRoutes,
       {
         path: '/orders',
-        element: <OrdersPage />,
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="orders:read">
+            <OrdersPage />
+          </CanAccess>
+        ),
       },
       {
         path: '/delivery-agents',
-        element: <DeliveryAgentsPage />,
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="delivery:read">
+            <DeliveryAgentsPage />
+          </CanAccess>
+        ),
       },
       {
         path: '/finance',
-        element: <FinancePage />,
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="finance:read">
+            <FinancePage />
+          </CanAccess>
+        ),
       },
       {
         path: '/support',
-        element: <SupportPage />,
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="support:read">
+            <SupportPage />
+          </CanAccess>
+        ),
       },
       {
         path: '/settings',
-        element: <SettingsPage />,
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="settings:read">
+            <SettingsPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/settings/sessions',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="settings:read">
+            <SessionsPage />
+          </CanAccess>
+        ),
       },
       ...(isDevelopment
         ? [
             {
               path: '/debug',
               element: <DebugPage />,
+            },
+            {
+              path: '/debug/auth-smoke',
+              element: <AuthSmokeTestPage />,
             },
           ]
         : []),

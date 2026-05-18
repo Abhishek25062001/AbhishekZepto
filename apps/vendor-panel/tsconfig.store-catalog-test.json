@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-store-catalog-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/access-control/permission-visibility.util.ts",
+    "src/modules/store-catalog/constants/**/*.ts",
+    "src/modules/store-catalog/forms/**/*.schema.ts",
+    "src/modules/store-catalog/**/*.test.ts",
+    "src/modules/store-catalog/**/*.test.tsx",
+    "src/modules/store-catalog/utils/vendor-catalog-*.ts"
+  ]
+}

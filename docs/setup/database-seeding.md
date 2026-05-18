@@ -31,3 +31,10 @@ the required models:
 - roles
 - super admin
 - units
+
+## Phase 3 Catalog Seeds (planned)
+
+Catalog master-data seed plan (not implemented in Catalog Architecture module):
+
+- `docs/database/catalog-seed-data-plan.md`
+- Planned file: `backend/api/src/database/seeds/seed-catalog.ts`

@@ -1,14 +1,34 @@
+import type { AuthRole, PermissionCode } from '../../../../../packages/shared/api';
 import {
   ADMIN_ACCESS_TOKEN,
   ADMIN_ID,
+  ADMIN_PERMISSIONS,
   ADMIN_REFRESH_TOKEN,
+  ADMIN_ROLE,
   ADMIN_SESSION_STORAGE_KEYS,
 } from '../../constants/storage-keys';
+
+const authRoles: readonly AuthRole[] = [
+  'customer',
+  'delivery_agent',
+  'vendor_owner',
+  'store_manager',
+  'store_staff',
+  'support_admin',
+  'operations_admin',
+  'super_admin',
+];
+
+const isAuthRole = (value: string | null): value is AuthRole => {
+  return value !== null && authRoles.includes(value as AuthRole);
+};
 
 export type AdminSession = {
   accessToken: string;
   adminId: string;
+  permissions: PermissionCode[];
   refreshToken: string;
+  role: AuthRole | null;
 };
 
 function getStorage() {
@@ -30,6 +50,8 @@ export function saveAdminSession(session: AdminSession) {
   storage.setItem(ADMIN_ACCESS_TOKEN, session.accessToken);
   storage.setItem(ADMIN_REFRESH_TOKEN, session.refreshToken);
   storage.setItem(ADMIN_ID, session.adminId);
+  storage.setItem(ADMIN_ROLE, session.role ?? '');
+  storage.setItem(ADMIN_PERMISSIONS, JSON.stringify(session.permissions));
 }
 
 export function loadAdminSession(): AdminSession | null {
@@ -42,15 +64,29 @@ export function loadAdminSession(): AdminSession | null {
   const accessToken = storage.getItem(ADMIN_ACCESS_TOKEN);
   const refreshToken = storage.getItem(ADMIN_REFRESH_TOKEN);
   const adminId = storage.getItem(ADMIN_ID);
+  const role = storage.getItem(ADMIN_ROLE);
+  const permissions = storage.getItem(ADMIN_PERMISSIONS);
 
   if (!accessToken || !refreshToken || !adminId) {
     return null;
   }
 
+  let parsedPermissions: PermissionCode[] = [];
+
+  if (permissions) {
+    try {
+      parsedPermissions = JSON.parse(permissions) as PermissionCode[];
+    } catch {
+      parsedPermissions = [];
+    }
+  }
+
   return {
     accessToken,
     adminId,
+    permissions: parsedPermissions,
     refreshToken,
+    role: isAuthRole(role) ? role : null,
   };
 }
 

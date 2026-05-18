@@ -1,0 +1,14 @@
+export const INVENTORY_BULK_DUPLICATE_MODE = {
+  FAIL: 'fail',
+  SKIP: 'skip',
+  REPLACE: 'replace',
+} as const;
+
+export const INVENTORY_BULK_DUPLICATE_MODE_VALUES = [
+  INVENTORY_BULK_DUPLICATE_MODE.FAIL,
+  INVENTORY_BULK_DUPLICATE_MODE.SKIP,
+  INVENTORY_BULK_DUPLICATE_MODE.REPLACE,
+] as const;
+
+export type InventoryBulkDuplicateMode =
+  (typeof INVENTORY_BULK_DUPLICATE_MODE_VALUES)[number];

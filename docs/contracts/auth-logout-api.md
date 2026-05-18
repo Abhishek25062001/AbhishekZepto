@@ -24,6 +24,42 @@
 }
 ```
 
+## Customer App Logout Example
+
+```json
+{
+  "refreshToken": "customer_refresh_token",
+  "logoutAllDevices": false
+}
+```
+
+## Delivery Agent App Logout Example
+
+```json
+{
+  "refreshToken": "delivery_refresh_token",
+  "logoutAllDevices": false
+}
+```
+
+## Vendor Panel Logout Example
+
+```json
+{
+  "refreshToken": "vendor_refresh_token",
+  "logoutAllDevices": false
+}
+```
+
+## Admin Dashboard Logout Example
+
+```json
+{
+  "refreshToken": "admin_refresh_token",
+  "logoutAllDevices": false
+}
+```
+
 ## Logout Behavior Rules
 
 - If `logoutAllDevices=false`, revoke current session only.

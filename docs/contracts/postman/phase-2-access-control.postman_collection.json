@@ -1,0 +1,1808 @@
+{
+  "info": {
+    "_postman_id": "a16b4c2d-9f0e-4c21-b7d1-phase2accessctrl",
+    "name": "Zepto-like Phase 2 Access Control",
+    "description": "Phase 2 access-control allow/deny scenarios. Requires a running local API and seeded development users. Set collection variables to match your environment. Do not commit real OTP secrets.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "publicAuthOtp",
+      "value": "123456"
+    },
+    {
+      "key": "challengeId",
+      "value": ""
+    },
+    {
+      "key": "customerPhone",
+      "value": "9999999999"
+    },
+    {
+      "key": "deliveryPhone",
+      "value": "8888888888"
+    },
+    {
+      "key": "vendorPhone",
+      "value": "7777777777"
+    },
+    {
+      "key": "adminPhone",
+      "value": "6666666666"
+    },
+    {
+      "key": "supportAdminPhone",
+      "value": "6666666601"
+    },
+    {
+      "key": "operationsAdminPhone",
+      "value": "6666666602"
+    },
+    {
+      "key": "customerAccessToken",
+      "value": ""
+    },
+    {
+      "key": "deliveryAccessToken",
+      "value": ""
+    },
+    {
+      "key": "vendorAccessToken",
+      "value": ""
+    },
+    {
+      "key": "adminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "supportAdminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "operationsAdminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "testUserId",
+      "value": ""
+    },
+    {
+      "key": "testSessionId",
+      "value": ""
+    },
+    {
+      "key": "vendorId",
+      "value": "65f0a0000000000000000001"
+    },
+    {
+      "key": "storeId",
+      "value": "65f0a0000000000000000002"
+    },
+    {
+      "key": "customerId",
+      "value": ""
+    },
+    {
+      "key": "deliveryAgentId",
+      "value": ""
+    },
+    {
+      "key": "foreignVendorId",
+      "value": "65f0a0000000000000000991"
+    },
+    {
+      "key": "foreignStoreId",
+      "value": "65f0a0000000000000000992"
+    },
+    {
+      "key": "foreignCustomerId",
+      "value": "000000000000000000000099"
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Auth Setup",
+      "description": "Run OTP request + verify flows before deny/allow folders. Requires seeded DB and dev OTP.",
+      "item": [
+        {
+          "name": "Request OTP - Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('OTP challenge returned', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{customerPhone}}\",\n  \"role\": \"customer\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - Customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('customerAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('customerId', user.userId);",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{customerPhone}}\",\n  \"role\": \"customer\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-device\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"customer_app\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - Delivery Agent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('OTP challenge returned', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{deliveryPhone}}\",\n  \"role\": \"delivery_agent\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - Delivery Agent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('deliveryAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('deliveryAgentId', user.userId);",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{deliveryPhone}}\",\n  \"role\": \"delivery_agent\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-device\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"delivery_agent_app\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - Vendor Owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('OTP challenge returned', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{vendorPhone}}\",\n  \"role\": \"vendor_owner\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - Vendor Owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('vendorAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{vendorPhone}}\",\n  \"role\": \"vendor_owner\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-device\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"vendor_panel\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - Super Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('OTP challenge returned', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{adminPhone}}\",\n  \"role\": \"super_admin\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - Super Admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('adminAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{adminPhone}}\",\n  \"role\": \"super_admin\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-device\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"admin_dashboard\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - Support Admin (NEEDS SEEDED USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('OTP challenge returned', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{supportAdminPhone}}\",\n  \"role\": \"support_admin\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - Support Admin (NEEDS SEEDED USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('supportAdminAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{supportAdminPhone}}\",\n  \"role\": \"support_admin\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-device\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"admin_dashboard\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - Operations Admin (NEEDS SEEDED USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('OTP challenge returned', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{operationsAdminPhone}}\",\n  \"role\": \"operations_admin\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - Operations Admin (NEEDS SEEDED USER)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('operationsAdminAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{operationsAdminPhone}}\",\n  \"role\": \"operations_admin\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-device\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"admin_dashboard\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "List Sessions - Capture testSessionId (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.sessions && json.data.sessions.length) {",
+                  "  const current = json.data.sessions.find((s) => s.isCurrent) || json.data.sessions[0];",
+                  "  if (current && current.sessionId) pm.collectionVariables.set('testSessionId', current.sessionId);",
+                  "}",
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/me/sessions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 Unauthenticated Deny",
+      "item": [
+        {
+          "name": "List My Sessions Without Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/me/sessions"
+          }
+        },
+        {
+          "name": "Customer Permissions Without Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/customer/me/permissions"
+          }
+        },
+        {
+          "name": "Admin Roles Without Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/roles"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Role and Surface Deny",
+      "item": [
+        {
+          "name": "Customer On Admin Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/me/permissions"
+          }
+        },
+        {
+          "name": "Customer On Internal Protected",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/auth/test-protected"
+          }
+        },
+        {
+          "name": "Vendor On Customer Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/customer/me/permissions"
+          }
+        },
+        {
+          "name": "Delivery On Admin Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deliveryAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/me/permissions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Permission Deny",
+      "item": [
+        {
+          "name": "Vendor On Internal Protected",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/auth/test-protected"
+          }
+        },
+        {
+          "name": "Customer On Admin Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/roles"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Permission Allow",
+      "item": [
+        {
+          "name": "Customer Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/customer/me/permissions"
+          }
+        },
+        {
+          "name": "Delivery Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deliveryAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/delivery/me/permissions"
+          }
+        },
+        {
+          "name": "Vendor Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/vendor/me/permissions"
+          }
+        },
+        {
+          "name": "Admin Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/me/permissions"
+          }
+        },
+        {
+          "name": "Super Admin Internal Protected",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/auth/test-protected"
+          }
+        },
+        {
+          "name": "List Admin Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/roles"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Tenant Allow",
+      "item": [
+        {
+          "name": "Vendor Store Tenant Records (Owned Scope)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/vendor/{{vendorId}}/store/{{storeId}}/test-records"
+          }
+        },
+        {
+          "name": "Customer Self Tenant Records",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/customer/{{customerId}}/test-records"
+          }
+        },
+        {
+          "name": "Delivery Self Tenant Records",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deliveryAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/delivery-agent/{{deliveryAgentId}}/test-records"
+          }
+        },
+        {
+          "name": "Admin Create Tenant Test Record",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/test-records",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"label\": \"postman-access-control-record\",\n  \"vendorId\": \"{{vendorId}}\",\n  \"storeId\": \"{{storeId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Vendor Scope Test Route (Owned vendorId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/internal/auth/test-vendor-scope?vendorId={{vendorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "internal",
+                "auth",
+                "test-vendor-scope"
+              ],
+              "query": [
+                {
+                  "key": "vendorId",
+                  "value": "{{vendorId}}"
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Tenant Deny",
+      "item": [
+        {
+          "name": "Vendor Scope Test Route (Foreign vendorId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/internal/auth/test-vendor-scope?vendorId={{foreignVendorId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "internal",
+                "auth",
+                "test-vendor-scope"
+              ],
+              "query": [
+                {
+                  "key": "vendorId",
+                  "value": "{{foreignVendorId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Vendor Store Scope Test Route (Foreign storeId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/internal/auth/test-store-scope?storeId={{foreignStoreId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "api",
+                "v1",
+                "internal",
+                "auth",
+                "test-store-scope"
+              ],
+              "query": [
+                {
+                  "key": "storeId",
+                  "value": "{{foreignStoreId}}"
+                }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Customer Tenant Records (Foreign customerId)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/customer/{{foreignCustomerId}}/test-records"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Session Access Control",
+      "item": [
+        {
+          "name": "List My Sessions (Customer)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/me/sessions"
+          }
+        },
+        {
+          "name": "Logout Current Session (Deny)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/logout-session",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": \"{{testSessionId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Refresh Token Rotation",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/refresh-token",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Admin Authorization Boundary",
+      "item": [
+        {
+          "name": "Admin List User Sessions (Allow)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/users/{{testUserId}}/sessions"
+          }
+        },
+        {
+          "name": "Customer Cannot List Admin User Sessions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/users/{{testUserId}}/sessions"
+          }
+        },
+        {
+          "name": "Admin Revoke User Session (Allow)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is allowed', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/users/{{testUserId}}/sessions/{{testSessionId}}"
+          }
+        },
+        {
+          "name": "Customer Cannot Revoke Admin User Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/users/{{testUserId}}/sessions/{{testSessionId}}"
+          }
+        },
+        {
+          "name": "Support Admin Revoke Sessions (NEEDS supportAdminAccessToken)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is denied', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([401, 403, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{supportAdminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/users/{{testUserId}}/sessions/{{testSessionId}}"
+          }
+        }
+      ]
+    }
+  ]
+}

@@ -1,9 +1,8 @@
 import { useId, type InputHTMLAttributes } from 'react';
 
-type InputProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'onChange'> & {
+type InputProps = InputHTMLAttributes<HTMLInputElement> & {
   error?: string;
   label?: string;
-  onChange?: (value: string) => void;
 };
 
 export function Input({ disabled = false, error, id, label, onChange, type = 'text', ...props }: InputProps) {
@@ -20,7 +19,7 @@ export function Input({ disabled = false, error, id, label, onChange, type = 'te
         aria-invalid={error ? true : undefined}
         disabled={disabled}
         id={inputId}
-        onChange={(event) => onChange?.(event.target.value)}
+        onChange={onChange}
         style={{
           background: disabled ? 'var(--color-background)' : 'var(--color-surface)',
           border: `1px solid ${error ? 'var(--color-error)' : 'var(--color-border)'}`,

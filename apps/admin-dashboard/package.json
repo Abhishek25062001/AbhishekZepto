@@ -7,9 +7,14 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test:catalog": "tsc -p tsconfig.catalog-test.json && find dist-catalog-test/modules/catalog -name '*.test.js' -exec node --test {} +",
+    "test:stores": "tsc -p tsconfig.stores-test.json && find dist-stores-test/modules/stores -name '*.test.js' -exec node --test {} +",
+    "test:inventory": "tsc -p tsconfig.inventory-test.json && find dist-inventory-test/modules/inventory -name '*.test.js' -exec node --test {} +",
+    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js"
   },
   "dependencies": {
+    "@hookform/resolvers": "^3.10.0",
     "@tanstack/react-query": "^5.100.9",
     "axios": "^1.16.0",
     "react": "^19.2.6",
@@ -20,6 +25,7 @@
     "zustand": "^5.0.13"
   },
   "devDependencies": {
+    "@types/node": "^22.10.5",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",

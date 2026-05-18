@@ -16,10 +16,10 @@ Never log full token values.
 
 ## Planned Env Fields
 
-- `JWT_ACCESS_SECRET=change_me`
-- `JWT_REFRESH_SECRET=change_me`
-- `JWT_ACCESS_EXPIRES_IN=15m`
-- `JWT_REFRESH_EXPIRES_IN=30d`
+- `JWT access secret` should live only in backend env files.
+- `JWT refresh secret` should live only in backend env files.
+- `JWT access expiry` should be `15m`.
+- `JWT refresh expiry` should be `30d`.
 
 ## DB Fields
 

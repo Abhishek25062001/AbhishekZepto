@@ -1,4 +1,7 @@
 import express from 'express';
+import path from 'node:path';
+import { env } from './config/env';
+import { STORAGE_PROVIDER } from './modules/media/constants/storage-provider.constant';
 import { bodyParserMiddleware } from './middlewares/body-parser.middleware';
 import { corsMiddleware } from './middlewares/cors.middleware';
 import { globalErrorMiddleware } from './middlewares/error.middleware';
@@ -23,6 +26,13 @@ app.use(corsMiddleware);
 app.use(bodyParserMiddleware);
 app.use(sanitizeRequestMiddleware);
 app.use(globalRateLimitMiddleware);
+
+if (env.MEDIA_STORAGE_PROVIDER === STORAGE_PROVIDER.LOCAL && env.APP_ENV !== 'production') {
+  app.use(
+    '/uploads',
+    express.static(path.resolve(process.cwd(), env.MEDIA_LOCAL_UPLOAD_DIR)),
+  );
+}
 
 app.use(routes);
 

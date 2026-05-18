@@ -1,13 +1,23 @@
 import { create } from 'zustand';
+import type { AuthRole, AuthScope, PermissionCode } from '../../../../packages/shared/api';
+
+const vendorAuthRoles = ['vendor_owner', 'store_manager', 'store_staff'] as const;
+
+export const isVendorAuthRole = (
+  role: AuthRole | null,
+): role is (typeof vendorAuthRoles)[number] => {
+  return role !== null && vendorAuthRoles.includes(role as (typeof vendorAuthRoles)[number]);
+};
 
 type AuthSessionInput = {
   accessToken: string;
+  cityId?: AuthScope['cityId'];
   refreshToken: string;
   vendorUserId: string;
   vendorId: string;
   storeId: string;
-  role?: string | null;
-  permissions?: string[];
+  role?: AuthRole | null;
+  permissions?: PermissionCode[];
 };
 
 type AuthStoreState = {
@@ -16,8 +26,9 @@ type AuthStoreState = {
   vendorUserId: string | null;
   vendorId: string | null;
   storeId: string | null;
-  role: string | null;
-  permissions: string[];
+  cityId: string | null;
+  role: AuthRole | null;
+  permissions: PermissionCode[];
   isAuthenticated: boolean;
   setAuthSession: (session: AuthSessionInput) => void;
   clearAuthSession: () => void;
@@ -29,6 +40,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
   vendorUserId: null,
   vendorId: null,
   storeId: null,
+  cityId: null,
   role: null,
   permissions: [],
   isAuthenticated: false,
@@ -39,6 +51,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
       vendorUserId: session.vendorUserId,
       vendorId: session.vendorId,
       storeId: session.storeId,
+      cityId: session.cityId ?? null,
       role: session.role ?? null,
       permissions: session.permissions ?? [],
       isAuthenticated: true,
@@ -50,6 +63,7 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
       vendorUserId: null,
       vendorId: null,
       storeId: null,
+      cityId: null,
       role: null,
       permissions: [],
       isAuthenticated: false,

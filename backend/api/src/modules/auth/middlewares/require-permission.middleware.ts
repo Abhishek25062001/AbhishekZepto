@@ -6,9 +6,10 @@ import { AUDIT_EVENTS, writeAuditLog } from '../../audit';
 import type { AuditActorSurface } from '../../audit';
 import { HTTP_STATUS } from '../../../utils/http-status';
 import { hasPermission } from '../services/permission.service';
+import type { PermissionCode } from '../types/auth-permission.types';
 import type { AuthRole } from '../types/auth-role.types';
 
-const toObjectIdOrNull = (value?: string): Types.ObjectId | null => {
+const toObjectIdOrNull = (value?: string | null): Types.ObjectId | null => {
   if (!value || !Types.ObjectId.isValid(value)) {
     return null;
   }
@@ -32,7 +33,9 @@ const getActorSurface = (role: AuthRole): AuditActorSurface => {
   return 'admin_dashboard';
 };
 
-export const requirePermission = (requiredPermission: string): RequestHandler => {
+export const requirePermission = (
+  requiredPermission: PermissionCode,
+): RequestHandler => {
   return (req, _res, next) => {
     if (!req.user) {
       return next(

@@ -1,7 +1,15 @@
 import { useEffect, useState } from 'react';
 
-import { loadDeliverySession } from '../services/auth/session-storage.service';
+import {
+  hasPartialDeliverySession,
+  isRestorableDeliverySession,
+} from '../access-control/session-restore.util';
+import {
+  clearDeliverySession,
+  loadDeliverySession,
+} from '../services/auth/session-storage.service';
 import { useAuthStore } from '../store/auth.store';
+import { logDeliveryAuthEvent } from '../utils/auth-event-logger';
 
 export function useRestoreDeliverySession() {
   const setAuthSession = useAuthStore((state) => state.setAuthSession);
@@ -17,10 +25,20 @@ export function useRestoreDeliverySession() {
         return;
       }
 
-      if (session) {
+      if (session && isRestorableDeliverySession(session)) {
         setAuthSession(session);
+        logDeliveryAuthEvent('session_restore_success', {
+          deliveryAgentId: session.deliveryAgentId,
+          role: session.role,
+        });
+      } else if (hasPartialDeliverySession(session)) {
+        await clearDeliverySession();
+        logDeliveryAuthEvent('session_restore_failure', {
+          reason: 'partial_session',
+        });
       }
 
+      // Refresh-token validation during restore is intentionally deferred.
       setIsRestoringSession(false);
     };
 
@@ -35,4 +53,3 @@ export function useRestoreDeliverySession() {
     isRestoringSession,
   };
 }
-

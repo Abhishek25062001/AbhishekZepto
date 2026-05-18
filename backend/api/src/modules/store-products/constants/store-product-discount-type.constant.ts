@@ -1,0 +1,14 @@
+export const STORE_PRODUCT_DISCOUNT_TYPE = {
+  NONE: 'none',
+  FLAT: 'flat',
+  PERCENTAGE: 'percentage',
+} as const;
+
+export type StoreProductDiscountType =
+  (typeof STORE_PRODUCT_DISCOUNT_TYPE)[keyof typeof STORE_PRODUCT_DISCOUNT_TYPE];
+
+export const STORE_PRODUCT_DISCOUNT_TYPE_VALUES = [
+  STORE_PRODUCT_DISCOUNT_TYPE.NONE,
+  STORE_PRODUCT_DISCOUNT_TYPE.FLAT,
+  STORE_PRODUCT_DISCOUNT_TYPE.PERCENTAGE,
+] as const;

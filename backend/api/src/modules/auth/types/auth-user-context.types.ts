@@ -1,11 +1,10 @@
+import type { PermissionCode } from './auth-permission.types';
 import type { AuthRole } from './auth-role.types';
+import type { ResolvedAuthScope } from './auth-scope.types';
 
-export type AuthUserContext = {
+export type AuthUserContext = ResolvedAuthScope & {
   userId: string;
   role: AuthRole;
-  permissions: string[];
+  permissions: PermissionCode[];
   sessionId: string;
-  vendorId?: string;
-  storeId?: string;
-  cityId?: string;
 };

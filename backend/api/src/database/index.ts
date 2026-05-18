@@ -7,3 +7,4 @@ export * from './index-strategy';
 export * from './pagination';
 export * from './plugins';
 export * from './query-helpers';
+export * from './tenant-query-helpers';

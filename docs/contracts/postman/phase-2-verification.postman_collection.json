@@ -1,0 +1,1318 @@
+{
+  "info": {
+    "_postman_id": "b27c4d1e-8f3a-4b2e-phase2verify01",
+    "name": "Zepto-like Phase 2 Verification",
+    "description": "Final Phase 2 integration verification (happy-path focus). Requires local API, MongoDB, seeds, and dev OTP. Run folder 09 Logout last. For allow/deny matrices use phase-2-access-control.postman_collection.json.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5000"
+    },
+    {
+      "key": "publicAuthOtp",
+      "value": "123456"
+    },
+    {
+      "key": "challengeId",
+      "value": ""
+    },
+    {
+      "key": "customerPhone",
+      "value": "9999999999"
+    },
+    {
+      "key": "deliveryPhone",
+      "value": "8888888888"
+    },
+    {
+      "key": "vendorPhone",
+      "value": "7777777777"
+    },
+    {
+      "key": "adminPhone",
+      "value": "6666666666"
+    },
+    {
+      "key": "customerAccessToken",
+      "value": ""
+    },
+    {
+      "key": "deliveryAccessToken",
+      "value": ""
+    },
+    {
+      "key": "vendorAccessToken",
+      "value": ""
+    },
+    {
+      "key": "adminAccessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "testUserId",
+      "value": ""
+    },
+    {
+      "key": "testSessionId",
+      "value": ""
+    },
+    {
+      "key": "testRoleId",
+      "value": ""
+    },
+    {
+      "key": "vendorId",
+      "value": "65f0a0000000000000000001"
+    },
+    {
+      "key": "storeId",
+      "value": "65f0a0000000000000000002"
+    },
+    {
+      "key": "customerId",
+      "value": ""
+    },
+    {
+      "key": "deliveryAgentId",
+      "value": ""
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Public Health and Config",
+      "description": "Unauthenticated public system endpoints.",
+      "item": [
+        {
+          "name": "Health",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/health"
+          }
+        },
+        {
+          "name": "Version",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/version"
+          }
+        },
+        {
+          "name": "System Info",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/system-info"
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 Public Auth OTP",
+      "description": "OTP request/verify for seeded development users. Populates access tokens and ids.",
+      "item": [
+        {
+          "name": "Request OTP - customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{customerPhone}}\",\n  \"role\": \"customer\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - customer",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('customerAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.session && json.data.session.sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.session.sessionId);",
+                  "  } else if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "  if (user.userId) pm.collectionVariables.set('customerId', user.userId);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{customerPhone}}\",\n  \"role\": \"customer\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-phase2-verify\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"customer_app\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - delivery_agent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{deliveryPhone}}\",\n  \"role\": \"delivery_agent\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - delivery_agent",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('deliveryAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.session && json.data.session.sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.session.sessionId);",
+                  "  } else if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "  if (user.userId) pm.collectionVariables.set('deliveryAgentId', user.userId);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{deliveryPhone}}\",\n  \"role\": \"delivery_agent\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-phase2-verify\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"delivery_agent_app\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - vendor_owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{vendorPhone}}\",\n  \"role\": \"vendor_owner\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - vendor_owner",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('vendorAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.session && json.data.session.sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.session.sessionId);",
+                  "  } else if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{vendorPhone}}\",\n  \"role\": \"vendor_owner\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-phase2-verify\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"vendor_panel\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Request OTP - super_admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (json && json.data && json.data.challengeId) {",
+                  "  pm.collectionVariables.set('challengeId', json.data.challengeId);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{adminPhone}}\",\n  \"role\": \"super_admin\",\n  \"purpose\": \"login\",\n  \"deliveryChannel\": \"sms\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Verify OTP - super_admin",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('adminAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "  const user = json.data.user || {};",
+                  "  if (user.userId) pm.collectionVariables.set('testUserId', user.userId);",
+                  "  if (json.data.session && json.data.session.sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.session.sessionId);",
+                  "  } else if (json.data.sessions && json.data.sessions[0] && json.data.sessions[0].sessionId) {",
+                  "    pm.collectionVariables.set('testSessionId', json.data.sessions[0].sessionId);",
+                  "  }",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"{{adminPhone}}\",\n  \"role\": \"super_admin\",\n  \"otp\": \"{{publicAuthOtp}}\",\n  \"challengeId\": \"{{challengeId}}\",\n  \"device\": {\n    \"deviceId\": \"postman-phase2-verify\",\n    \"deviceType\": \"web\",\n    \"appSurface\": \"admin_dashboard\",\n    \"appVersion\": \"1.0.0\"\n  }\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Refresh Token",
+      "description": "Refresh rotation using token from OTP verify.",
+      "item": [
+        {
+          "name": "Refresh Access Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "if (pm.response.code >= 200 && pm.response.code < 300 && json && json.data) {",
+                  "  if (json.data.accessToken) pm.collectionVariables.set('customerAccessToken', json.data.accessToken);",
+                  "  if (json.data.refreshToken) pm.collectionVariables.set('refreshToken', json.data.refreshToken);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/refresh-token",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Self Permissions by Surface",
+      "item": [
+        {
+          "name": "Customer Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/customer/me/permissions"
+          }
+        },
+        {
+          "name": "Delivery Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deliveryAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/delivery/me/permissions"
+          }
+        },
+        {
+          "name": "Vendor Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/vendor/me/permissions"
+          }
+        },
+        {
+          "name": "Admin Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/me/permissions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Self Sessions",
+      "item": [
+        {
+          "name": "List My Sessions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/me/sessions"
+          }
+        },
+        {
+          "name": "Logout Other Sessions (Keep Current)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/logout-other-sessions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentSessionId\": \"{{testSessionId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Role Management Admin APIs",
+      "item": [
+        {
+          "name": "List Roles",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const json = pm.response.json();",
+                  "const roles = json && json.data && (json.data.roles || json.data.items || json.data);",
+                  "if (Array.isArray(roles) && roles[0] && roles[0].roleId) {",
+                  "  pm.collectionVariables.set('testRoleId', roles[0].roleId);",
+                  "} else if (Array.isArray(roles) && roles[0] && roles[0]._id) {",
+                  "  pm.collectionVariables.set('testRoleId', roles[0]._id);",
+                  "}",
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/roles"
+          }
+        },
+        {
+          "name": "Get Role By Id",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/roles/{{testRoleId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 User Permission Admin APIs",
+      "item": [
+        {
+          "name": "Sync User Role Permissions",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/users/{{testUserId}}/sync-role-permissions",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"roleCode\": \"customer\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Tenant Access Internal Verification",
+      "description": "Internal test routes for tenant scope checks (not production APIs).",
+      "item": [
+        {
+          "name": "Internal Auth Test Protected",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/auth/test-protected"
+          }
+        },
+        {
+          "name": "Vendor Store Tenant Records",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{vendorAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/vendor/{{vendorId}}/store/{{storeId}}/test-records"
+          }
+        },
+        {
+          "name": "Customer Tenant Records",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/customer/{{customerId}}/test-records"
+          }
+        },
+        {
+          "name": "Delivery Agent Tenant Records",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{deliveryAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/internal/tenant-access/delivery-agent/{{deliveryAgentId}}/test-records"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Admin User-Session APIs",
+      "item": [
+        {
+          "name": "List User Sessions (Admin)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{adminAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/admin/users/{{testUserId}}/sessions"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Logout",
+      "description": "Run last — invalidates refresh token for the active session.",
+      "item": [
+        {
+          "name": "Public Logout",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201]);",
+                  "});",
+                  "pm.test('Response has success envelope', function () {",
+                  "  const json = pm.response.json();",
+                  "  pm.expect(json).to.have.property('success', true);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/public/auth/logout",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        },
+        {
+          "name": "Logout Current Session",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Status is success or already logged out', function () {",
+                  "  pm.expect(pm.response.code).to.be.oneOf([200, 201, 401, 404, 409]);",
+                  "});",
+                  "pm.test('Response does not expose refreshTokenHash', function () {",
+                  "  pm.expect(pm.response.text()).to.not.include('refreshTokenHash');",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "Authorization",
+                "value": "Bearer {{customerAccessToken}}"
+              }
+            ],
+            "url": "{{baseUrl}}/api/v1/auth/logout-session",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sessionId\": \"{{testSessionId}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

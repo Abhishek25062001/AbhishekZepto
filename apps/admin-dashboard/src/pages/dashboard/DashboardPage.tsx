@@ -1,10 +1,13 @@
 import { Badge, Card, ErrorView, Loader } from '../../components/common';
 import { isDevelopment } from '../../config/env';
 import { useBackendHealth } from '../../hooks/useBackendHealth';
+import { Link } from 'react-router-dom';
+import { useAuthStore } from '../../store/auth.store';
 
 export function DashboardPage() {
   const { error, healthData, isLoading } = useBackendHealth();
   const errorMessage = error instanceof Error ? error.message : 'Unable to load backend health.';
+  const adminId = useAuthStore((state) => state.adminId);
 
   return (
     <>
@@ -24,6 +27,15 @@ export function DashboardPage() {
               </Badge>
             </p>
           ) : null}
+          <div style={{ display: 'grid', gap: '4px', marginTop: 'var(--spacing-md)' }}>
+            <p style={{ margin: 0 }}>
+              Admin summary: {adminId ?? 'n/a'}
+            </p>
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <Link to="/debug">Debug</Link>
+              <Link to="/debug/auth-smoke">Auth smoke</Link>
+            </div>
+          </div>
         </Card>
       ) : null}
     </>

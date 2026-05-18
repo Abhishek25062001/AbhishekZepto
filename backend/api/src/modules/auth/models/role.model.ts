@@ -3,15 +3,18 @@ import type { SchemaOptions } from 'mongoose';
 import { baseSchemaFields } from '../../../database/base-schema-fields';
 import { baseSchemaOptions } from '../../../database/base-schema-options';
 import { COLLECTION_NAMES } from '../../../database/constants/collection-names.constants';
+import type { DbStatus } from '../../../database/constants/db-status.constants';
+import type { PermissionCode } from '../types/auth-permission.types';
+import type { AuthRole } from '../types/auth-role.types';
 
 export type RoleRecord = {
-  code: string;
+  code: AuthRole;
   name: string;
   description: string | null;
-  permissions: string[];
+  permissions: PermissionCode[];
   isSystemRole: boolean;
   isEditable: boolean;
-  status: string;
+  status: DbStatus;
   isDeleted: boolean;
   deletedAt: Date | null;
   createdAt: Date;

@@ -27,7 +27,7 @@ export const globalRateLimitMiddleware = rateLimit({
 
 export const authRateLimitMiddleware = rateLimit({
   legacyHeaders: false,
-  limit: 5,
+  limit: process.env.APP_ENV === 'development' ? 100 : 5,
   standardHeaders: true,
   windowMs: 5 * minutes,
   handler: (req, res) => {

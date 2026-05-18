@@ -1,4 +1,5 @@
 import { Router } from 'express';
+import authRoutes from './auth.routes';
 import adminRoutes from './admin.routes';
 import customerRoutes from './customer.routes';
 import deliveryRoutes from './delivery.routes';
@@ -8,6 +9,7 @@ import vendorRoutes from './vendor.routes';
 
 const router = Router();
 
+router.use('/auth', authRoutes);
 router.use('/public', publicRoutes);
 router.use('/customer', customerRoutes);
 router.use('/delivery', deliveryRoutes);

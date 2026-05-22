@@ -4,6 +4,7 @@ import { locationPaths } from './location.paths';
 import { inventoryPaths } from './inventory.paths';
 import { inventoryLockPaths } from './inventory-lock.paths';
 import { mediaPaths } from './media.paths';
+import { orderPaths } from './order.paths';
 import { storeProductPaths } from './store-product.paths';
 import {
   ApiErrorResponseSchema,
@@ -15,6 +16,7 @@ import {
 } from './common.schemas';
 import { openApiConfig } from './openapi.config';
 import { publicPaths } from './public.paths';
+import { deliveryPaths } from './delivery.paths';
 
 export {
   ApiErrorResponseSchema,
@@ -25,11 +27,13 @@ export {
   inventoryPaths,
   inventoryLockPaths,
   mediaPaths,
+  orderPaths,
   storeProductPaths,
   HealthResponseSchema,
   openApiConfig,
   PaginationMetaSchema,
   publicPaths,
+  deliveryPaths,
   SystemInfoResponseSchema,
   VersionResponseSchema,
 };
@@ -55,5 +59,7 @@ export const openApiDocument = {
     ...inventoryPaths,
     ...inventoryLockPaths,
     ...mediaPaths,
+    ...orderPaths,
+    ...deliveryPaths,
   },
 };

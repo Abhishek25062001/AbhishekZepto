@@ -6,6 +6,7 @@
 - Phase 2 access control: `docs/contracts/postman/phase-2-access-control.postman_collection.json`
 - Phase 2 verification (integration): `docs/contracts/postman/phase-2-verification.postman_collection.json`
 - Phase 3 catalog/store/inventory: `docs/contracts/postman/zepto-like-phase-3.postman_collection.json`
+- Phase 4 customer shopping: `docs/contracts/postman/zepto-like-phase-4.postman_collection.json`
 
 See also: `docs/handoffs/phase-2-release-notes.md`, `docs/releases/phase-3-release-notes.md`
 

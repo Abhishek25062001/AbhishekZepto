@@ -4,7 +4,7 @@ import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { Loader, ScreenWrapper, Text } from '../../../components/common';
-import { useAuthStore } from '../../../store/auth.store';
+import { useLocationContext } from '../../addresses/hooks/useLocationContext';
 import { BrandCard } from '../components/BrandCard';
 import { CatalogErrorState } from '../components/CatalogErrorState';
 import { CatalogHorizontalList } from '../components/CatalogHorizontalList';
@@ -23,9 +23,10 @@ import type { CustomerBrand } from '../types/customer-brand.types';
 import type { CustomerCategory } from '../types/customer-category.types';
 import type { CustomerProduct } from '../types/customer-product.types';
 
+/** Full catalog browse; shopping entry uses `CustomerHomeScreen` + `GET /customer/home`. */
 export function CatalogHomeScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<CatalogStackParamList>>();
-  const cityId = useAuthStore((state) => state.cityId);
+  const { hasStore } = useLocationContext();
   const [search, setSearch] = React.useState('');
 
   const categoriesQuery = useCustomerCategories();
@@ -68,7 +69,12 @@ export function CatalogHomeScreen() {
         refreshControl={<RefreshControl onRefresh={onRefresh} refreshing={isRefreshing} />}
       >
         <Text variant="h2">Catalog</Text>
-        {!cityId ? <ServiceabilityPlaceholderBanner /> : null}
+        <ServiceabilityPlaceholderBanner />
+        {!hasStore ? (
+          <Text color="secondary" variant="small">
+            Select a delivery store from Addresses to browse with store context.
+          </Text>
+        ) : null}
         <CustomerSearchBar
           onChangeText={setSearch}
           onSubmit={() => navigation.navigate('CatalogSearch')}
@@ -97,7 +103,9 @@ export function CatalogHomeScreen() {
           <CatalogHorizontalList
             data={featuredQuery.data?.items ?? []}
             keyExtractor={(item) => item.id}
-            renderItem={({ item }) => <ProductCard onPress={openProduct} product={item} />}
+            renderItem={({ item }) => (
+              <ProductCard onPress={openProduct} product={item} showAddToCart />
+            )}
           />
         )}
         <CatalogSectionHeader title="Browse by brand" />

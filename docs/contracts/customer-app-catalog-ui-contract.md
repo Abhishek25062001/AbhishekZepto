@@ -25,7 +25,41 @@ Status: **IMPLEMENTED**
 | `availability` | `available`, `out_of_stock`, `all` |
 | `isFeatured` | Featured listing |
 | `sortBy`, `sortOrder` | Sort (see constants) |
-| `cityId` | Optional; from auth store when set |
+| `cityId` | Optional; from location context (fallback auth) |
+| `storeId` | Optional; from `useLocationContext` when store selected — required for accurate store stock |
+| `isAvailable` | Client maps filter `availability: available` only (backend has no `isOutOfStock` query param) |
+
+## Browsing improvements (Module 13)
+
+### Pagination
+
+| Screen | Endpoint | Behavior |
+|--------|----------|----------|
+| `CategoryProductsScreen` | `GET .../products` | Infinite scroll; default `limit` 20 |
+| `BrandProductsScreen` | `GET .../products` | Same |
+| `CatalogSearchScreen` | `GET .../search` | Same; reset when debounced `q` changes |
+
+- `hasNextPage`: `pagination.page * pagination.limit < pagination.total` (or equivalent meta).
+- `onEndReached` on `ProductGrid` / `FlatList`; guard while `isLoadingMore`.
+- Pull-to-refresh and filter/subcategory/search changes reset to `page = 1`.
+- Footer: loading indicator + end-of-list message.
+
+### OOS listing cards
+
+| Field | Rule |
+|-------|------|
+| `isOutOfStock === true` | Badge “Out of stock”, dimmed card, hide quick-add |
+| `isAvailable === false` | Badge “Unavailable”, dimmed card, hide quick-add |
+
+### Product detail
+
+- `getAvailabilityState(isAvailable, isOutOfStock)` → `AvailabilityBadge`.
+- Low stock: `availableQuantity != null && availableQuantity > 0 && availableQuantity <= 5` → “Only {n} left”.
+- Add to cart disabled when OOS or unavailable.
+
+### Availability filter
+
+UI filter `out_of_stock` does not map to a server query param in Phase 3/4 backend. Only `available` sends `isAvailable=true`. Do not client-filter paginated pages for `out_of_stock`.
 
 ## Response shape
 

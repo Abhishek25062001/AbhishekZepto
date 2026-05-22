@@ -1,0 +1,21 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-admin-orders-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/types/api.types.ts",
+    "src/modules/orders/forms/**/*.schema.ts",
+    "src/modules/orders/forms/**/*.test.ts",
+    "src/modules/orders/types/**/*.ts",
+    "src/modules/orders/utils/**/*.ts",
+    "src/modules/orders/utils/**/*.test.ts",
+    "src/modules/orders/pages/**/*.test.ts"
+  ]
+}

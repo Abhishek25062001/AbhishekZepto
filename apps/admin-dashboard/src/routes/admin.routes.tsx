@@ -10,6 +10,7 @@ import { DebugPage } from '../pages/debug/DebugPage';
 import { DeliveryAgentsPage } from '../pages/delivery-agents/DeliveryAgentsPage';
 import { FinancePage } from '../pages/finance/FinancePage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
+import { AdminOrderDetailPage } from '../modules/orders/pages/AdminOrderDetailPage';
 import { catalogRoutes } from './catalog.routes';
 import { inventoryRoutes } from './inventory.routes';
 import { storeRoutes } from './store.routes';
@@ -76,6 +77,14 @@ export const adminRoutes = [
       ...catalogRoutes,
       ...storeRoutes,
       ...inventoryRoutes,
+      {
+        path: '/orders/:orderId',
+        element: (
+          <CanAccess fallback={<Navigate to="/orders" replace />} permission="orders:read">
+            <AdminOrderDetailPage />
+          </CanAccess>
+        ),
+      },
       {
         path: '/orders',
         element: (

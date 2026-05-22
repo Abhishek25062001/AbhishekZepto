@@ -26,6 +26,7 @@ export const buildCatalogQuery = (
   if (filters.foodType) {
     query.foodType = filters.foodType;
   }
+  // Backend supports isAvailable only; out_of_stock filter has no server param.
   if (filters.availability === 'available') {
     query.isAvailable = true;
   }

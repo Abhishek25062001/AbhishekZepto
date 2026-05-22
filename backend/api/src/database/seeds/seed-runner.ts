@@ -4,6 +4,8 @@ import { seedDefaultSettings } from './seed-default-settings';
 import { seedRoles } from './seed-roles';
 import { seedTenantAccessTests } from './seed-tenant-access-tests';
 import { seedLocations } from './seed-locations';
+import { seedCustomerAddresses } from './seed-customer-addresses';
+import { seedDemoCart } from './seed-demo-cart';
 import { seedInventory } from './seed-inventory';
 import { seedStoreProducts } from './seed-store-products';
 import { seedStores } from './seed-stores';
@@ -24,4 +26,6 @@ export const runSeeds = async ({ dryRun = false }: SeedRunnerOptions = {}): Prom
   await seedStores(dryRun);
   await seedStoreProducts(dryRun);
   await seedInventory(dryRun);
+  await seedCustomerAddresses(dryRun);
+  await seedDemoCart(dryRun);
 };

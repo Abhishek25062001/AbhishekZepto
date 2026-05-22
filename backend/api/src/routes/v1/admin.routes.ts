@@ -13,6 +13,9 @@ import storeAdminRoutes from '../../modules/stores/routes/store-admin.routes';
 import storeProductAdminRoutes from '../../modules/store-products/routes/store-product-admin.routes';
 import inventoryAdminRoutes from '../../modules/inventory/routes/inventory-admin.routes';
 import mediaAdminRoutes from '../../modules/media/routes/media-admin.routes';
+import adminOrderRoutes from '../../modules/orders/routes/admin-order.routes';
+import deliveryAgentAdminRoutes from '../../modules/delivery/routes/delivery-agent-admin.routes';
+import deliveryAssignmentAdminRoutes from '../../modules/delivery/routes/delivery-assignment-admin.routes';
 import { authenticate } from '../../modules/auth/middlewares/authenticate.middleware';
 import { requireRole } from '../../modules/auth/middlewares/require-role.middleware';
 import { sendSuccessResponse } from '../../utils/api-response';
@@ -109,6 +112,36 @@ router.use(
   authenticate(),
   requireRole(adminRoles),
   mediaAdminRoutes,
+);
+router.use(
+  '/orders',
+  authenticate(),
+  requireRole(adminRoles),
+  adminOrderRoutes,
+);
+
+// ---------------------------------------------------------------------------
+// Phase 6 Module 2 — Delivery Agent Admin Routes
+// GET  /api/v1/admin/agents
+// GET  /api/v1/admin/agents/:agentId
+// ---------------------------------------------------------------------------
+router.use(
+  '/agents',
+  authenticate(),
+  requireRole(adminRoles),
+  deliveryAgentAdminRoutes,
+);
+
+// ---------------------------------------------------------------------------
+// Phase 6 Module 4 — Delivery Assignment Admin Routes
+// GET  /api/v1/admin/deliveries/pending
+// POST /api/v1/admin/deliveries/:deliveryId/dispatch
+// ---------------------------------------------------------------------------
+router.use(
+  '/deliveries',
+  authenticate(),
+  requireRole(adminRoles),
+  deliveryAssignmentAdminRoutes,
 );
 
 router.get('/', (_req, res) => {

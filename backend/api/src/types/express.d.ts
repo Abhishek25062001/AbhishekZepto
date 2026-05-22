@@ -6,6 +6,9 @@ declare global {
       requestId?: string;
       traceId?: string;
       user?: AuthUserContext;
+      deliveryAgentId?: string;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      deliveryAgent?: any;
     }
   }
 }

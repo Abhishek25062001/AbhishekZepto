@@ -1,0 +1,18 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-payment-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/payment/utils/payment-idempotency.util.ts",
+    "src/modules/payment/utils/payment-idempotency.util.test.ts",
+    "src/modules/payment/utils/customer-payment-error-message.util.ts",
+    "src/modules/payment/utils/customer-payment-error-message.util.test.ts"
+  ]
+}

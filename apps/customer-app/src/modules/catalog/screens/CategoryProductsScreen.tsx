@@ -12,7 +12,7 @@ import {
   selectSubcategories,
   useCustomerCategories,
 } from '../hooks/useCustomerCategories';
-import { useCustomerProducts } from '../hooks/useCustomerProducts';
+import { usePaginatedCustomerProducts } from '../hooks/usePaginatedCustomerProducts';
 import { useCatalogFilterStore } from '../store/catalog-filter.store';
 import type { CatalogStackParamList } from '../navigation/catalog-navigation.types';
 import type { CustomerProduct } from '../types/customer-product.types';
@@ -22,7 +22,29 @@ export function CategoryProductsScreen() {
   const route = useRoute<RouteProp<CatalogStackParamList, 'CategoryProducts'>>();
   const { categoryId, categoryName } = route.params;
   const [selectedSubcategoryId, setSelectedSubcategoryId] = useState<string | undefined>();
-  const filterQuery = useCatalogFilterStore((state) => state.toListQuery());
+
+  const filterAvailability = useCatalogFilterStore((state) => state.availability);
+  const filterSortBy = useCatalogFilterStore((state) => state.sortBy);
+  const filterFoodType = useCatalogFilterStore((state) => state.foodType);
+  const filterBrandId = useCatalogFilterStore((state) => state.brandId);
+  const toListQuery = useCatalogFilterStore((state) => state.toListQuery);
+
+  const listQuery = useMemo(
+    () => ({
+      ...toListQuery(),
+      categoryId: selectedSubcategoryId ? undefined : categoryId,
+      subcategoryId: selectedSubcategoryId,
+    }),
+    [
+      categoryId,
+      selectedSubcategoryId,
+      filterAvailability,
+      filterSortBy,
+      filterFoodType,
+      filterBrandId,
+      toListQuery,
+    ],
+  );
 
   const categoriesQuery = useCustomerCategories();
   const subcategories = useMemo(
@@ -30,11 +52,7 @@ export function CategoryProductsScreen() {
     [categoriesQuery.data, categoryId],
   );
 
-  const productsQuery = useCustomerProducts({
-    ...filterQuery,
-    categoryId: selectedSubcategoryId ? undefined : categoryId,
-    subcategoryId: selectedSubcategoryId,
-  });
+  const productsQuery = usePaginatedCustomerProducts(listQuery);
 
   const openProduct = (product: CustomerProduct) => {
     navigation.navigate('ProductDetail', { productId: product.id });
@@ -60,20 +78,24 @@ export function CategoryProductsScreen() {
           </Pressable>
         ))}
       </View>
-      {productsQuery.data?.pagination ? (
+      {productsQuery.pagination ? (
         <Text color="secondary" variant="small">
-          {productsQuery.data.pagination.total} products
+          {productsQuery.total} products
         </Text>
       ) : null}
       {productsQuery.isError ? (
-        <CatalogErrorState onRetry={() => void productsQuery.refetch()} />
+        <CatalogErrorState onRetry={() => void productsQuery.refresh()} />
       ) : (
         <ProductGrid
+          hasNextPage={productsQuery.hasNextPage}
           isLoading={productsQuery.isLoading}
-          isRefreshing={productsQuery.isFetching}
+          isLoadingMore={productsQuery.isLoadingMore}
+          isRefreshing={productsQuery.isFetching && !productsQuery.isLoadingMore}
+          onEndReached={productsQuery.loadMore}
           onPressProduct={openProduct}
-          onRefresh={() => void productsQuery.refetch()}
-          products={productsQuery.data?.items ?? []}
+          onRefresh={() => void productsQuery.refresh()}
+          products={productsQuery.items}
+          showAddToCart
         />
       )}
     </ScreenWrapper>

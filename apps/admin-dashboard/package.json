@@ -11,7 +11,9 @@
     "test:catalog": "tsc -p tsconfig.catalog-test.json && find dist-catalog-test/modules/catalog -name '*.test.js' -exec node --test {} +",
     "test:stores": "tsc -p tsconfig.stores-test.json && find dist-stores-test/modules/stores -name '*.test.js' -exec node --test {} +",
     "test:inventory": "tsc -p tsconfig.inventory-test.json && find dist-inventory-test/modules/inventory -name '*.test.js' -exec node --test {} +",
-    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js"
+    "test:admin-orders": "tsc -p tsconfig.admin-orders-test.json && find dist-admin-orders-test/modules/orders -name '*.test.js' -exec node --test {} +",
+    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js",
+    "test:phase-5-admin": "npm run test:admin-orders && npm run test:access-control-smoke"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

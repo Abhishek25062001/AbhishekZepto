@@ -1,16 +1,16 @@
 import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 
-import { useAuthStore } from '../../../store/auth.store';
 import {
   CUSTOMER_CATALOG_SEARCH_DEBOUNCE_MS,
   CUSTOMER_CATALOG_SEARCH_MIN_LENGTH,
 } from '../constants/customer-catalog.constants';
 import { searchCustomerCatalog } from '../api/customer-catalog.api';
 import { buildCatalogQuery } from '../utils/catalog-query.util';
+import { useCatalogLocationQuery } from './useCatalogLocationQuery';
 
 export function useCustomerCatalogSearch(search: string) {
-  const cityId = useAuthStore((state) => state.cityId);
+  const { cityId, storeId } = useCatalogLocationQuery();
   const [debouncedSearch, setDebouncedSearch] = useState('');
 
   useEffect(() => {
@@ -20,7 +20,8 @@ export function useCustomerCatalogSearch(search: string) {
 
   const enabled = debouncedSearch.length >= CUSTOMER_CATALOG_SEARCH_MIN_LENGTH;
   const listQuery = buildCatalogQuery({
-    cityId: cityId ?? undefined,
+    cityId,
+    storeId,
   });
 
   return useQuery({

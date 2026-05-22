@@ -25,6 +25,17 @@ test('product card shows out of stock badge', () => {
     isOutOfStock: true,
   } as never);
   assert.equal(state.showOutOfStock, true);
+  assert.equal(state.isDimmed, true);
+});
+
+test('product card shows unavailable badge', () => {
+  const state = getProductCardBadgeState({
+    id: 'p1',
+    isAvailable: false,
+    isOutOfStock: false,
+  } as never);
+  assert.equal(state.showUnavailable, true);
+  assert.equal(state.isDimmed, true);
 });
 
 test('product card navigation uses productId', () => {

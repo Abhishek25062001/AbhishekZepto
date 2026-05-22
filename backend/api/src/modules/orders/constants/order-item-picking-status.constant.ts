@@ -1,0 +1,15 @@
+export const ORDER_ITEM_PICKING_STATUS = {
+  PENDING: 'pending',
+  PICKED: 'picked',
+  MISSING: 'missing',
+  PARTIAL: 'partial',
+} as const;
+
+export const ORDER_ITEM_PICKING_STATUS_VALUES = [
+  ORDER_ITEM_PICKING_STATUS.PENDING,
+  ORDER_ITEM_PICKING_STATUS.PICKED,
+  ORDER_ITEM_PICKING_STATUS.MISSING,
+  ORDER_ITEM_PICKING_STATUS.PARTIAL,
+] as const;
+
+export type OrderItemPickingStatus = (typeof ORDER_ITEM_PICKING_STATUS_VALUES)[number];

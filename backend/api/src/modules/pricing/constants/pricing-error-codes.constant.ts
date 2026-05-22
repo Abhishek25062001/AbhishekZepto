@@ -1,0 +1,3 @@
+export const PRICING_ERROR_CODES = {
+  CART_PRICE_CHANGED: 'CART_PRICE_CHANGED',
+} as const;

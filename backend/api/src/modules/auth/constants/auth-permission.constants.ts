@@ -23,6 +23,8 @@ export const AUTH_PERMISSION_ACTION = {
   UPDATE: 'update',
   DELETE: 'delete',
   APPROVE: 'approve',
+  CANCEL: 'cancel',
+  UPDATE_STATUS: 'update-status',
   MANAGE: 'manage',
   READ_SELF: 'read_self',
   READ_STORE: 'read_store',

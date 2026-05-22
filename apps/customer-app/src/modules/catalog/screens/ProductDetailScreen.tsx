@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { RefreshControl, ScrollView, StyleSheet, View } from 'react-native';
 import { useRoute } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
 import type { AxiosError } from 'axios';
 
-import { Button, Loader, ScreenWrapper, Text } from '../../../components/common';
+import { Loader, ScreenWrapper, Text } from '../../../components/common';
+import { AddToCartButton } from '../../cart/components/AddToCartButton';
 import type { ApiErrorResponse } from '../../../types/api.types';
 import {
   AvailabilityBadge,
@@ -17,6 +18,7 @@ import { ProductPriceBlock } from '../components/ProductPriceBlock';
 import { ProductVariantSelector } from '../components/ProductVariantSelector';
 import { useCustomerProductDetail } from '../hooks/useCustomerProductDetail';
 import { useCustomerProductVariants } from '../hooks/useCustomerProductVariants';
+import type { CustomerProductVariant } from '../types/customer-product-variant.types';
 import type { CatalogStackParamList } from '../navigation/catalog-navigation.types';
 import {
   getCustomerCatalogErrorMessage,
@@ -32,6 +34,7 @@ export function ProductDetailScreen() {
   const variantsQuery = useCustomerProductVariants(productId);
 
   const product = detailQuery.data;
+  const [selectedVariant, setSelectedVariant] = useState<CustomerProductVariant | undefined>();
   const errorCode = (detailQuery.error as AxiosError<ApiErrorResponse> | undefined)?.response
     ?.data?.error?.code;
 
@@ -92,8 +95,24 @@ export function ProductDetailScreen() {
         <Text variant="h2">{product.name}</Text>
         <ProductPriceBlock finalPrice={product.finalPrice} mrp={product.mrp} />
         {product.foodType ? <FoodTypeBadge foodType={product.foodType} /> : null}
-        <AvailabilityBadge state={availabilityState} />
-        <ProductVariantSelector variants={variantsQuery.data ?? []} />
+        <AvailabilityBadge
+          availableQuantity={product.availableQuantity}
+          state={availabilityState}
+        />
+        {availabilityState === 'out_of_stock' ? (
+          <Text color="secondary" variant="small">
+            This item is currently out of stock at your store.
+          </Text>
+        ) : null}
+        {availabilityState === 'unavailable' ? (
+          <Text color="secondary" variant="small">
+            This item is not available for delivery from your store.
+          </Text>
+        ) : null}
+        <ProductVariantSelector
+          onSelect={setSelectedVariant}
+          variants={variantsQuery.data ?? []}
+        />
         {product.description ? (
           <View style={styles.section}>
             <Text variant="h3">Description</Text>
@@ -118,11 +137,13 @@ export function ProductDetailScreen() {
             Similar products — coming soon
           </Text>
         </View>
-        <Button
-          disabled
-          onPress={() => undefined}
-          title={addToCartDisabled ? 'Add to Cart — coming soon' : 'Add to Cart — coming soon'}
-        />
+        {selectedVariant ? (
+          <AddToCartButton disabled={addToCartDisabled} variantId={selectedVariant.id} />
+        ) : (
+          <Text color="secondary" variant="small">
+            Select a variant to add to cart
+          </Text>
+        )}
       </ScrollView>
     </ScreenWrapper>
   );

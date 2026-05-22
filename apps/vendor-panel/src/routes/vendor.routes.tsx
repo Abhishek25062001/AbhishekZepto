@@ -15,6 +15,11 @@ import { ProtectedRoute } from './ProtectedRoute';
 import { storeCatalogRoutes } from './store-catalog.routes';
 import { storeInventoryRoutes } from './store-inventory.routes';
 import { VendorMediaListPage } from '../modules/media/pages/VendorMediaListPage';
+import { VendorActiveOrderDetailPage } from '../modules/orders/pages/VendorActiveOrderDetailPage';
+import { VendorActiveOrdersPage } from '../modules/orders/pages/VendorActiveOrdersPage';
+import { VendorIncomingOrderDetailPage } from '../modules/orders/pages/VendorIncomingOrderDetailPage';
+import { VendorOrderHistoryDetailPage } from '../modules/orders/pages/VendorOrderHistoryDetailPage';
+import { VendorOrderHistoryPage } from '../modules/orders/pages/VendorOrderHistoryPage';
 
 export const vendorRoutes = [
   {
@@ -41,6 +46,46 @@ export const vendorRoutes = [
         element: (
           <CanAccess fallback={<Navigate to="/orders" replace />} permission="vendor:read_store">
             <DashboardPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/orders/active/:orderId',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="orders:read">
+            <VendorActiveOrderDetailPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/orders/active',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="orders:read">
+            <VendorActiveOrdersPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/orders/history/:orderId',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="orders:read">
+            <VendorOrderHistoryDetailPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/orders/history',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="orders:read">
+            <VendorOrderHistoryPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/orders/:orderId',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="orders:read">
+            <VendorIncomingOrderDetailPage />
           </CanAccess>
         ),
       },

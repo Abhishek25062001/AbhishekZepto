@@ -23,10 +23,16 @@ export const COLLECTION_NAMES = {
   PRODUCT_UNITS: 'product_units',
   INVENTORIES: 'inventories',
   ORDERS: 'orders',
+  ORDER_NOTIFICATION_PLACEHOLDERS: 'order_notification_placeholders',
   DELIVERIES: 'deliveries',
   AUDIT_LOGS: 'audit_logs',
   SYSTEM_CHECKS: 'system_checks',
   TENANT_ACCESS_TESTS: 'tenant_access_tests',
+  CUSTOMER_ADDRESSES: 'customer_addresses',
+  CUSTOMER_STORE_SELECTIONS: 'customer_store_selections',
+  CARTS: 'carts',
+  CHECKOUT_SESSIONS: 'checkout_sessions',
+  PAYMENTS: 'payments',
 } as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[keyof typeof COLLECTION_NAMES];

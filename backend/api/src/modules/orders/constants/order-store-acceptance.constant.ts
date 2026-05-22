@@ -1,0 +1,3 @@
+export const STORE_ACCEPTANCE_AUTO_ACCEPT_ENABLED = false;
+
+export const STORE_ACCEPTANCE_TIMEOUT_JOB_ENABLED = false;

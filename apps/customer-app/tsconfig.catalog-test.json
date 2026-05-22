@@ -14,6 +14,8 @@
     "src/modules/catalog/store/catalog-filter.store.ts",
     "src/modules/catalog/utils/catalog-price.util.ts",
     "src/modules/catalog/utils/catalog-query.util.ts",
+    "src/modules/catalog/utils/catalog-pagination.util.ts",
+    "src/modules/catalog/constants/customer-catalog.constants.ts",
     "src/modules/catalog/utils/customer-catalog-error-message.util.ts",
     "src/modules/catalog/components/product-card-display.util.ts",
     "src/modules/catalog/components/product-price-display.util.ts",

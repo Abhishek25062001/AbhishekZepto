@@ -9,7 +9,15 @@
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
     "test:catalog": "tsc -p tsconfig.catalog-test.json && find dist-catalog-test/modules/catalog -name '*.test.js' -exec node --test {} +",
-    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js"
+    "test:customer-catalog-browsing": "npm run test:catalog",
+    "test:phase-4-customer": "npm run test:customer-cart && npm run test:customer-checkout && npm run test:customer-payment && npm run test:customer-orders && npm run test:customer-profile && npm run test:customer-catalog-browsing",
+    "test:customer-cart": "tsc -p tsconfig.cart-test.json && find dist-cart-test/modules/cart -name '*.test.js' -exec node --test {} +",
+    "test:customer-checkout": "tsc -p tsconfig.checkout-test.json && find dist-checkout-test/modules/checkout -name '*.test.js' -exec node --test {} +",
+    "test:customer-payment": "tsc -p tsconfig.payment-test.json && find dist-payment-test/modules/payment -name '*.test.js' -exec node --test {} +",
+    "test:customer-orders": "tsc -p tsconfig.orders-test.json && find dist-orders-test/modules/orders -name '*.test.js' -exec node --test {} +",
+    "test:customer-profile": "tsc -p tsconfig.profile-test.json && find dist-profile-test/modules/profile -name '*.test.js' -exec node --test {} +",
+    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js",
+    "test:phase-5-customer": "npm run test:customer-orders && npm run test:access-control-smoke"
   },
   "dependencies": {
     "@react-navigation/native": "^7.2.4",
@@ -20,6 +28,7 @@
     "react-hook-form": "^7.75.0",
     "react-native": "^0.85.3",
     "react-native-keychain": "^10.0.0",
+    "react-native-razorpay": "^2.3.1",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",
     "zod": "^3.25.76",

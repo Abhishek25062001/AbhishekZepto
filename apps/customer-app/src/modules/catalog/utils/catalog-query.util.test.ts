@@ -15,6 +15,7 @@ test('buildCatalogQuery includes set filters', () => {
       brandId: 'brand-1',
       sortBy: 'newest',
       cityId: 'city-1',
+      storeId: 'store-1',
       availability: 'available',
       minPrice: 10,
       maxPrice: 100,
@@ -24,9 +25,14 @@ test('buildCatalogQuery includes set filters', () => {
       brandId: 'brand-1',
       sortBy: 'newest',
       cityId: 'city-1',
+      storeId: 'store-1',
       isAvailable: true,
       minPrice: 10,
       maxPrice: 100,
     },
   );
+});
+
+test('buildCatalogQuery does not map out_of_stock to API', () => {
+  assert.deepEqual(buildCatalogQuery({ availability: 'out_of_stock' }), {});
 });

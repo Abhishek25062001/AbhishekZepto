@@ -1,0 +1,317 @@
+{
+  "info": {
+    "_postman_id": "b4e1c3d5-phase4-zepto-01",
+    "name": "Zepto-like Phase 4",
+    "description": "Phase 4 customer shopping journey: location, home, catalog, cart, checkout, payment, orders, profile. Requires local API, MongoDB, seeds, customer token.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000" },
+    { "key": "customerAccessToken", "value": "" },
+    { "key": "storeId", "value": "" },
+    { "key": "addressId", "value": "" },
+    { "key": "productId", "value": "" },
+    { "key": "variantId", "value": "" },
+    { "key": "cartItemId", "value": "" },
+    { "key": "checkoutSessionId", "value": "" },
+    { "key": "paymentId", "value": "" },
+    { "key": "orderId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "00 Auth (Phase 2 prerequisite)",
+      "item": [
+        {
+          "name": "Request OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9999999999\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/public/auth/request-otp"
+          }
+        },
+        {
+          "name": "Verify OTP",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"phone\": \"9999999999\",\n  \"otp\": \"123456\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/public/auth/verify-otp"
+          }
+        }
+      ]
+    },
+    {
+      "name": "01 Customer — Addresses & Store",
+      "item": [
+        {
+          "name": "List addresses",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/customer/addresses"
+          }
+        },
+        {
+          "name": "Check serviceability",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"latitude\": 12.9716,\n  \"longitude\": 77.5946\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/customer/serviceability"
+          }
+        },
+        {
+          "name": "Select store",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"storeId\": \"{{storeId}}\",\n  \"addressId\": \"{{addressId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/customer/store-selection"
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Customer — Home",
+      "item": [
+        {
+          "name": "Get home feed",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customer/home?storeId={{storeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customer", "home"],
+              "query": [{ "key": "storeId", "value": "{{storeId}}" }]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Customer — Catalog (Phase 3)",
+      "item": [
+        {
+          "name": "List products",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customer/catalog/products?page=1&limit=20&storeId={{storeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customer", "catalog", "products"],
+              "query": [
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "storeId", "value": "{{storeId}}" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Search catalog",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": {
+              "raw": "{{baseUrl}}/api/v1/customer/catalog/search?q=milk&page=1&limit=20&storeId={{storeId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["api", "v1", "customer", "catalog", "search"],
+              "query": [
+                { "key": "q", "value": "milk" },
+                { "key": "page", "value": "1" },
+                { "key": "limit", "value": "20" },
+                { "key": "storeId", "value": "{{storeId}}" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Customer — Cart",
+      "item": [
+        {
+          "name": "Get cart",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/customer/cart"
+          }
+        },
+        {
+          "name": "Add cart item",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"variantId\": \"{{variantId}}\",\n  \"quantity\": 1\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/customer/cart/items"
+          }
+        },
+        {
+          "name": "Recalculate cart",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/customer/cart/recalculate"
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Customer — Checkout",
+      "item": [
+        {
+          "name": "Initiate checkout",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"addressId\": \"{{addressId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/customer/checkout/initiate"
+          }
+        },
+        {
+          "name": "Checkout summary",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/customer/checkout/summary"
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Customer — Payments",
+      "item": [
+        {
+          "name": "Create payment order",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"checkoutSessionId\": \"{{checkoutSessionId}}\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/customer/payments/create-order"
+          }
+        },
+        {
+          "name": "Verify payment",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"razorpay_order_id\": \"order_placeholder\",\n  \"razorpay_payment_id\": \"pay_placeholder\",\n  \"razorpay_signature\": \"sig_placeholder\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/customer/payments/verify"
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Customer — Orders",
+      "item": [
+        {
+          "name": "List orders",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/customer/orders"
+          }
+        },
+        {
+          "name": "Get order by id",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/customer/orders/{{orderId}}"
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Customer — Profile",
+      "item": [
+        {
+          "name": "Get profile",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{customerAccessToken}}" }],
+            "url": "{{baseUrl}}/api/v1/customer/profile"
+          }
+        },
+        {
+          "name": "Patch profile",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{customerAccessToken}}" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Test Customer\"\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/customer/profile"
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Webhooks",
+      "item": [
+        {
+          "name": "Razorpay webhook (placeholder)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"event\": \"payment.captured\",\n  \"payload\": {}\n}"
+            },
+            "url": "{{baseUrl}}/api/v1/webhooks/razorpay"
+          }
+        }
+      ]
+    }
+  ]
+}

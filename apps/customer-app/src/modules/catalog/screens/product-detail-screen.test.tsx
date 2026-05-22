@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
 
-import { getAvailabilityState } from '../utils/availability.util';
+import { getAvailabilityState, isLowStock } from '../utils/availability.util';
 import {
   getCustomerCatalogErrorMessage,
   isProductUnavailableError,
@@ -12,6 +12,11 @@ test('product detail add to cart disabled when out of stock', () => {
   assert.equal(state, 'out_of_stock');
   const disabled = true;
   assert.equal(disabled, true);
+});
+
+test('product detail low stock hint threshold', () => {
+  assert.equal(isLowStock(3), true);
+  assert.equal(isLowStock(20), false);
 });
 
 test('product unavailable errors are recognized', () => {

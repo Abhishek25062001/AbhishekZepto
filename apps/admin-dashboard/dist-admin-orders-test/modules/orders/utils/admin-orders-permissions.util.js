@@ -1,0 +1,12 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.canMonitorAdminOrderSla = exports.canCancelAdminOrder = exports.canUpdateAdminOrderStatus = exports.canReadAdminOrders = void 0;
+const hasPermission = (permissions, permission) => permissions.includes('*:*') || permissions.includes(permission);
+const canReadAdminOrders = (permissions) => hasPermission(permissions, 'orders:read');
+exports.canReadAdminOrders = canReadAdminOrders;
+const canUpdateAdminOrderStatus = (permissions) => hasPermission(permissions, 'orders:update-status');
+exports.canUpdateAdminOrderStatus = canUpdateAdminOrderStatus;
+const canCancelAdminOrder = (permissions) => hasPermission(permissions, 'orders:cancel');
+exports.canCancelAdminOrder = canCancelAdminOrder;
+const canMonitorAdminOrderSla = (permissions) => hasPermission(permissions, 'orders:monitor-sla');
+exports.canMonitorAdminOrderSla = canMonitorAdminOrderSla;

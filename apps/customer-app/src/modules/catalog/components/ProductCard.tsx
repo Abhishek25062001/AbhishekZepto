@@ -1,6 +1,7 @@
 import React from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
+import { AddToCartButton } from '../../cart/components/AddToCartButton';
 import { Text } from '../../../components/common';
 import { colors, radius, spacing } from '../../../theme';
 import type { CustomerProduct } from '../types/customer-product.types';
@@ -15,18 +16,25 @@ import { FoodTypeBadge } from './FoodTypeBadge';
 type ProductCardProps = {
   onPress: (product: CustomerProduct) => void;
   product: CustomerProduct;
+  showAddToCart?: boolean;
 };
 
-export function ProductCard({ onPress, product }: ProductCardProps) {
+export function ProductCard({ onPress, product, showAddToCart = false }: ProductCardProps) {
   const imageUrl = getProductImage(product);
-  const { showDiscount, showOutOfStock } = getProductCardBadgeState(product);
+  const { showDiscount, showOutOfStock, showUnavailable, isDimmed } =
+    getProductCardBadgeState(product);
   const displayPrice = product.finalPrice ?? product.sellingPrice ?? product.mrp;
+  const canQuickAdd =
+    showAddToCart &&
+    Boolean(product.variantId) &&
+    product.isAvailable !== false &&
+    product.isOutOfStock !== true;
 
   return (
     <Pressable
       accessibilityRole="button"
       onPress={() => onPress(product)}
-      style={styles.card}
+      style={[styles.card, isDimmed && styles.cardDimmed]}
     >
       <View style={styles.imagePlaceholder}>
         {imageUrl ? <Text variant="small">IMG</Text> : null}
@@ -39,9 +47,16 @@ export function ProductCard({ onPress, product }: ProductCardProps) {
         </View>
       ) : null}
       {showOutOfStock ? (
-        <View style={styles.outOfStockBadge}>
+        <View style={styles.statusBadge}>
           <Text color="secondary" variant="small">
             Out of stock
+          </Text>
+        </View>
+      ) : null}
+      {showUnavailable ? (
+        <View style={styles.statusBadge}>
+          <Text color="secondary" variant="small">
+            Unavailable
           </Text>
         </View>
       ) : null}
@@ -49,6 +64,11 @@ export function ProductCard({ onPress, product }: ProductCardProps) {
       {product.foodType ? <FoodTypeBadge foodType={product.foodType} /> : null}
       {displayPrice != null ? (
         <Text variant="small">{formatProductPrice(displayPrice)}</Text>
+      ) : null}
+      {canQuickAdd && product.variantId ? (
+        <View onStartShouldSetResponder={() => true}>
+          <AddToCartButton compact variantId={product.variantId} />
+        </View>
       ) : null}
     </Pressable>
   );
@@ -63,6 +83,9 @@ const styles = StyleSheet.create({
     flex: 1,
     margin: spacing.xs,
     padding: spacing.sm,
+  },
+  cardDimmed: {
+    opacity: 0.65,
   },
   discountBadge: {
     backgroundColor: colors.success,
@@ -79,7 +102,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: spacing.xs,
   },
-  outOfStockBadge: {
+  statusBadge: {
     backgroundColor: colors.border,
     borderRadius: radius.sm,
     marginBottom: spacing.xs,

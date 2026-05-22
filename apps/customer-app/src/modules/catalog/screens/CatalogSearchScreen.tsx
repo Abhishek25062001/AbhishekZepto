@@ -4,11 +4,10 @@ import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
 import { ScreenWrapper, Text } from '../../../components/common';
 import { CustomerSearchBar } from '../components/CustomerSearchBar';
-import { CatalogEmptyState } from '../components/CatalogEmptyState';
 import { CatalogErrorState } from '../components/CatalogErrorState';
 import { ProductGrid } from '../components/ProductGrid';
 import { CUSTOMER_CATALOG_SEARCH_MIN_LENGTH } from '../constants/customer-catalog.constants';
-import { useCustomerCatalogSearch } from '../hooks/useCustomerCatalogSearch';
+import { usePaginatedCustomerCatalogSearch } from '../hooks/usePaginatedCustomerCatalogSearch';
 import {
   selectRootCategories,
   useCustomerCategories,
@@ -19,7 +18,7 @@ import type { CustomerProduct } from '../types/customer-product.types';
 export function CatalogSearchScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<CatalogStackParamList>>();
   const [search, setSearch] = useState('');
-  const searchQuery = useCustomerCatalogSearch(search);
+  const searchQuery = usePaginatedCustomerCatalogSearch(search);
   const categoriesQuery = useCustomerCategories();
   const rootCategories = selectRootCategories(categoriesQuery.data ?? []);
 
@@ -42,22 +41,22 @@ export function CatalogSearchScreen() {
           ))}
         </>
       ) : null}
-      {showResults && searchQuery.isLoading ? <Text variant="small">Searching...</Text> : null}
       {showResults && searchQuery.isError ? (
-        <CatalogErrorState onRetry={() => void searchQuery.refetch()} />
+        <CatalogErrorState onRetry={() => void searchQuery.refresh()} />
       ) : null}
-      {showResults && !searchQuery.isLoading && !searchQuery.isError ? (
+      {showResults && !searchQuery.isError ? (
         <ProductGrid
           emptyVariant="no_search_results"
+          hasNextPage={searchQuery.hasNextPage}
+          isLoading={searchQuery.isLoading}
+          isLoadingMore={searchQuery.isLoadingMore}
+          isRefreshing={searchQuery.isFetching && !searchQuery.isLoadingMore}
+          onEndReached={searchQuery.loadMore}
           onPressProduct={openProduct}
-          products={searchQuery.data?.items ?? []}
+          onRefresh={() => void searchQuery.refresh()}
+          products={searchQuery.items}
+          showAddToCart
         />
-      ) : null}
-      {showResults &&
-      !searchQuery.isLoading &&
-      !searchQuery.isError &&
-      (searchQuery.data?.items.length ?? 0) === 0 ? (
-        <CatalogEmptyState variant="no_search_results" />
       ) : null}
     </ScreenWrapper>
   );

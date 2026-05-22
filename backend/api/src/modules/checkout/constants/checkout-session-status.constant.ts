@@ -1,0 +1,18 @@
+export const CHECKOUT_SESSION_STATUS = {
+  INITIATED: 'initiated',
+  EXPIRED: 'expired',
+  COMPLETED: 'completed',
+  CANCELLED: 'cancelled',
+  FAILED: 'failed',
+} as const;
+
+export const CHECKOUT_SESSION_STATUS_VALUES = [
+  CHECKOUT_SESSION_STATUS.INITIATED,
+  CHECKOUT_SESSION_STATUS.EXPIRED,
+  CHECKOUT_SESSION_STATUS.COMPLETED,
+  CHECKOUT_SESSION_STATUS.CANCELLED,
+  CHECKOUT_SESSION_STATUS.FAILED,
+] as const;
+
+export type CheckoutSessionStatus =
+  (typeof CHECKOUT_SESSION_STATUS_VALUES)[number];

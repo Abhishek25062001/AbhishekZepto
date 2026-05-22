@@ -51,6 +51,17 @@ const envSchema = z.object({
   AWS_S3_ACCESS_KEY_ID: z.string().optional(),
   AWS_S3_SECRET_ACCESS_KEY: z.string().optional(),
   AWS_S3_PUBLIC_BASE_URL: z.string().url().optional(),
+  CART_MAX_QUANTITY_PER_LINE: z.coerce.number().int().positive().optional(),
+  CART_TAX_RATE_PERCENT: z.coerce.number().min(0).max(100).optional(),
+  CART_DELIVERY_FEE_AMOUNT: z.coerce.number().min(0).optional(),
+  CHECKOUT_RESERVATION_TTL_SECONDS: z.coerce.number().int().positive().optional(),
+  CHECKOUT_RESERVATION_CRON_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
+  RAZORPAY_KEY_ID: z.string().min(1).optional(),
+  RAZORPAY_KEY_SECRET: z.string().min(1).optional(),
+  RAZORPAY_WEBHOOK_SECRET: z.string().min(1).optional(),
 });
 
 const parsedEnv = envSchema.safeParse(process.env);
@@ -74,6 +85,40 @@ if (
   throw new Error('MEDIA_STORAGE_PROVIDER=local is not allowed in production');
 }
 
+if (parsedEnv.data.APP_ENV === 'production') {
+  const missingRazorpay = ['RAZORPAY_KEY_ID', 'RAZORPAY_KEY_SECRET', 'RAZORPAY_WEBHOOK_SECRET'].filter(
+    (key) => !parsedEnv.data[key as keyof typeof parsedEnv.data],
+  );
+
+  if (missingRazorpay.length > 0) {
+    throw new Error(`Missing required Razorpay configuration in production: ${missingRazorpay.join(', ')}`);
+  }
+}
+
 export const env = parsedEnv.data;
 
 export type BackendEnv = typeof env;
+
+export const getRazorpayKeyId = (): string => {
+  if (!env.RAZORPAY_KEY_ID) {
+    throw new Error('RAZORPAY_KEY_ID is not configured');
+  }
+
+  return env.RAZORPAY_KEY_ID;
+};
+
+export const getRazorpayKeySecret = (): string => {
+  if (!env.RAZORPAY_KEY_SECRET) {
+    throw new Error('RAZORPAY_KEY_SECRET is not configured');
+  }
+
+  return env.RAZORPAY_KEY_SECRET;
+};
+
+export const getRazorpayWebhookSecret = (): string => {
+  if (!env.RAZORPAY_WEBHOOK_SECRET) {
+    throw new Error('RAZORPAY_WEBHOOK_SECRET is not configured');
+  }
+
+  return env.RAZORPAY_WEBHOOK_SECRET;
+};

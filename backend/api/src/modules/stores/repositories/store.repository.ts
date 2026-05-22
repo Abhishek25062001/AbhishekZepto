@@ -11,6 +11,22 @@ const activeFilter = {
   status: 'active' as const,
 };
 
+export const findActiveStoresForServiceability = async (
+  cityId?: string,
+): Promise<(StoreRecord & { _id: Types.ObjectId })[]> => {
+  const filter: FilterQuery<StoreRecord> = {
+    ...activeFilter,
+    isOpen: true,
+    isAcceptingOrders: true,
+  };
+
+  if (cityId && Types.ObjectId.isValid(cityId)) {
+    filter.cityId = new Types.ObjectId(cityId);
+  }
+
+  return StoreModel.find(filter).lean();
+};
+
 export const findStoreById = async (
   storeId: string,
 ): Promise<(StoreRecord & { _id: Types.ObjectId }) | null> => {

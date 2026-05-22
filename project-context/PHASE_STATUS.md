@@ -39,22 +39,28 @@ Primary artifacts:
 
 ## Phase 3: Store Foundation (Catalog & Inventory)
 
-Status: **in progress** — Module 1 Catalog Architecture **complete** (documentation/contracts only).
+Status: **complete** for documented scope (modules 1–17, integration review 2026-05-18).
 
-Completed:
+Handoff: `docs/handoffs/phase-3-integration-review-complete.md`
 
-- Module 1: Catalog Architecture (`docs/handoffs/catalog-architecture-complete.md`)
+## Phase 4: Customer Shopping Experience
 
-Not started (runtime):
+Status: **complete** — Modules 0–15 closed (2026-05-19).
 
-- Module 2: Category Management Backend and all later Phase 3 modules
+Handoff: `docs/handoffs/phase-4-integration-review-complete.md`
 
-Rule: Category Management Backend implementation requires explicit approval; Catalog Architecture added no runtime code.
+## Phase 5: Order Lifecycle & Store Operations
 
-## Phase 4–12
+Status: **complete** — Modules 0–16 closed (2026-05-21).
+
+Current next phase: Phase 6.
+
+Latest handoff: `docs/handoffs/phase-5-integration-review-complete.md`
+
+## Phase 6–12
 
 Status: not started.
 
 ## Rule
 
-Future work must start from `project-context/CURRENT_PROGRESS.md`. Phase 3 implementation must not begin until the user explicitly approves.
+Future work must start from `project-context/CURRENT_PROGRESS.md`.

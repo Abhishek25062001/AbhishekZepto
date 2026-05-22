@@ -1,0 +1,17 @@
+export const ORDER_AUDIT_EVENTS = {
+  PLACED: 'order.placed',
+  PLACEMENT_FAILED: 'order.placement_failed',
+  STORE_ACCEPTED: 'order.store.accepted',
+  STORE_REJECTED: 'order.store.rejected',
+  PICKING_STARTED: 'order.picking.started',
+  ITEM_PICKED: 'order.item.picked',
+  ITEM_MISSING: 'order.item.missing',
+  PICKING_COMPLETED: 'order.picking.completed',
+  PACKING_STARTED: 'order.packing.started',
+  PACKING_COMPLETED: 'order.packing.completed',
+  READY_FOR_PICKUP: 'order.ready_for_pickup',
+  INVENTORY_ADJUSTED: 'order.inventory.adjusted',
+  STATUS_UPDATED: 'order.status.updated',
+  CANCELLED: 'order.cancelled',
+  SLA_BREACHED: 'order.sla.breached',
+} as const;

@@ -4,7 +4,9 @@ import { CanAccess } from '../auth/CanAccess';
 
 const navigationLinks: Array<{ label: string; to: string; permission: PermissionCode }> = [
   { label: 'Dashboard', to: '/dashboard', permission: 'vendor:read_store' },
-  { label: 'Orders', to: '/orders', permission: 'orders:read' },
+  { label: 'Incoming Orders', to: '/orders', permission: 'orders:read' },
+  { label: 'Active Orders', to: '/orders/active', permission: 'orders:read' },
+  { label: 'Order History', to: '/orders/history', permission: 'orders:read' },
   { label: 'Store Catalog', to: '/store-catalog/products', permission: 'catalog:read' },
   { label: 'Store Products', to: '/store-products', permission: 'store_products:read' },
   { label: 'Inventory', to: '/inventory/stocks', permission: 'inventory:read' },

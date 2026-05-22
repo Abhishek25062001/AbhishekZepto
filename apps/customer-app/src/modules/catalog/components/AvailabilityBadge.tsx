@@ -5,6 +5,7 @@ import { Text } from '../../../components/common';
 import { colors, radius, spacing } from '../../../theme';
 
 import type { AvailabilityState } from '../utils/availability.util';
+import { LowStockHint } from './LowStockHint';
 
 const LABELS: Record<AvailabilityState, string> = {
   available: 'Available',
@@ -13,13 +14,17 @@ const LABELS: Record<AvailabilityState, string> = {
 };
 
 type AvailabilityBadgeProps = {
+  availableQuantity?: number | null;
   state: AvailabilityState;
 };
 
-export function AvailabilityBadge({ state }: AvailabilityBadgeProps) {
+export function AvailabilityBadge({ availableQuantity, state }: AvailabilityBadgeProps) {
   return (
-    <View style={[styles.badge, state !== 'available' && styles.badgeWarning]}>
-      <Text variant="small">{LABELS[state]}</Text>
+    <View>
+      <View style={[styles.badge, state !== 'available' && styles.badgeWarning]}>
+        <Text variant="small">{LABELS[state]}</Text>
+      </View>
+      {state === 'available' ? <LowStockHint availableQuantity={availableQuantity} /> : null}
     </View>
   );
 }

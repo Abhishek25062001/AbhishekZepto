@@ -44,18 +44,26 @@ Customer APIs (and UI expectations) show only records that are:
 - `isVisible = true`
 - `isDeleted = false`
 
-## cityId and serviceability
+## cityId, storeId, and serviceability
 
-- Optional `cityId` query param from `useAuthStore` when present
+- `cityId` from `useLocationContext` (fallback `useAuthStore`)
+- `storeId` from `useLocationContext` when user has selected a serviceable store (Module 1)
 - `ServiceabilityPlaceholderBanner` when `cityId` is null (informational; browse still allowed)
-- Full address/serviceability module deferred
 
 ## UX rules
 
 - Search debounce: **300ms**; API call when query length **≥ 2**
 - Pull-to-refresh on home, category, brand, detail screens
 - Recently viewed: local secure storage, max **10** product IDs
-- Add to Cart: disabled placeholder; disabled when `isAvailable === false` or `isOutOfStock === true`
+- Add to Cart: disabled when `isAvailable === false` or `isOutOfStock === true`
+
+## Module 13 — Browse improvements
+
+Status: **IMPLEMENTED** (pagination + OOS polish on category, brand, search listings).
+
+- Infinite scroll on `CategoryProductsScreen`, `BrandProductsScreen`, `CatalogSearchScreen`
+- OOS/unavailable card dimming and badges; detail low-stock hint
+- See `docs/architecture/customer-app-catalog-browsing-improvements.md`
 
 ## Out of scope
 

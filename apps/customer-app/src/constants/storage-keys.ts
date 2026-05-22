@@ -5,6 +5,10 @@ export const CUSTOMER_CITY_ID = 'customer_city_id';
 export const CUSTOMER_ROLE = 'customer_role';
 export const CUSTOMER_PERMISSIONS = 'customer_permissions';
 export const CUSTOMER_RECENTLY_VIEWED = 'customer_recently_viewed_products';
+export const CUSTOMER_SELECTED_ADDRESS_ID = 'customer_selected_address_id';
+export const CUSTOMER_SELECTED_STORE_ID = 'customer_selected_store_id';
+export const CUSTOMER_SELECTED_STORE_NAME = 'customer_selected_store_name';
+export const CUSTOMER_SELECTED_CITY_ID = 'customer_selected_city_id';
 
 export const CUSTOMER_AUTH_STORAGE_KEYS = [
   CUSTOMER_ACCESS_TOKEN,

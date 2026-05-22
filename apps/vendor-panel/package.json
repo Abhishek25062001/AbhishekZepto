@@ -10,7 +10,9 @@
     "lint": "eslint .",
     "test:store-catalog": "tsc -p tsconfig.store-catalog-test.json && find dist-store-catalog-test/modules/store-catalog -name '*.test.js' -exec node --test {} +",
     "test:store-inventory": "tsc -p tsconfig.store-inventory-test.json && find dist-store-inventory-test/modules/store-inventory -name '*.test.js' -exec node --test {} +",
-    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js"
+    "test:vendor-orders": "tsc -p tsconfig.vendor-orders-test.json && find dist-vendor-orders-test/modules/orders -name '*.test.js' -exec node --test {} +",
+    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js",
+    "test:phase-5-vendor": "npm run test:vendor-orders && npm run test:access-control-smoke"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.10.0",

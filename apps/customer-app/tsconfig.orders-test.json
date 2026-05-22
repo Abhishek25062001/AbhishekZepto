@@ -1,0 +1,20 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-orders-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/orders/utils/customer-order-error-message.util.ts",
+    "src/modules/orders/utils/customer-order-error-message.util.test.ts",
+    "src/modules/orders/utils/order-lifecycle-display.util.ts",
+    "src/modules/orders/utils/order-lifecycle-display.util.test.ts",
+    "src/modules/orders/utils/order-status-label.util.ts",
+    "src/modules/orders/utils/order-status-label.util.test.ts"
+  ]
+}

@@ -23,6 +23,8 @@ export type PermissionAction =
   | 'delete'
   | 'approve'
   | 'manage'
+  | 'cancel'
+  | 'update-status'
   | 'adjust'
   | 'bulk_update'
   | 'read_self'

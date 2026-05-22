@@ -10,9 +10,9 @@ export default [
       'dist-access-control-smoke/**',
       'dist-store-catalog-test/**',
       'dist-store-inventory-test/**',
+      'dist-vendor-orders-test/**',
     ],
   },
   js.configs.recommended,
   ...tseslint.configs.recommended,
 ];
-

@@ -129,3 +129,27 @@ auth/session
 If a ticket requires a dependency that does not exist, create only the smallest
 dependency needed for that ticket and document it. Do not create broad future
 infrastructure early.
+
+## Phase 6 Dependency Chain
+
+```text
+Phase 5 complete (Phase 6 gate)
+  -> Phase 6 Module 1 — Delivery Lifecycle Architecture (completed 2026-05-21)
+  -> Phase 6 Module 2 — Delivery Partner Profile Backend (completed 2026-05-21)
+  -> Phase 6 Module 3 — Rider Availability & Online Status (completed 2026-05-21)
+  -> Phase 6 Module 4 — Delivery Assignment Backend (completed 2026-05-22)
+  -> Phase 6 Module 5 — Delivery Agent App — Availability (completed 2026-05-22)
+  -> Phase 6 Module 6 — Store Arrival & Pickup Backend (completed 2026-05-22)
+  -> Phase 6 Module 8 — Delivery Agent App — Pickup Flow (depends on 6)
+  -> Phase 6 Module 9 — Delivery Progress Backend (depends on 6)
+  -> Phase 6 Module 10 — Delivery Agent App — Active Delivery (depends on 9)
+  -> Phase 6 Module 11 — Delivery Completion Backend (depends on 9)
+  -> Phase 6 Module 12 — Delivery Agent App — Completion Flow (depends on 11)
+  -> Phase 6 Module 13 — Customer App — Delivery Tracking (depends on 9, 11)
+  -> Phase 6 Module 14 — Vendor Panel — Pickup Visibility (depends on 6)
+  -> Phase 6 Module 15 — Admin Dashboard — Delivery Operations (depends on 4, 11)
+  -> Phase 6 Module 16 — Delivery SLA & Escalation (depends on 4, 6, 11)
+  -> Phase 6 Module 17 — Delivery Notifications Placeholder (depends on 4, 6, 11)
+  -> Phase 6 Module 18 — Phase 6 Testing & Validation (depends on 1-17)
+  -> Phase 6 Module 19 — Phase 6 Integration & Review (depends on 18)
+```

@@ -1,0 +1,7 @@
+export const CUSTOMER_HOME_ERROR_CODES = {
+  STORE_NOT_FOUND: 'STORE_NOT_FOUND',
+  STORE_NOT_SERVICEABLE: 'STORE_NOT_SERVICEABLE',
+} as const;
+
+export type CustomerHomeErrorCode =
+  (typeof CUSTOMER_HOME_ERROR_CODES)[keyof typeof CUSTOMER_HOME_ERROR_CODES];

@@ -342,5 +342,281 @@ export const deliveryPaths = {
       tags: ['Delivery Agent'],
     },
   },
+  '/delivery/assignments/{assignmentId}/en-route-to-customer': {
+    post: {
+      description: 'Transitions the delivery assignment from picked_up to en_route_to_customer. The agent must be the assigned agent for this delivery.',
+      parameters: [
+        {
+          description: 'The delivery assignment ObjectId.',
+          in: 'path',
+          name: 'assignmentId',
+          required: true,
+          schema: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+        },
+      ],
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                properties: {
+                  data: {
+                    type: 'object',
+                    properties: {
+                      _id: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+                      deliveryStatus: { type: 'string', example: 'en_route_to_customer' },
+                      enRouteToCustomerAt: { type: 'string', format: 'date-time', example: '2026-05-28T06:20:00.000Z' },
+                    },
+                  },
+                  message: { type: 'string', example: 'En-route to customer registered successfully' },
+                  success: { type: 'boolean', example: true },
+                },
+                type: 'object',
+              },
+            },
+          },
+          description: 'En-route to customer status registered successfully.',
+        },
+        401: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Authentication failure response.',
+        },
+        403: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Forbidden: Delivery agent is not assigned to this order.',
+        },
+        404: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Delivery assignment not found.',
+        },
+        409: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Conflict: Invalid state transition or delivery is in terminal state.',
+        },
+        422: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Validation error: assignmentId is not a valid ObjectId.',
+        },
+      },
+      security: [{ bearerAuth: [] }],
+      summary: 'Mark delivery as en-route to customer',
+      tags: ['Delivery Agent'],
+    },
+  },
+  '/delivery/assignments/{assignmentId}/arrived-at-customer': {
+    post: {
+      description: 'Transitions the delivery assignment from en_route_to_customer to arrived_at_customer. The agent must be the assigned agent for this delivery.',
+      parameters: [
+        {
+          description: 'The delivery assignment ObjectId.',
+          in: 'path',
+          name: 'assignmentId',
+          required: true,
+          schema: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+        },
+      ],
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                properties: {
+                  data: {
+                    type: 'object',
+                    properties: {
+                      _id: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+                      deliveryStatus: { type: 'string', example: 'arrived_at_customer' },
+                      arrivedAtCustomerAt: { type: 'string', format: 'date-time', example: '2026-05-28T06:28:00.000Z' },
+                    },
+                  },
+                  message: { type: 'string', example: 'Arrived at customer registered successfully' },
+                  success: { type: 'boolean', example: true },
+                },
+                type: 'object',
+              },
+            },
+          },
+          description: 'Arrived at customer status registered successfully.',
+        },
+        401: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Authentication failure response.',
+        },
+        403: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Forbidden: Delivery agent is not assigned to this order.',
+        },
+        404: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Delivery assignment not found.',
+        },
+        409: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Conflict: Invalid state transition or delivery is in terminal state.',
+        },
+        422: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Validation error: assignmentId is not a valid ObjectId.',
+        },
+      },
+      security: [{ bearerAuth: [] }],
+      summary: 'Mark delivery as arrived at customer',
+      tags: ['Delivery Agent'],
+    },
+  },
+  '/delivery/assignments/{assignmentId}/delivered': {
+    post: {
+      description: 'Mark the delivery assignment as successfully delivered. Updates corresponding order status to delivered, sets completion timestamps, and releases the delivery agent. Protected by secure JWT authentication.',
+      parameters: [
+        {
+          description: 'The delivery assignment ObjectId.',
+          in: 'path',
+          name: 'assignmentId',
+          required: true,
+          schema: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+        },
+      ],
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              properties: {
+                verificationMethod: { type: 'string', enum: ['otp', 'photo', 'manual'], example: 'otp' },
+                verificationValue: { type: 'string', example: '123456' },
+                notes: { type: 'string', example: 'Handed over directly to customer front door.' },
+              },
+              type: 'object',
+            },
+          },
+        },
+        required: false,
+      },
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                properties: {
+                  data: {
+                    type: 'object',
+                    properties: {
+                      _id: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+                      deliveryStatus: { type: 'string', example: 'delivered' },
+                      completedAt: { type: 'string', format: 'date-time', example: '2026-05-28T09:00:00.000Z' },
+                      deliveredAt: { type: 'string', format: 'date-time', example: '2026-05-28T09:00:00.000Z' },
+                    },
+                  },
+                  message: { type: 'string', example: 'Delivery completed successfully' },
+                  success: { type: 'boolean', example: true },
+                },
+                type: 'object',
+              },
+            },
+          },
+          description: 'Delivery marked as successfully completed.',
+        },
+        401: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Authentication failure response.',
+        },
+        403: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Forbidden: Delivery agent is not assigned to this order.',
+        },
+        404: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Delivery assignment not found.',
+        },
+        409: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Conflict: Invalid state transition or delivery is in terminal state.',
+        },
+        422: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Validation error: assignmentId is not a valid ObjectId or request body has invalid verification schema.',
+        },
+      },
+      security: [{ bearerAuth: [] }],
+      summary: 'Mark delivery as delivered',
+      tags: ['Delivery Agent'],
+    },
+  },
+  '/delivery/assignments/{assignmentId}/failed': {
+    post: {
+      description: 'Mark the delivery assignment as failed. Updates corresponding order status to failed, sets failure timestamps and reason, and releases the delivery agent. Protected by secure JWT authentication.',
+      parameters: [
+        {
+          description: 'The delivery assignment ObjectId.',
+          in: 'path',
+          name: 'assignmentId',
+          required: true,
+          schema: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+        },
+      ],
+      requestBody: {
+        content: {
+          'application/json': {
+            schema: {
+              properties: {
+                failureReason: { type: 'string', example: 'Customer not available' },
+              },
+              required: ['failureReason'],
+              type: 'object',
+            },
+          },
+        },
+        required: true,
+      },
+      responses: {
+        200: {
+          content: {
+            'application/json': {
+              schema: {
+                properties: {
+                  data: {
+                    type: 'object',
+                    properties: {
+                      _id: { type: 'string', example: '603d7b97e6824a1b8cfa3b22' },
+                      deliveryStatus: { type: 'string', example: 'failed' },
+                      failedAt: { type: 'string', format: 'date-time', example: '2026-05-28T09:05:00.000Z' },
+                      failureReason: { type: 'string', example: 'Customer not available' },
+                    },
+                  },
+                  message: { type: 'string', example: 'Delivery failure registered successfully' },
+                  success: { type: 'boolean', example: true },
+                },
+                type: 'object',
+              },
+            },
+          },
+          description: 'Delivery failure registered successfully.',
+        },
+        401: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Authentication failure response.',
+        },
+        403: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Forbidden: Delivery agent is not assigned to this order.',
+        },
+        404: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Delivery assignment not found.',
+        },
+        409: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Conflict: Invalid state transition or delivery is in terminal state.',
+        },
+        422: {
+          content: { 'application/json': { schema: ApiErrorResponseSchema } },
+          description: 'Validation error: assignmentId is not a valid ObjectId or missing required failureReason field.',
+        },
+      },
+      security: [{ bearerAuth: [] }],
+      summary: 'Mark delivery as failed',
+      tags: ['Delivery Agent'],
+    },
+  },
 };
+
 

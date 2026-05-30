@@ -2,6 +2,10 @@ import { VendorIncomingOrdersEmptyState } from '../components/VendorIncomingOrde
 import { VendorIncomingOrdersErrorState } from '../components/VendorIncomingOrdersErrorState';
 import { VendorIncomingOrdersTable } from '../components/VendorIncomingOrdersTable';
 import { useVendorIncomingOrders } from '../hooks/useVendorIncomingOrders';
+import { NewOrderRealtimeAlert } from '../../realtime-store-operations/components/NewOrderRealtimeAlert';
+import { VendorRealtimeConnectionBanner } from '../../realtime-store-operations/components/VendorRealtimeConnectionBanner';
+import { useVendorRealtimeStore } from '../../realtime-store-operations/store/vendor-realtime.store';
+import { applyVendorRealtimeOrderEventToList } from '../../realtime-store-operations/utils/vendor-realtime-order-list.util';
 import {
   extractApiErrorCode,
   mapVendorOrderErrorCodeToMessage,
@@ -9,7 +13,13 @@ import {
 
 export function VendorIncomingOrdersPage() {
   const { data, error, isFetching, isLoading, refetch } = useVendorIncomingOrders();
-  const orders = data?.items ?? [];
+  const lastOrderEvent = useVendorRealtimeStore((state) => state.lastOrderEvent);
+  const orders = applyVendorRealtimeOrderEventToList(
+    data?.items ?? [],
+    lastOrderEvent,
+    (order) =>
+      order.orderStatus === 'placed' && order.storeStatus === 'pending_acceptance',
+  );
 
   if (error) {
     return (
@@ -31,6 +41,8 @@ export function VendorIncomingOrdersPage() {
           Review newly placed store orders and decide acceptance.
         </p>
       </header>
+      <VendorRealtimeConnectionBanner />
+      <NewOrderRealtimeAlert />
       {isLoading && !data ? (
         <VendorIncomingOrdersTable isFetching orders={[]} />
       ) : null}

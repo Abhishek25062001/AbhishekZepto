@@ -9,6 +9,8 @@ export const CUSTOMER_SELECTED_ADDRESS_ID = 'customer_selected_address_id';
 export const CUSTOMER_SELECTED_STORE_ID = 'customer_selected_store_id';
 export const CUSTOMER_SELECTED_STORE_NAME = 'customer_selected_store_name';
 export const CUSTOMER_SELECTED_CITY_ID = 'customer_selected_city_id';
+export const CUSTOMER_PUSH_DEVICE_ID = 'customer_push_device_id';
+export const CUSTOMER_LAST_BACKGROUND_PUSH_PAYLOAD = 'customer_last_background_push_payload';
 
 export const CUSTOMER_AUTH_STORAGE_KEYS = [
   CUSTOMER_ACCESS_TOKEN,

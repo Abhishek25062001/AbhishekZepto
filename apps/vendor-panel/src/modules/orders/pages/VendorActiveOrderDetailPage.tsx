@@ -6,7 +6,13 @@ import { VendorIncomingOrderDetail } from '../components/VendorIncomingOrderDeta
 import { VendorPackingActions } from '../components/VendorPackingActions';
 import { VendorPickingItemsTable } from '../components/VendorPickingItemsTable';
 import { VendorStartPickingAction } from '../components/VendorStartPickingAction';
+import { VendorPickupVisibilityCard } from '../components/VendorPickupVisibilityCard';
 import { useVendorOrderDetail } from '../hooks/useVendorOrderDetail';
+import { RiderArrivedAlert } from '../../realtime-store-operations/components/RiderArrivedAlert';
+import { PickupCompletedAlert } from '../../realtime-store-operations/components/PickupCompletedAlert';
+import { useVendorOrderRoom } from '../../realtime-store-operations/hooks/useVendorOrderRoom';
+import { useVendorRealtimeStore } from '../../realtime-store-operations/store/vendor-realtime.store';
+import { applyVendorRealtimeOrderEventToDetail } from '../../realtime-store-operations/utils/vendor-realtime-order-list.util';
 import {
   extractApiErrorCode,
   mapVendorOrderErrorCodeToMessage,
@@ -15,6 +21,8 @@ import {
 export function VendorActiveOrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const { data, error, isLoading, refetch } = useVendorOrderDetail(orderId);
+  const lastOrderEvent = useVendorRealtimeStore((state) => state.lastOrderEvent);
+  useVendorOrderRoom(orderId);
 
   if (isLoading) {
     return <Loader label="Loading active order" />;
@@ -42,14 +50,19 @@ export function VendorActiveOrderDetailPage() {
     );
   }
 
+  const order = applyVendorRealtimeOrderEventToDetail(data, lastOrderEvent);
+
   return (
     <section style={{ display: 'grid', gap: 'var(--spacing-lg)' }}>
       <Link to="/orders/active">Back to active orders</Link>
-      <VendorIncomingOrderDetail order={data} />
-      <VendorPickingItemsTable order={data} />
-      <VendorStartPickingAction order={data} />
-      <VendorCompletePickingAction order={data} />
-      <VendorPackingActions order={data} />
+      <RiderArrivedAlert />
+      <PickupCompletedAlert />
+      <VendorIncomingOrderDetail order={order} />
+      <VendorPickupVisibilityCard order={order} />
+      <VendorPickingItemsTable order={order} />
+      <VendorStartPickingAction order={order} />
+      <VendorCompletePickingAction order={order} />
+      <VendorPackingActions order={order} />
     </section>
   );
 }

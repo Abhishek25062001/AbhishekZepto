@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { validateRequest } from '../../../middlewares/validate-request.middleware';
 import {
   cancelCustomerOrderController,
+  getCustomerOrderDeliveryController,
   getCustomerOrderLifecycleController,
   getCustomerOrderStateController,
   getOrderController,
@@ -31,6 +32,12 @@ router.get(
   '/:orderId/lifecycle',
   validateRequest({ params: orderIdParamValidator }),
   getCustomerOrderLifecycleController,
+);
+
+router.get(
+  '/:orderId/delivery',
+  validateRequest({ params: orderIdParamValidator }),
+  getCustomerOrderDeliveryController,
 );
 
 router.get(

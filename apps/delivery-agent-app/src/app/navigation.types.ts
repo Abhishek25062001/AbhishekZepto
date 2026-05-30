@@ -13,10 +13,14 @@ export type AuthStackParamList = {
 export type MainStackParamList = {
   AuthSmokeTest: undefined;
   DeliveryHome: undefined;
-  ActiveDelivery: undefined;
+  ActiveDelivery: { assignmentId: string };
+  NotificationCenter: undefined;
   Debug: undefined;
   Profile: undefined;
   Sessions: undefined;
+  StoreArrival: { assignmentId: string };
+  PickupConfirmation: { assignmentId: string };
+  CustomerArrival: { assignmentId: string };
 };
 
 export type RootStackParamList = {

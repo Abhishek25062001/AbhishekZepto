@@ -1,5 +1,6 @@
 import { sendSuccessResponse } from '../../../utils/api-response';
 import { asyncHandler } from '../../../utils/async-handler';
+import { orderScopeRequiredError } from '../utils/order-error.mapper';
 import {
   acceptStoreOrder,
   cancelAdminOrder,
@@ -8,12 +9,14 @@ import {
   completeStoreOrderPacking,
   completeStoreOrderPicking,
   getOrderForAdmin,
+  getOrderDeliveryForCustomer,
   getOrderLifecycleForCustomer,
   getOrderTimelineForAdmin,
   getOrderStateForCustomer,
   listOrdersForAdmin,
   getOrderForCustomer,
   getOrderForStore,
+  getOrderDeliveryForVendor,
   listOrdersForStore,
   markStoreOrderItemMissing,
   listOrdersForCustomer,
@@ -162,6 +165,19 @@ export const getCustomerOrderLifecycleController = asyncHandler(async (req, res)
   });
 });
 
+export const getCustomerOrderDeliveryController = asyncHandler(async (req, res) => {
+  const customerId = requireCustomerId(req.user?.userId);
+  const orderId = req.params.orderId as string;
+  const data = await getOrderDeliveryForCustomer(customerId, orderId);
+
+  return sendSuccessResponse({
+    res,
+    message: 'Customer order delivery tracking fetched successfully',
+    data,
+    meta: { requestId: req.requestId, traceId: req.traceId },
+  });
+});
+
 export const cancelCustomerOrderController = asyncHandler(async (req, res) => {
   const customerId = requireCustomerId(req.user?.userId);
   const orderId = req.params.orderId as string;
@@ -244,6 +260,24 @@ export const getStoreOrderController = asyncHandler(async (req, res) => {
   return sendSuccessResponse({
     res,
     message: 'Store order fetched successfully',
+    data,
+    meta: { requestId: req.requestId, traceId: req.traceId },
+  });
+});
+
+export const getVendorOrderDeliveryStatusController = asyncHandler(async (req, res) => {
+  const storeId = req.user?.storeId;
+
+  if (!storeId) {
+    throw orderScopeRequiredError();
+  }
+
+  const orderId = req.params.orderId as string;
+  const data = await getOrderDeliveryForVendor(storeId, orderId);
+
+  return sendSuccessResponse({
+    res,
+    message: 'Store order delivery status fetched successfully',
     data,
     meta: { requestId: req.requestId, traceId: req.traceId },
   });

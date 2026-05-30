@@ -1,0 +1,22 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-realtime-store-operations-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/realtime-store-operations/**/*.test.ts",
+    "src/modules/realtime-store-operations/**/*.test.tsx",
+    "src/modules/realtime-store-operations/store/**/*.ts",
+    "src/modules/realtime-store-operations/types/**/*.ts",
+    "src/modules/realtime-store-operations/utils/**/*.ts",
+    "src/modules/orders/types/**/*.ts",
+    "src/tests/integration/vendor-realtime-*.test.tsx",
+    "src/tests/integration/phase-7-vendor-realtime.test.tsx"
+  ]
+}

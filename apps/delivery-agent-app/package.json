@@ -8,9 +8,15 @@
     "ios": "react-native run-ios",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
-    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js"
+    "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js",
+    "test:realtime-operations": "tsc -p tsconfig.realtime-operations-test.json && find dist-realtime-operations-test/apps/delivery-agent-app/src/modules/realtime-operations -name '*.test.js' -exec node --test {} + && node --test dist-realtime-operations-test/apps/delivery-agent-app/src/tests/integration/phase-7-delivery-realtime.test.js",
+    "test:push-notifications": "tsc -p tsconfig.push-notifications-test.json && find dist-push-notifications-test/apps/delivery-agent-app/src -name '*.test.js' -exec node --test {} +",
+    "test:notifications": "tsc -p tsconfig.notifications-test.json && find dist-notifications-test/apps/delivery-agent-app/src/modules/notification-center -name '*.test.js' -exec node --test {} +",
+    "test": "node scripts/run-tests.mjs"
   },
   "dependencies": {
+    "@react-native-firebase/app": "^24.0.0",
+    "@react-native-firebase/messaging": "^24.0.0",
     "@react-navigation/native": "^7.2.4",
     "@react-navigation/native-stack": "^7.14.14",
     "@tanstack/react-query": "^5.100.9",
@@ -21,6 +27,7 @@
     "react-native-keychain": "^10.0.0",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",
+    "socket.io-client": "^4.8.3",
     "zod": "^3.25.76",
     "zustand": "^5.0.13"
   },

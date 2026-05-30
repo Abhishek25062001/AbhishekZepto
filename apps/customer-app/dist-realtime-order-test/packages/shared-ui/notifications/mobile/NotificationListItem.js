@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationListItem = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
+const react_native_1 = require("react-native");
+const notification_icon_util_1 = require("../utils/notification-icon.util");
+const notification_message_util_1 = require("../utils/notification-message.util");
+const notification_time_util_1 = require("../utils/notification-time.util");
+const NotificationListItem = ({ notification, onPress, }) => ((0, jsx_runtime_1.jsx)(react_native_1.Pressable, { accessibilityLabel: notification.title, onPress: () => onPress?.(notification), children: (0, jsx_runtime_1.jsxs)(react_native_1.View, { children: [(0, jsx_runtime_1.jsx)(react_native_1.Text, { children: (0, notification_icon_util_1.getNotificationIconName)(notification.notificationType) }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { children: notification.title }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { children: (0, notification_message_util_1.truncateNotificationMessage)(notification.message) }), (0, jsx_runtime_1.jsx)(react_native_1.Text, { children: (0, notification_time_util_1.formatNotificationRelativeTime)(notification.createdAt) })] }) }));
+exports.NotificationListItem = NotificationListItem;

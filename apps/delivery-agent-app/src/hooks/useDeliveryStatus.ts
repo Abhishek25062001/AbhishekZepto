@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useEffect } from 'react';
 import { useDeliveryStore } from '../store/delivery.store';
 import { useAuthStore } from '../store/auth.store';
+import { useDeliveryRealtimeStore } from '../modules/realtime-operations/store/delivery-realtime.store';
 import {
   fetchAgentAvailabilityStatus,
   updateAgentAvailabilityStatus,
@@ -13,6 +14,7 @@ export function useDeliveryStatusQuery() {
   const deliveryAgentId = useAuthStore((state) => state.deliveryAgentId);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const currentStatus = useDeliveryStore((state) => state.availabilityStatus);
+  const socketConnected = useDeliveryRealtimeStore((state) => state.socketConnected);
 
   const query = useQuery<DeliveryAgentStatus>({
     queryKey: ['delivery-status', deliveryAgentId],
@@ -21,7 +23,12 @@ export function useDeliveryStatusQuery() {
       return response.data;
     },
     enabled: isAuthenticated && Boolean(deliveryAgentId),
-    refetchInterval: isAuthenticated && (currentStatus === 'online' || currentStatus === 'busy') ? 5000 : false,
+    refetchInterval:
+      isAuthenticated &&
+      !socketConnected &&
+      (currentStatus === 'online' || currentStatus === 'busy')
+        ? 5000
+        : false,
   });
 
   // Sync with Zustand store when data changes

@@ -4,6 +4,9 @@ import { ErrorView, Loader } from '../../../components/common';
 import { VendorIncomingOrderDetail } from '../components/VendorIncomingOrderDetail';
 import { VendorStartPickingAction } from '../components/VendorStartPickingAction';
 import { useVendorOrderDetail } from '../hooks/useVendorOrderDetail';
+import { useVendorOrderRoom } from '../../realtime-store-operations/hooks/useVendorOrderRoom';
+import { useVendorRealtimeStore } from '../../realtime-store-operations/store/vendor-realtime.store';
+import { applyVendorRealtimeOrderEventToDetail } from '../../realtime-store-operations/utils/vendor-realtime-order-list.util';
 import {
   extractApiErrorCode,
   mapVendorOrderErrorCodeToMessage,
@@ -12,6 +15,8 @@ import {
 export function VendorIncomingOrderDetailPage() {
   const { orderId } = useParams<{ orderId: string }>();
   const { data, error, isLoading, refetch } = useVendorOrderDetail(orderId);
+  const lastOrderEvent = useVendorRealtimeStore((state) => state.lastOrderEvent);
+  useVendorOrderRoom(orderId);
 
   if (isLoading) {
     return <Loader label="Loading order" />;
@@ -39,11 +44,13 @@ export function VendorIncomingOrderDetailPage() {
     );
   }
 
+  const order = applyVendorRealtimeOrderEventToDetail(data, lastOrderEvent);
+
   return (
     <section style={{ display: 'grid', gap: 'var(--spacing-lg)' }}>
       <Link to="/orders">Back to incoming orders</Link>
-      <VendorIncomingOrderDetail order={data} />
-      <VendorStartPickingAction order={data} />
+      <VendorIncomingOrderDetail order={order} />
+      <VendorStartPickingAction order={order} />
     </section>
   );
 }

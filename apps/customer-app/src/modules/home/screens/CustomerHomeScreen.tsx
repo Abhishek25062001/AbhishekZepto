@@ -16,6 +16,7 @@ import { HomeFeaturedSection } from '../components/HomeFeaturedSection';
 import { HomeLocationHeader } from '../components/HomeLocationHeader';
 import { HomeServiceabilityBanner } from '../components/HomeServiceabilityBanner';
 import { CartBottomBar } from '../../cart/components/CartBottomBar';
+import { NotificationBell } from '../../notification-center/components/NotificationBell';
 import { useCustomerHome } from '../hooks/useCustomerHome';
 import { getCustomerHomeErrorMessage } from '../utils/customer-home-error-message.util';
 
@@ -93,6 +94,7 @@ export function CustomerHomeScreen() {
             onChangeLocation={openChangeLocation}
             storeName={feed?.store.name ?? selectedStoreName ?? 'Store'}
           />
+          <NotificationBell onPress={() => mainNavigation.navigate('NotificationCenter')} />
           {feed && !feed.serviceability.isServiceable && feed.serviceability.message ? (
             <HomeServiceabilityBanner message={feed.serviceability.message} />
           ) : null}

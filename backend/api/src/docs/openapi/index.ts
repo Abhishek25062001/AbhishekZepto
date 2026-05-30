@@ -17,6 +17,9 @@ import {
 import { openApiConfig } from './openapi.config';
 import { publicPaths } from './public.paths';
 import { deliveryPaths } from './delivery.paths';
+import { controlTowerPaths } from './control-tower.paths';
+import { pushNotificationPaths } from './push-notification.paths';
+import { inAppNotificationPaths } from './in-app-notification.paths';
 
 export {
   ApiErrorResponseSchema,
@@ -34,6 +37,9 @@ export {
   PaginationMetaSchema,
   publicPaths,
   deliveryPaths,
+  controlTowerPaths,
+  pushNotificationPaths,
+  inAppNotificationPaths,
   SystemInfoResponseSchema,
   VersionResponseSchema,
 };
@@ -61,5 +67,8 @@ export const openApiDocument = {
     ...mediaPaths,
     ...orderPaths,
     ...deliveryPaths,
+    ...controlTowerPaths,
+    ...pushNotificationPaths,
+    ...inAppNotificationPaths,
   },
 };

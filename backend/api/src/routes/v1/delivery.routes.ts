@@ -4,6 +4,8 @@ import { authenticate } from '../../modules/auth/middlewares/authenticate.middle
 import { requireRole } from '../../modules/auth/middlewares/require-role.middleware';
 import { sendSuccessResponse } from '../../utils/api-response';
 import deliveryAgentRoutes from '../../modules/delivery/routes/delivery-agent.routes';
+import deliveryDeviceTokenRoutes from '../../modules/push-notifications/routes/delivery-device-token.routes';
+import deliveryNotificationRoutes from '../../modules/in-app-notifications/routes/delivery-notification.routes';
 
 const router = Router();
 
@@ -14,6 +16,20 @@ const router = Router();
 // Note: PATCH /api/v1/delivery/availability is Module 3 — not mounted here.
 // ---------------------------------------------------------------------------
 router.use('/', deliveryAgentRoutes);
+
+router.use(
+  '/me/device-token',
+  authenticate(),
+  requireRole([AUTH_ROLE.DELIVERY_AGENT]),
+  deliveryDeviceTokenRoutes,
+);
+
+router.use(
+  '/me/notifications',
+  authenticate(),
+  requireRole([AUTH_ROLE.DELIVERY_AGENT]),
+  deliveryNotificationRoutes,
+);
 
 router.get(
   '/me/permissions',
@@ -48,4 +64,3 @@ router.get('/', (_req, res) => {
 });
 
 export default router;
-

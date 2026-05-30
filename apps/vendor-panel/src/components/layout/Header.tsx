@@ -5,6 +5,7 @@ import { isDevelopment } from '../../config/env';
 import { useVendorPermissions } from '../../hooks/useVendorPermissions';
 import { forceLocalLogout, logoutVendorUser } from '../../services/auth/logout.service';
 import { useAuthStore } from '../../store/auth.store';
+import { VendorNotificationDropdown } from '../../modules/notification-center/components/VendorNotificationDropdown';
 import { logVendorAuthEvent } from '../../utils/auth-event-logger';
 import {
   getAuthErrorMessage,
@@ -93,6 +94,7 @@ export function Header() {
           </span>
         ) : null}
         <div style={{ display: 'flex', gap: '8px' }}>
+          <VendorNotificationDropdown />
           <button
             aria-label="Refresh vendor permissions"
             disabled={permissionsQuery.isFetching}

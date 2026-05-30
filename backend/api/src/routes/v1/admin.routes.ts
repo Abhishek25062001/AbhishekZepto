@@ -14,6 +14,9 @@ import storeProductAdminRoutes from '../../modules/store-products/routes/store-p
 import inventoryAdminRoutes from '../../modules/inventory/routes/inventory-admin.routes';
 import mediaAdminRoutes from '../../modules/media/routes/media-admin.routes';
 import adminOrderRoutes from '../../modules/orders/routes/admin-order.routes';
+import controlTowerAdminRoutes from '../../modules/control-tower/routes/control-tower-admin.routes';
+import pushNotificationAdminRoutes from '../../modules/push-notifications/routes/push-notification-admin.routes';
+import adminNotificationRoutes from '../../modules/in-app-notifications/routes/admin-notification.routes';
 import deliveryAgentAdminRoutes from '../../modules/delivery/routes/delivery-agent-admin.routes';
 import deliveryAssignmentAdminRoutes from '../../modules/delivery/routes/delivery-assignment-admin.routes';
 import { authenticate } from '../../modules/auth/middlewares/authenticate.middleware';
@@ -118,6 +121,27 @@ router.use(
   authenticate(),
   requireRole(adminRoles),
   adminOrderRoutes,
+);
+
+router.use(
+  '/control-tower',
+  authenticate(),
+  requireRole(adminRoles),
+  controlTowerAdminRoutes,
+);
+
+router.use(
+  '/push-notifications',
+  authenticate(),
+  requireRole(adminRoles),
+  pushNotificationAdminRoutes,
+);
+
+router.use(
+  '/me/notifications',
+  authenticate(),
+  requireRole(adminRoles),
+  adminNotificationRoutes,
 );
 
 // ---------------------------------------------------------------------------

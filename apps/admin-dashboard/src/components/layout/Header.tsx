@@ -5,6 +5,7 @@ import { isDevelopment } from '../../config/env';
 import { useAdminPermissions } from '../../hooks/useAdminPermissions';
 import { forceLocalLogout, logoutAdminUser } from '../../services/auth/logout.service';
 import { useAuthStore } from '../../store/auth.store';
+import { AdminNotificationDropdown } from '../../modules/notification-center/components/AdminNotificationDropdown';
 import { logAdminAuthEvent } from '../../utils/auth-event-logger';
 import {
   getAuthErrorMessage,
@@ -87,6 +88,7 @@ export function Header() {
           </span>
         ) : null}
         <div style={{ display: 'flex', gap: '8px' }}>
+          <AdminNotificationDropdown />
           <button
             aria-label="Refresh admin permissions"
             disabled={permissionsQuery.isFetching}

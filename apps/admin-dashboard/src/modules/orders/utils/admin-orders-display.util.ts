@@ -11,6 +11,9 @@ export const ADMIN_ORDER_STATUSES = [
   'picking',
   'packing',
   'ready_for_pickup',
+  'shipped',
+  'delivered',
+  'failed',
   'cancelled',
 ] as const;
 
@@ -46,6 +49,9 @@ export const ADMIN_ORDER_STATUS_LABELS: Record<AdminOrderStatus, string> = {
   picking: 'Picking',
   packing: 'Packing',
   ready_for_pickup: 'Ready for pickup',
+  shipped: 'Shipped',
+  delivered: 'Delivered',
+  failed: 'Failed',
   cancelled: 'Cancelled',
 };
 

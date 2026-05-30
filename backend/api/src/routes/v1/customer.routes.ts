@@ -13,6 +13,8 @@ import paymentRoutes from '../../modules/payment/routes/payment.routes';
 import customerOrderRoutes from '../../modules/orders/routes/customer-order.routes';
 import customerHomeRoutes from '../../modules/home/routes/customer-home.routes';
 import customerProfileRoutes from '../../modules/profile/routes/customer-profile.routes';
+import customerDeviceTokenRoutes from '../../modules/push-notifications/routes/customer-device-token.routes';
+import customerNotificationRoutes from '../../modules/in-app-notifications/routes/customer-notification.routes';
 import { sendSuccessResponse } from '../../utils/api-response';
 
 const router = Router();
@@ -109,6 +111,20 @@ router.use(
   authenticate(),
   requireRole([AUTH_ROLE.CUSTOMER]),
   customerProfileRoutes,
+);
+
+router.use(
+  '/me/device-token',
+  authenticate(),
+  requireRole([AUTH_ROLE.CUSTOMER]),
+  customerDeviceTokenRoutes,
+);
+
+router.use(
+  '/me/notifications',
+  authenticate(),
+  requireRole([AUTH_ROLE.CUSTOMER]),
+  customerNotificationRoutes,
 );
 
 router.get('/', (_req, res) => {

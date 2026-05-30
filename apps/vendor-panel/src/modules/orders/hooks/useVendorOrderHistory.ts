@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 
 import { getVendorOrders } from '../api/vendor-orders.api';
+import { useVendorRealtimeStore } from '../../realtime-store-operations/store/vendor-realtime.store';
 import type { VendorOrderHistoryFilters, VendorOrderStatus, VendorOrderStoreStatus } from '../types/vendor-orders.types';
 import {
   HISTORY_ORDER_STATUSES,
@@ -38,10 +39,12 @@ const parseStoreStatus = (value: string | null): VendorOrderStoreStatus | undefi
 
 export function useVendorOrderHistory() {
   const [searchParams] = useSearchParams();
+  const socketConnected = useVendorRealtimeStore((state) => state.socketConnected);
   const query = buildOrderHistoryQuery(buildVendorOrderHistoryFilters(searchParams));
 
   return useQuery({
     queryKey: ['vendor-order-history', query],
     queryFn: () => getVendorOrders(query),
+    refetchInterval: socketConnected ? false : 30000,
   });
 }

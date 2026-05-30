@@ -6,6 +6,9 @@ export type AdminOrderStatus =
   | 'picking'
   | 'packing'
   | 'ready_for_pickup'
+  | 'shipped'
+  | 'delivered'
+  | 'failed'
   | 'cancelled';
 
 export type AdminOrderStoreStatus = 'pending_acceptance' | 'accepted' | 'rejected';

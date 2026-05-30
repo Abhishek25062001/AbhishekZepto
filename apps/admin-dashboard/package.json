@@ -8,10 +8,13 @@
     "preview": "vite preview",
     "typecheck": "tsc --noEmit",
     "lint": "eslint .",
+    "test": "node scripts/run-tests.mjs",
     "test:catalog": "tsc -p tsconfig.catalog-test.json && find dist-catalog-test/modules/catalog -name '*.test.js' -exec node --test {} +",
     "test:stores": "tsc -p tsconfig.stores-test.json && find dist-stores-test/modules/stores -name '*.test.js' -exec node --test {} +",
     "test:inventory": "tsc -p tsconfig.inventory-test.json && find dist-inventory-test/modules/inventory -name '*.test.js' -exec node --test {} +",
     "test:admin-orders": "tsc -p tsconfig.admin-orders-test.json && find dist-admin-orders-test/modules/orders -name '*.test.js' -exec node --test {} +",
+    "test:realtime-control-tower": "tsc -p tsconfig.realtime-control-tower-test.json && node scripts/run-tests.mjs realtime-control-tower --compiled-only",
+    "test:notifications": "tsc -p tsconfig.notifications-test.json && node scripts/run-tests.mjs notifications --compiled-only",
     "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js",
     "test:phase-5-admin": "npm run test:admin-orders && npm run test:access-control-smoke"
   },
@@ -23,6 +26,7 @@
     "react-dom": "^19.2.6",
     "react-hook-form": "^7.75.0",
     "react-router-dom": "^7.15.0",
+    "socket.io-client": "^4.8.3",
     "zod": "^3.25.76",
     "zustand": "^5.0.13"
   },

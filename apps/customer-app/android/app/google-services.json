@@ -1,0 +1,24 @@
+{
+  "client": [
+    {
+      "api_key": [
+        {
+          "current_key": "dev-placeholder-customer-api-key"
+        }
+      ],
+      "client_info": {
+        "android_client_info": {
+          "package_name": "com.zeptolike.customerapp"
+        },
+        "mobilesdk_app_id": "1:000000000000:android:customerdev00000000"
+      }
+    }
+  ],
+  "configuration_version": "1",
+  "project_info": {
+    "firebase_url": "https://zepto-like-dev.firebaseio.com",
+    "project_id": "zepto-like-dev",
+    "project_number": "000000000000",
+    "storage_bucket": "zepto-like-dev.appspot.com"
+  }
+}

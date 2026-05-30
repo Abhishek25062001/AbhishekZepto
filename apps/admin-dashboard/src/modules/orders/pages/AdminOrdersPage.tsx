@@ -1,13 +1,26 @@
+import { useMemo } from 'react';
+import { useSearchParams } from 'react-router-dom';
+
 import { CatalogPagination } from '../../catalog/components/CatalogPagination';
+import { useAdminRealtimeStore } from '../../realtime-control-tower/store/admin-realtime.store';
+import { applyAdminRealtimeOrderEventToAdminOrdersList } from '../../realtime-control-tower/utils/admin-orders-realtime.util';
 import { AdminOrderEmptyState } from '../components/AdminOrderEmptyState';
 import { AdminOrderErrorState } from '../components/AdminOrderErrorState';
 import { AdminOrderFilters } from '../components/AdminOrderFilters';
 import { AdminOrderTable } from '../components/AdminOrderTable';
 import { useAdminOrders } from '../hooks/useAdminOrders';
+import { buildAdminOrderListQuery } from '../utils/admin-orders-query.util';
 
 export function AdminOrdersPage() {
+  const [searchParams] = useSearchParams();
+  const query = useMemo(() => buildAdminOrderListQuery(searchParams), [searchParams]);
   const { data, error, isFetching, isLoading, refetch } = useAdminOrders();
-  const orders = data?.items ?? [];
+  const lastOrderEvent = useAdminRealtimeStore((state) => state.lastOrderEvent);
+  const orders = applyAdminRealtimeOrderEventToAdminOrdersList(
+    data?.items ?? [],
+    lastOrderEvent,
+    query,
+  );
 
   if (error) {
     return (

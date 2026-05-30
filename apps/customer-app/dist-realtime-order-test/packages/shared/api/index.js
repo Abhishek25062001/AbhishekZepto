@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.resolveDeviceTypeFromPlatform = exports.formatSessionTimestamp = exports.formatSessionDeviceLabel = exports.buildAuthDeviceInput = exports.getAuthErrorMessage = void 0;
+var auth_error_messages_1 = require("./auth-error-messages");
+Object.defineProperty(exports, "getAuthErrorMessage", { enumerable: true, get: function () { return auth_error_messages_1.getAuthErrorMessage; } });
+var device_info_1 = require("./device-info");
+Object.defineProperty(exports, "buildAuthDeviceInput", { enumerable: true, get: function () { return device_info_1.buildAuthDeviceInput; } });
+Object.defineProperty(exports, "formatSessionDeviceLabel", { enumerable: true, get: function () { return device_info_1.formatSessionDeviceLabel; } });
+Object.defineProperty(exports, "formatSessionTimestamp", { enumerable: true, get: function () { return device_info_1.formatSessionTimestamp; } });
+Object.defineProperty(exports, "resolveDeviceTypeFromPlatform", { enumerable: true, get: function () { return device_info_1.resolveDeviceTypeFromPlatform; } });

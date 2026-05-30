@@ -12,6 +12,7 @@ import type {
   VendorOrderPackingResponse,
   VendorOrderPickingResponse,
   VendorRejectOrderPayload,
+  VendorDeliveryStatusResponse,
 } from '../types/vendor-orders.types';
 import { buildVendorOrderListQueryParams } from '../utils/vendor-orders-query.util';
 
@@ -111,6 +112,15 @@ export const cancelVendorOrder = async (
   const response = await apiClient.post<ApiSuccessResponse<VendorOrderCancellationResponse>>(
     `${BASE}/${orderId}/cancel`,
     payload,
+  );
+  return unwrapData(response.data);
+};
+
+export const getVendorOrderDeliveryStatus = async (
+  orderId: string,
+): Promise<VendorDeliveryStatusResponse> => {
+  const response = await apiClient.get<ApiSuccessResponse<VendorDeliveryStatusResponse>>(
+    `${BASE}/${orderId}/delivery-status`,
   );
   return unwrapData(response.data);
 };

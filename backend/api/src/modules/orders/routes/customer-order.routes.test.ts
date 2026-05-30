@@ -32,6 +32,7 @@ test('customer order routes expose expected endpoints', () => {
     { path: '/', methods: ['get'] },
     { path: '/:orderId/state', methods: ['get'] },
     { path: '/:orderId/lifecycle', methods: ['get'] },
+    { path: '/:orderId/delivery', methods: ['get'] },
     { path: '/:orderId', methods: ['get'] },
     { path: '/:orderId/cancel', methods: ['post'] },
   ]);
@@ -47,6 +48,7 @@ test('store order routes expose accept and reject endpoints', () => {
   assert.deepEqual(routes, [
     { path: '/', methods: ['get'] },
     { path: '/:orderId', methods: ['get'] },
+    { path: '/:orderId/delivery-status', methods: ['get'] },
     { path: '/:orderId/accept', methods: ['post'] },
     { path: '/:orderId/reject', methods: ['post'] },
     { path: '/:orderId/picking/start', methods: ['post'] },

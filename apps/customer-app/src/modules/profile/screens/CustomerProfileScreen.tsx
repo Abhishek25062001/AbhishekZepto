@@ -7,6 +7,8 @@ import { Button, Loader, ScreenWrapper, Text } from '../../../components/common'
 import { isDevelopment } from '../../../config/env';
 import type { MainStackParamList } from '../../../app/navigation.types';
 import { useCustomerPermissions } from '../../../hooks/useCustomerPermissions';
+import { requestPushPermission } from '../../push-notifications/services/customer-push-permission.service';
+import { useCustomerPushStore } from '../../push-notifications/store/customer-push.store';
 import {
   forceLocalLogout,
   logoutCustomer,
@@ -23,7 +25,10 @@ export function CustomerProfileScreen() {
   const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
   const permissionsQuery = useCustomerPermissions();
   const { profile, isLoading, isError, errorMessage, refetch } = useCustomerProfile();
+  const permissionStatus = useCustomerPushStore((state) => state.permissionStatus);
+  const setPermissionStatus = useCustomerPushStore((state) => state.setPermissionStatus);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [isRequestingPushPermission, setIsRequestingPushPermission] = useState(false);
   const [screenError, setScreenError] = useState<string | null>(null);
 
   const handleLogout = async () => {
@@ -60,6 +65,15 @@ export function CustomerProfileScreen() {
       );
     } finally {
       setIsLoggingOut(false);
+    }
+  };
+
+  const handleRequestPushPermission = async () => {
+    setIsRequestingPushPermission(true);
+    try {
+      setPermissionStatus(await requestPushPermission());
+    } finally {
+      setIsRequestingPushPermission(false);
     }
   };
 
@@ -111,6 +125,24 @@ export function CustomerProfileScreen() {
           title="Manage sessions"
           variant="secondary"
         />
+        <Button
+          onPress={() => navigation.navigate('NotificationCenter')}
+          title="Notification center"
+          variant="secondary"
+        />
+        <View style={styles.pushSection}>
+          <Text variant="h3">Notifications</Text>
+          <Text color="secondary">Status: {permissionStatus}</Text>
+          <Text color="secondary">
+            Order updates use push notifications for delivery status changes.
+          </Text>
+          <Button
+            loading={isRequestingPushPermission}
+            onPress={handleRequestPushPermission}
+            title="Request notification permission"
+            variant="secondary"
+          />
+        </View>
         {screenError ? <Text color="error">{screenError}</Text> : null}
         <Button
           loading={isLoggingOut}
@@ -146,5 +178,9 @@ const styles = StyleSheet.create({
   links: {
     gap: spacing.sm,
     marginTop: spacing.lg,
+  },
+  pushSection: {
+    gap: spacing.xs,
+    marginTop: spacing.md,
   },
 });

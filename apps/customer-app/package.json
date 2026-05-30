@@ -15,11 +15,17 @@
     "test:customer-checkout": "tsc -p tsconfig.checkout-test.json && find dist-checkout-test/modules/checkout -name '*.test.js' -exec node --test {} +",
     "test:customer-payment": "tsc -p tsconfig.payment-test.json && find dist-payment-test/modules/payment -name '*.test.js' -exec node --test {} +",
     "test:customer-orders": "tsc -p tsconfig.orders-test.json && find dist-orders-test/modules/orders -name '*.test.js' -exec node --test {} +",
+    "test:realtime-order": "tsc -p tsconfig.realtime-order-test.json && node --test dist-realtime-order-test/apps/customer-app/src/modules/realtime-order-experience/__tests__/RealtimeConnectionBanner.test.js dist-realtime-order-test/apps/customer-app/src/modules/realtime-order-experience/__tests__/RealtimeOrderStatusToast.test.js dist-realtime-order-test/apps/customer-app/src/modules/realtime-order-experience/__tests__/realtime-delivery-location.util.test.js dist-realtime-order-test/apps/customer-app/src/modules/realtime-order-experience/__tests__/realtime-order.store.test.js dist-realtime-order-test/apps/customer-app/src/modules/realtime-order-experience/__tests__/useRealtimeDeliveryTrackingEvents.test.js dist-realtime-order-test/apps/customer-app/src/tests/integration/customer-realtime-reconnect.test.js dist-realtime-order-test/apps/customer-app/src/tests/integration/phase-7-customer-realtime.test.js",
+    "test:push-notifications": "tsc -p tsconfig.push-notifications-test.json && find dist-push-notifications-test -name '*.test.js' -exec node --test {} +",
+    "test:notifications": "tsc -p tsconfig.notifications-test.json && find dist-notifications-test/apps/customer-app/src/modules/notification-center -name '*.test.js' -exec node --test {} +",
+    "test": "node scripts/run-tests.mjs",
     "test:customer-profile": "tsc -p tsconfig.profile-test.json && find dist-profile-test/modules/profile -name '*.test.js' -exec node --test {} +",
     "test:access-control-smoke": "tsc -p tsconfig.smoke.json && node --test dist-access-control-smoke/*.smoke.test.js",
     "test:phase-5-customer": "npm run test:customer-orders && npm run test:access-control-smoke"
   },
   "dependencies": {
+    "@react-native-firebase/app": "^24.0.0",
+    "@react-native-firebase/messaging": "^24.0.0",
     "@react-navigation/native": "^7.2.4",
     "@react-navigation/native-stack": "^7.14.14",
     "@tanstack/react-query": "^5.100.9",
@@ -31,6 +37,7 @@
     "react-native-razorpay": "^2.3.1",
     "react-native-safe-area-context": "^5.7.0",
     "react-native-screens": "^4.24.0",
+    "socket.io-client": "^4.8.3",
     "zod": "^3.25.76",
     "zustand": "^5.0.13"
   },

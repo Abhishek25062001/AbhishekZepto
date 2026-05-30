@@ -10,6 +10,8 @@ export default [
       'dist-stores-test/**',
       'dist-inventory-test/**',
       'dist-admin-orders-test/**',
+      'dist-notifications-test/**',
+      'dist-realtime-control-tower-test/**',
       'build/**',
       'node_modules/**',
     ],

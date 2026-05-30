@@ -16,6 +16,29 @@ const envSchema = z.object({
   ADMIN_WEB_ORIGIN: z.string().url().optional(),
   VENDOR_WEB_ORIGIN: z.string().url().optional(),
   REDIS_URL: z.string().min(1).optional(),
+  REDIS_HOST: z.string().min(1).optional(),
+  REDIS_PORT: z.coerce.number().int().positive().optional(),
+  REDIS_PASSWORD: z.string().optional(),
+  SOCKET_CORS_ORIGIN: z
+    .string()
+    .min(1)
+    .default(
+      'http://localhost:5173,http://localhost:5174,http://127.0.0.1:5173,http://127.0.0.1:5174',
+    ),
+  SOCKET_PING_TIMEOUT: z.coerce.number().int().positive().default(20_000),
+  SOCKET_PING_INTERVAL: z.coerce.number().int().positive().default(25_000),
+  REALTIME_REDIS_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
+  DELIVERY_LOCATION_EMIT_MIN_INTERVAL_SECONDS: z.coerce.number().int().positive().default(10),
+  FIREBASE_PROJECT_ID: z.string().min(1).optional(),
+  FIREBASE_CLIENT_EMAIL: z.string().email().optional(),
+  FIREBASE_PRIVATE_KEY: z.string().min(1).optional(),
+  PUSH_NOTIFICATIONS_ENABLED: z
+    .enum(['true', 'false'])
+    .default('false')
+    .transform((value) => value === 'true'),
   JWT_ACCESS_SECRET: z.string().min(1),
   JWT_REFRESH_SECRET: z.string().min(1),
   JWT_ACCESS_EXPIRES_IN: z.string().min(1).default('15m'),
@@ -122,3 +145,9 @@ export const getRazorpayWebhookSecret = (): string => {
 
   return env.RAZORPAY_WEBHOOK_SECRET;
 };
+
+export const getFirebaseConfig = () => ({
+  clientEmail: env.FIREBASE_CLIENT_EMAIL,
+  privateKey: env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  projectId: env.FIREBASE_PROJECT_ID,
+});

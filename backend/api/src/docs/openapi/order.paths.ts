@@ -121,6 +121,21 @@ export const orderPaths = {
       tags: ['Customer'],
     },
   },
+  '/customer/orders/{orderId}/delivery': {
+    get: {
+      parameters: [
+        {
+          in: 'path',
+          name: 'orderId',
+          required: true,
+          schema: { type: 'string' },
+        },
+      ],
+      responses: orderMutationResponses,
+      summary: 'Get customer order delivery tracking details',
+      tags: ['Customer'],
+    },
+  },
   '/admin/orders': {
     get: {
       parameters: [
@@ -298,6 +313,21 @@ export const orderPaths = {
       ],
       responses: orderMutationResponses,
       summary: 'Get store order detail',
+      tags: ['Vendor'],
+    },
+  },
+  '/store/orders/{orderId}/delivery-status': {
+    get: {
+      parameters: [
+        {
+          in: 'path',
+          name: 'orderId',
+          required: true,
+          schema: { type: 'string' },
+        },
+      ],
+      responses: orderMutationResponses,
+      summary: 'Get store order delivery status',
       tags: ['Vendor'],
     },
   },

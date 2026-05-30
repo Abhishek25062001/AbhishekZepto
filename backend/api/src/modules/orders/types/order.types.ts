@@ -307,3 +307,34 @@ export type AdminOrderStatusUpdateInput = {
   status: OrderStatus;
   reason?: string;
 };
+
+export type CustomerRiderProfileSnapshot = {
+  name: string;
+  phone: string;
+  vehicleType: string;
+  vehicleNumber: string | null;
+  profilePhotoUrl: string | null;
+};
+
+export type CustomerDeliveryTrackingResponse = {
+  deliveryId: string;
+  deliveryStatus: string;
+  assignedAt: string | null;
+  pickedUpAt: string | null;
+  enRouteToCustomerAt: string | null;
+  arrivedAtCustomerAt: string | null;
+  completedAt: string | null;
+  deliveredAt: string | null;
+  failedAt: string | null;
+  riderProfile: CustomerRiderProfileSnapshot | null;
+} | null;
+
+export type VendorDeliveryStatusResponse = {
+  deliveryId: string;
+  deliveryStatus: string;
+  assignedAt: string | null;
+  arrivedAtStoreAt: string | null;
+  pickedUpAt: string | null;
+  riderProfile: CustomerRiderProfileSnapshot | null;
+} | null;
+

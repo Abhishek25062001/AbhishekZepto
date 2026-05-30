@@ -6,6 +6,7 @@ import catalogSearchVendorRoutes from '../../modules/catalog/search/routes/catal
 import storeProductVendorRoutes from '../../modules/store-products/routes/store-product-vendor.routes';
 import inventoryVendorRoutes from '../../modules/inventory/routes/inventory-vendor.routes';
 import mediaVendorRoutes from '../../modules/media/routes/media-vendor.routes';
+import vendorNotificationRoutes from '../../modules/in-app-notifications/routes/vendor-notification.routes';
 import { sendSuccessResponse } from '../../utils/api-response';
 
 const router = Router();
@@ -62,6 +63,13 @@ router.use(
   authenticate(),
   requireRole(vendorRoles),
   mediaVendorRoutes,
+);
+
+router.use(
+  '/me/notifications',
+  authenticate(),
+  requireRole(vendorRoles),
+  vendorNotificationRoutes,
 );
 
 router.get('/', (_req, res) => {

@@ -14,10 +14,16 @@ import { authenticateDeliveryAgent } from '../middlewares/delivery-agent-auth.mi
 import {
   agentArrivedAtStoreController,
   agentPickedUpController,
+  agentEnRouteToCustomerController,
+  agentArrivedAtCustomerController,
+  agentDeliveredController,
+  agentFailedController,
 } from '../controllers/delivery-assignment.controller';
 import {
   assignmentParamSchema,
   pickedUpBodySchema,
+  deliveredBodySchema,
+  failedBodySchema,
 } from '../validators/delivery-assignment.validators';
 
 
@@ -83,6 +89,46 @@ router.post(
   authenticateDeliveryAgent(),
   validateRequest({ params: assignmentParamSchema, body: pickedUpBodySchema }),
   agentPickedUpController,
+);
+
+// ---------------------------------------------------------------------------
+// POST /assignments/:assignmentId/en-route-to-customer — Mark en-route to customer.
+// ---------------------------------------------------------------------------
+router.post(
+  '/assignments/:assignmentId/en-route-to-customer',
+  authenticateDeliveryAgent(),
+  validateRequest({ params: assignmentParamSchema }),
+  agentEnRouteToCustomerController,
+);
+
+// ---------------------------------------------------------------------------
+// POST /assignments/:assignmentId/arrived-at-customer — Mark arrived at customer.
+// ---------------------------------------------------------------------------
+router.post(
+  '/assignments/:assignmentId/arrived-at-customer',
+  authenticateDeliveryAgent(),
+  validateRequest({ params: assignmentParamSchema }),
+  agentArrivedAtCustomerController,
+);
+
+// ---------------------------------------------------------------------------
+// POST /assignments/:assignmentId/delivered — Mark assignment as delivered.
+// ---------------------------------------------------------------------------
+router.post(
+  '/assignments/:assignmentId/delivered',
+  authenticateDeliveryAgent(),
+  validateRequest({ params: assignmentParamSchema, body: deliveredBodySchema }),
+  agentDeliveredController,
+);
+
+// ---------------------------------------------------------------------------
+// POST /assignments/:assignmentId/failed — Mark assignment as failed.
+// ---------------------------------------------------------------------------
+router.post(
+  '/assignments/:assignmentId/failed',
+  authenticateDeliveryAgent(),
+  validateRequest({ params: assignmentParamSchema, body: failedBodySchema }),
+  agentFailedController,
 );
 
 

@@ -22,6 +22,8 @@ export type MainStackParamList = {
   Checkout: undefined;
   OrderSuccess: { orderId: string };
   OrderDetail: { orderId: string };
+  DeliveryTracking: { orderId: string };
+  NotificationCenter: undefined;
   OrderHistory: undefined;
   Catalog: NavigatorScreenParams<CatalogStackParamList> | undefined;
   Debug: undefined;

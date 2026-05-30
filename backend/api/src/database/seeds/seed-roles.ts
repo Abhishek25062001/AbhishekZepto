@@ -19,6 +19,14 @@ export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
         AUTH_PERMISSION_RESOURCE.CUSTOMER,
         AUTH_PERMISSION_ACTION.READ_SELF,
       ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.UPDATE_SELF,
+      ),
     ],
   },
   {
@@ -28,6 +36,14 @@ export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
       createPermissionCode(
         AUTH_PERMISSION_RESOURCE.DELIVERY,
         AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.UPDATE_SELF,
       ),
     ],
   },
@@ -50,6 +66,14 @@ export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.READ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.UPDATE_SELF,
+      ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.SETTINGS, AUTH_PERMISSION_ACTION.MANAGE),
     ],
   },
@@ -72,6 +96,14 @@ export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.READ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.UPDATE_SELF,
+      ),
     ],
   },
   {
@@ -89,6 +121,14 @@ export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
       createPermissionCode(AUTH_PERMISSION_RESOURCE.STORE_PRODUCTS, AUTH_PERMISSION_ACTION.UPDATE),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.READ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.UPDATE_SELF,
+      ),
     ],
   },
   {
@@ -103,6 +143,15 @@ export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
       createPermissionCode(AUTH_PERMISSION_RESOURCE.DELIVERY, AUTH_PERMISSION_ACTION.READ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.READ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.SUPPORT, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.PUSH_NOTIFICATIONS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.UPDATE_SELF,
+      ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.SETTINGS, AUTH_PERMISSION_ACTION.READ),
     ],
   },
@@ -153,6 +202,15 @@ export const systemRoleSeedMatrix: UpsertSystemRoleInput[] = [
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPLOAD),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.UPDATE),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.MEDIA, AUTH_PERMISSION_ACTION.DELETE),
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.PUSH_NOTIFICATIONS, AUTH_PERMISSION_ACTION.READ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.READ_SELF,
+      ),
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.NOTIFICATIONS,
+        AUTH_PERMISSION_ACTION.UPDATE_SELF,
+      ),
       createPermissionCode(AUTH_PERMISSION_RESOURCE.SETTINGS, AUTH_PERMISSION_ACTION.MANAGE),
     ],
   },

@@ -1,0 +1,32 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-realtime-control-tower-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/types/api.types.ts",
+    "src/modules/orders/types/**/*.ts",
+    "src/modules/orders/utils/admin-orders-query.util.ts",
+    "src/modules/realtime-control-tower/types/**/*.ts",
+    "src/modules/realtime-control-tower/store/**/*.ts",
+    "src/modules/realtime-control-tower/utils/admin-realtime-connection-banner.util.ts",
+    "src/modules/realtime-control-tower/utils/admin-realtime-event-handler.util.ts",
+    "src/modules/realtime-control-tower/utils/admin-realtime-event.mapper.ts",
+    "src/modules/realtime-control-tower/utils/admin-realtime-stale-event.util.ts",
+    "src/modules/realtime-control-tower/utils/control-tower-metrics.util.ts",
+    "src/modules/realtime-control-tower/utils/live-delivery-locations.util.ts",
+    "src/modules/realtime-control-tower/utils/live-orders.util.ts",
+    "src/modules/realtime-control-tower/utils/live-sla-breaches.util.ts",
+    "src/modules/realtime-control-tower/**/*.test.ts",
+    "src/modules/realtime-control-tower/**/*.test.tsx",
+    "src/tests/integration/admin-realtime-control-tower-flow.test.tsx",
+    "src/tests/integration/phase-7-admin-realtime.test.tsx"
+  ],
+  "exclude": ["src/modules/realtime-control-tower/pages/**/*.tsx"]
+}

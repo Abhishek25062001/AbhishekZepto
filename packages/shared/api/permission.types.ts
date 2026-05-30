@@ -14,6 +14,9 @@ export type PermissionResource =
   | 'payments'
   | 'finance'
   | 'support'
+  | 'push_notifications'
+  | 'notifications'
+  | 'realtime_control_tower'
   | 'settings';
 
 export type PermissionAction =
@@ -28,6 +31,8 @@ export type PermissionAction =
   | 'adjust'
   | 'bulk_update'
   | 'read_self'
-  | 'read_store';
+  | 'update_self'
+  | 'read_store'
+  | 'monitor';
 
 export type PermissionCode = `${PermissionResource}:${PermissionAction}` | '*:*';

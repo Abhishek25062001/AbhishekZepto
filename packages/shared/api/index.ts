@@ -15,6 +15,7 @@ export {
 } from './device-info';
 export type * from './permission.types';
 export type * from './tenant-scope.types';
+export type * from './notifications/in-app-notification.types';
 export type {
   DatabaseHealthStatus,
   HealthStatusResponse,

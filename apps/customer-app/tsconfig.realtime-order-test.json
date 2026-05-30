@@ -1,0 +1,23 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-realtime-order-test",
+    "noEmit": false,
+    "rootDir": "../..",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/realtime-order-experience/types/**/*.ts",
+    "src/modules/realtime-order-experience/store/**/*.ts",
+    "src/modules/realtime-order-experience/utils/**/*.ts",
+    "src/modules/realtime-order-experience/__tests__/**/*.ts",
+    "src/modules/realtime-order-experience/__tests__/**/*.tsx",
+    "src/tests/integration/customer-realtime-*.tsx",
+    "src/tests/integration/phase-7-customer-realtime.test.tsx",
+    "../../packages/shared/api/**/*.ts",
+    "../../packages/shared-ui/notifications/**/*.ts"
+  ]
+}

@@ -12,6 +12,7 @@ import {
   completeStoreOrderPackingController,
   completeStoreOrderPickingController,
   getStoreOrderController,
+  getVendorOrderDeliveryStatusController,
   listStoreOrdersController,
   markStoreOrderItemMissingController,
   markStoreOrderItemPickedController,
@@ -52,6 +53,13 @@ router.get(
   requirePermission(ordersRead),
   validateRequest({ params: orderIdParamValidator }),
   getStoreOrderController,
+);
+
+router.get(
+  '/:orderId/delivery-status',
+  requirePermission(ordersRead),
+  validateRequest({ params: orderIdParamValidator }),
+  getVendorOrderDeliveryStatusController,
 );
 
 router.post(

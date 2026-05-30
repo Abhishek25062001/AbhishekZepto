@@ -14,6 +14,9 @@ export const AUTH_PERMISSION_RESOURCE = {
   PAYMENTS: 'payments',
   FINANCE: 'finance',
   SUPPORT: 'support',
+  PUSH_NOTIFICATIONS: 'push_notifications',
+  NOTIFICATIONS: 'notifications',
+  REALTIME_CONTROL_TOWER: 'realtime_control_tower',
   SETTINGS: 'settings',
 } as const;
 
@@ -27,6 +30,7 @@ export const AUTH_PERMISSION_ACTION = {
   UPDATE_STATUS: 'update-status',
   MANAGE: 'manage',
   READ_SELF: 'read_self',
+  UPDATE_SELF: 'update_self',
   READ_STORE: 'read_store',
   BULK_UPDATE: 'bulk_update',
   ADJUST: 'adjust',

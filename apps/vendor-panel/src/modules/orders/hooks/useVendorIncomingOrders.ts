@@ -2,6 +2,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useSearchParams } from 'react-router-dom';
 
 import { getVendorOrders } from '../api/vendor-orders.api';
+import { useVendorRealtimeStore } from '../../realtime-store-operations/store/vendor-realtime.store';
 import type { VendorOrderListQuery } from '../types/vendor-orders.types';
 import { buildIncomingOrdersQuery } from '../utils/vendor-orders-query.util';
 
@@ -22,10 +23,12 @@ export const buildVendorIncomingOrdersQuery = (
 
 export function useVendorIncomingOrders() {
   const [searchParams] = useSearchParams();
+  const socketConnected = useVendorRealtimeStore((state) => state.socketConnected);
   const query = buildIncomingOrdersQuery(buildVendorIncomingOrdersQuery(searchParams));
 
   return useQuery({
     queryKey: ['vendor-incoming-orders', query],
     queryFn: () => getVendorOrders(query),
+    refetchInterval: socketConnected ? false : 10000,
   });
 }

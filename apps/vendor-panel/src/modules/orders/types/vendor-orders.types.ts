@@ -137,3 +137,20 @@ export type VendorOrderCancellationResponse = {
   cancelledAt: string | null;
   refundReviewRequired: boolean;
 };
+
+export type CustomerRiderProfileSnapshot = {
+  name: string;
+  phone: string;
+  vehicleType: string;
+  vehicleNumber: string | null;
+  profilePhotoUrl: string | null;
+};
+
+export type VendorDeliveryStatusResponse = {
+  deliveryId: string;
+  deliveryStatus: string;
+  assignedAt: string | null;
+  arrivedAtStoreAt: string | null;
+  pickedUpAt: string | null;
+  riderProfile: CustomerRiderProfileSnapshot | null;
+} | null;

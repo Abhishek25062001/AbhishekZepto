@@ -11,11 +11,13 @@ import { CheckoutScreen } from '../modules/checkout/screens/CheckoutScreen';
 import { OrderDetailScreen } from '../modules/orders/screens/OrderDetailScreen';
 import { OrderHistoryScreen } from '../modules/orders/screens/OrderHistoryScreen';
 import { OrderSuccessScreen } from '../modules/orders/screens/OrderSuccessScreen';
+import { DeliveryTrackingScreen } from '../modules/orders/screens/DeliveryTrackingScreen';
 import { CatalogWithCartBar } from '../modules/cart/components/CatalogWithCartBar';
 import { CustomerHomeScreen } from '../modules/home/screens/CustomerHomeScreen';
 import { DevHomeScreen } from '../screens/main/HomeScreen';
 import { ProfileScreen } from '../screens/main/ProfileScreen';
 import { SessionsScreen } from '../screens/main/SessionsScreen';
+import { NotificationCenterScreen } from '../modules/notification-center/screens/NotificationCenterScreen';
 import type { MainStackParamList } from './navigation.types';
 
 const Stack = createNativeStackNavigator<MainStackParamList>();
@@ -66,9 +68,19 @@ export function MainNavigator() {
         options={{ title: 'Order details' }}
       />
       <Stack.Screen
+        name="DeliveryTracking"
+        component={DeliveryTrackingScreen}
+        options={{ title: 'Track Delivery' }}
+      />
+      <Stack.Screen
         name="OrderHistory"
         component={OrderHistoryScreen}
         options={{ title: 'My orders' }}
+      />
+      <Stack.Screen
+        name="NotificationCenter"
+        component={NotificationCenterScreen}
+        options={{ title: 'Notifications' }}
       />
       <Stack.Screen
         name="Catalog"

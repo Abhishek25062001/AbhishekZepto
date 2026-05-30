@@ -4,9 +4,11 @@ export type OrderStatus =
   | 'picking'
   | 'packing'
   | 'ready_for_pickup'
-  | 'shipped_placeholder'
-  | 'delivered_placeholder'
+  | 'shipped'
+  | 'delivered'
+  | 'failed'
   | 'cancelled';
+
 
 export type OrderPaymentStatus = 'paid';
 
@@ -142,3 +144,25 @@ export type OrderSuccessScreenParams = {
 export type OrderDetailScreenParams = {
   orderId: string;
 };
+
+export type CustomerRiderProfileSnapshot = {
+  name: string;
+  phone: string;
+  vehicleType: string;
+  vehicleNumber: string | null;
+  profilePhotoUrl: string | null;
+};
+
+export type CustomerDeliveryTrackingResponse = {
+  deliveryId: string;
+  deliveryStatus: string;
+  assignedAt: string | null;
+  pickedUpAt: string | null;
+  enRouteToCustomerAt: string | null;
+  arrivedAtCustomerAt: string | null;
+  completedAt: string | null;
+  deliveredAt: string | null;
+  failedAt: string | null;
+  riderProfile: CustomerRiderProfileSnapshot | null;
+} | null;
+

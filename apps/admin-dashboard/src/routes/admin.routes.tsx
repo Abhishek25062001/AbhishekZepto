@@ -8,9 +8,12 @@ import { DashboardPage } from '../pages/dashboard/DashboardPage';
 import { AuthSmokeTestPage } from '../pages/debug/AuthSmokeTestPage';
 import { DebugPage } from '../pages/debug/DebugPage';
 import { DeliveryAgentsPage } from '../pages/delivery-agents/DeliveryAgentsPage';
+import { DeliveriesPage } from '../pages/deliveries/DeliveriesPage';
+import { DeliveryDetailPage } from '../pages/deliveries/DeliveryDetailPage';
 import { FinancePage } from '../pages/finance/FinancePage';
 import { OrdersPage } from '../pages/orders/OrdersPage';
 import { AdminOrderDetailPage } from '../modules/orders/pages/AdminOrderDetailPage';
+import { RealtimeControlTowerPage } from '../modules/realtime-control-tower/pages/RealtimeControlTowerPage';
 import { catalogRoutes } from './catalog.routes';
 import { inventoryRoutes } from './inventory.routes';
 import { storeRoutes } from './store.routes';
@@ -22,6 +25,7 @@ import { SupportPage } from '../pages/support/SupportPage';
 import { UsersPage } from '../pages/users/UsersPage';
 import { isDevelopment } from '../config/env';
 import { ProtectedRoute } from './ProtectedRoute';
+import { NotificationCenterPage } from '../modules/notification-center/pages/NotificationCenterPage';
 
 export const adminRoutes = [
   {
@@ -48,6 +52,14 @@ export const adminRoutes = [
         element: (
           <CanAccess fallback={<Navigate to="/orders" replace />} permission="auth:read">
             <DashboardPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/notifications',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="notifications:read_self">
+            <NotificationCenterPage />
           </CanAccess>
         ),
       },
@@ -98,6 +110,34 @@ export const adminRoutes = [
         element: (
           <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="delivery:read">
             <DeliveryAgentsPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/realtime-control-tower',
+        element: (
+          <CanAccess
+            fallback={<Navigate to="/dashboard" replace />}
+            permission="realtime_control_tower:read"
+          >
+            <RealtimeControlTowerPage />
+          </CanAccess>
+        ),
+      },
+      // Module 15 — Admin Delivery Operations
+      {
+        path: '/deliveries',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="delivery:monitor">
+            <DeliveriesPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/deliveries/:deliveryId',
+        element: (
+          <CanAccess fallback={<Navigate to="/deliveries" replace />} permission="delivery:read">
+            <DeliveryDetailPage />
           </CanAccess>
         ),
       },

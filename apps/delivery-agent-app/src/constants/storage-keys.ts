@@ -4,6 +4,8 @@ export const DELIVERY_AGENT_ID = 'delivery_agent_id';
 export const DELIVERY_CITY_ID = 'delivery_city_id';
 export const DELIVERY_ROLE = 'delivery_role';
 export const DELIVERY_PERMISSIONS = 'delivery_permissions';
+export const DELIVERY_PUSH_DEVICE_ID = 'delivery_push_device_id';
+export const DELIVERY_LAST_BACKGROUND_PUSH_PAYLOAD = 'delivery_last_background_push_payload';
 
 export const DELIVERY_AUTH_STORAGE_KEYS = [
   DELIVERY_ACCESS_TOKEN,

@@ -1,4 +1,5 @@
 import type { Document, Model, Types } from 'mongoose';
+import type { DeliverySlaStatus, DeliverySlaStage } from '../constants/delivery-sla.constant';
 
 // ---------------------------------------------------------------------------
 // Enums & Types
@@ -44,10 +45,22 @@ export interface IDeliveryAssignmentBase {
   assignedAt: Date | null;
   arrivedAtStoreAt: Date | null;
   pickedUpAt: Date | null;
+  enRouteToCustomerAt: Date | null;
+  arrivedAtCustomerAt: Date | null;
   completedAt: Date | null;
+  deliveredAt: Date | null;
+  failedAt: Date | null;
+  failureReason: string | null;
   cancelledAt: Date | null;
   cancellationReason: string | null;
   timeline: IDeliveryTimelineEvent[];
+  slaStatus: DeliverySlaStatus;
+  slaBreachedStage: DeliverySlaStage | null;
+  slaAssignmentDeadline: Date | null;
+  slaPickupDeadline: Date | null;
+  slaDropDeadline: Date | null;
+  slaTotalDeadline: Date | null;
+  slaBreachedAt: Date | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -85,7 +98,12 @@ export interface DeliveryAssignmentResponse {
   assignedAt: string | null;
   arrivedAtStoreAt: string | null;
   pickedUpAt: string | null;
+  enRouteToCustomerAt: string | null;
+  arrivedAtCustomerAt: string | null;
   completedAt: string | null;
+  deliveredAt: string | null;
+  failedAt: string | null;
+  failureReason: string | null;
   cancelledAt: string | null;
   cancellationReason: string | null;
   timeline: Array<{
@@ -104,5 +122,77 @@ export interface IPickupVerificationData {
   verificationMethod?: 'otp' | 'barcode' | 'manual';
   verificationValue?: string;
   notes?: string;
+}
+
+// ---------------------------------------------------------------------------
+// Module 15 — Admin Delivery Operations Types
+// ---------------------------------------------------------------------------
+
+/**
+ * Projected list item returned by GET /api/v1/admin/deliveries.
+ * Omits bulky fields (full timeline, customer data) for performance.
+ */
+export interface AdminDeliveryListItem {
+  deliveryId: string;
+  orderId: string;
+  storeId: string;
+  cityId: string;
+  deliveryAgentId: string | null;
+  deliveryStatus: DeliveryStatus;
+  assignedAt: string | null;
+  pickedUpAt: string | null;
+  completedAt: string | null;
+  cancelledAt: string | null;
+  slaStatus: DeliverySlaStatus;
+  slaBreachedStage: DeliverySlaStage | null;
+  createdAt: string;
+}
+
+/**
+ * Query filters and pagination for GET /api/v1/admin/deliveries.
+ */
+export interface AdminDeliveryListQuery {
+  status?: DeliveryStatus;
+  agentId?: string;
+  storeId?: string;
+  cityId?: string;
+  slaStatus?: DeliverySlaStatus;
+  page: number;
+  limit: number;
+}
+
+/**
+ * Request body for POST /api/v1/admin/deliveries/:deliveryId/override.
+ * Admin may only override to 'cancelled' or 'failed'.
+ */
+export interface AdminDeliveryOverrideBody {
+  targetStatus: 'cancelled' | 'failed';
+  reason: string;
+}
+
+/**
+ * Agent snapshot embedded in admin delivery detail response.
+ */
+export interface AdminAgentSnapshot {
+  name: string;
+  phone: string;
+  vehicleType: string;
+  vehicleNumber: string | null;
+  profilePhotoUrl: string | null;
+}
+
+/**
+ * Full delivery detail response for GET /api/v1/admin/deliveries/:deliveryId.
+ * Extends the base DeliveryAssignmentResponse with an agent snapshot.
+ */
+export interface AdminDeliveryDetailResponse extends DeliveryAssignmentResponse {
+  agentSnapshot: AdminAgentSnapshot | null;
+  slaStatus: DeliverySlaStatus;
+  slaBreachedStage: DeliverySlaStage | null;
+  slaBreachedAt: string | null;
+  slaAssignmentDeadline: string | null;
+  slaPickupDeadline: string | null;
+  slaDropDeadline: string | null;
+  slaTotalDeadline: string | null;
 }
 

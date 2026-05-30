@@ -2,6 +2,7 @@ import type { ApiPaginationMeta, ApiSuccessResponse } from '../../../types/api.t
 import { apiClient } from '../../../services/api/client';
 import type {
   CancelOrderInput,
+  CustomerDeliveryTrackingResponse,
   OrderDetail,
   OrderListItem,
   OrderListQuery,
@@ -67,6 +68,15 @@ export const cancelCustomerOrder = async (
   const response = await apiClient.post<ApiSuccessResponse<OrderDetail>>(
     `${BASE}/${orderId}/cancel`,
     input,
+  );
+  return unwrapData(response.data);
+};
+
+export const getCustomerOrderDelivery = async (
+  orderId: string,
+): Promise<CustomerDeliveryTrackingResponse> => {
+  const response = await apiClient.get<ApiSuccessResponse<CustomerDeliveryTrackingResponse>>(
+    `${BASE}/${orderId}/delivery`,
   );
   return unwrapData(response.data);
 };

@@ -1,0 +1,24 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-push-notifications-test",
+    "noEmit": false,
+    "rootDir": "../..",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/push-notifications/types/**/*.ts",
+    "src/modules/push-notifications/store/**/*.ts",
+    "src/modules/push-notifications/utils/**/*.ts",
+    "src/modules/push-notifications/services/customer-device-token.api.ts",
+    "src/modules/push-notifications/__tests__/**/*.ts",
+    "src/tests/integration/customer-push-registration.test.tsx",
+    "src/services/api/client.ts",
+    "src/store/auth.store.ts",
+    "src/types/**/*.ts",
+    "src/config/env.ts",
+    "../../packages/shared/api/**/*.ts"
+  ]
+}

@@ -13,6 +13,10 @@ import {
   runDispatchEngineForAgent,
   markArrivedAtStore,
   markPickedUp,
+  markEnRouteToCustomer,
+  markArrivedAtCustomer,
+  markDelivered,
+  markFailed,
 } from './delivery-assignment.service';
 
 import * as notificationModule from './delivery-notification.service';
@@ -35,7 +39,10 @@ const makeDeliveryDoc = (overrides: Partial<IDeliveryAssignmentDocument> = {}): 
   deliveryAgentId: null,
   deliveryStatus: 'pending_assignment',
   assignedAt: null,
+  arrivedAtStoreAt: null,
   pickedUpAt: null,
+  enRouteToCustomerAt: null,
+  arrivedAtCustomerAt: null,
   completedAt: null,
   cancelledAt: null,
   cancellationReason: null,
@@ -520,3 +527,417 @@ test('markPickedUp throws 409 when preceding state is invalid', async () => {
   }
 });
 
+// ---------------------------------------------------------------------------
+// markEnRouteToCustomer tests
+// ---------------------------------------------------------------------------
+
+test('markEnRouteToCustomer transitions status to en_route_to_customer successfully', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+    updateDeliveryAssignmentStatus: typeof repositoryModule.updateDeliveryAssignmentStatus;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+  const originalUpdate = repositoryModule.updateDeliveryAssignmentStatus;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'picked_up',
+    });
+    const updatedDelivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'en_route_to_customer',
+      enRouteToCustomerAt: new Date(),
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+    repo.updateDeliveryAssignmentStatus = async () => updatedDelivery;
+
+    const result = await markEnRouteToCustomer(deliveryId, agentId);
+    assert.equal(result.deliveryStatus, 'en_route_to_customer');
+    assert.ok(result.enRouteToCustomerAt);
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+    repo.updateDeliveryAssignmentStatus = originalUpdate;
+  }
+});
+
+test('markEnRouteToCustomer throws 404 when assignment not found', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    repo.findDeliveryAssignmentById = async () => null;
+
+    await assert.rejects(
+      markEnRouteToCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_ASSIGNMENT_NOT_FOUND');
+        assert.equal(err.statusCode, 404);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markEnRouteToCustomer throws 403 when agent is not the assigned agent', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    const otherAgentId = new Types.ObjectId();
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: otherAgentId,
+      deliveryStatus: 'picked_up',
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+
+    await assert.rejects(
+      markEnRouteToCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_AGENT_NOT_ASSIGNED_TO_ORDER');
+        assert.equal(err.statusCode, 403);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markEnRouteToCustomer throws 409 when delivery is in a terminal state', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'delivered',
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+
+    await assert.rejects(
+      markEnRouteToCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_ALREADY_COMPLETED');
+        assert.equal(err.statusCode, 409);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markEnRouteToCustomer throws 409 when preceding state is invalid', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'arrived_at_store', // should be picked_up
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+
+    await assert.rejects(
+      markEnRouteToCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_INVALID_STATE_TRANSITION');
+        assert.equal(err.statusCode, 409);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+// ---------------------------------------------------------------------------
+// markArrivedAtCustomer tests
+// ---------------------------------------------------------------------------
+
+test('markArrivedAtCustomer transitions status to arrived_at_customer successfully', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+    updateDeliveryAssignmentStatus: typeof repositoryModule.updateDeliveryAssignmentStatus;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+  const originalUpdate = repositoryModule.updateDeliveryAssignmentStatus;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'en_route_to_customer',
+      enRouteToCustomerAt: new Date(),
+    });
+    const updatedDelivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'arrived_at_customer',
+      enRouteToCustomerAt: new Date(),
+      arrivedAtCustomerAt: new Date(),
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+    repo.updateDeliveryAssignmentStatus = async () => updatedDelivery;
+
+    const result = await markArrivedAtCustomer(deliveryId, agentId);
+    assert.equal(result.deliveryStatus, 'arrived_at_customer');
+    assert.ok(result.arrivedAtCustomerAt);
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+    repo.updateDeliveryAssignmentStatus = originalUpdate;
+  }
+});
+
+test('markArrivedAtCustomer throws 404 when assignment not found', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    repo.findDeliveryAssignmentById = async () => null;
+
+    await assert.rejects(
+      markArrivedAtCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_ASSIGNMENT_NOT_FOUND');
+        assert.equal(err.statusCode, 404);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markArrivedAtCustomer throws 403 when agent is not the assigned agent', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    const otherAgentId = new Types.ObjectId();
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: otherAgentId,
+      deliveryStatus: 'en_route_to_customer',
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+
+    await assert.rejects(
+      markArrivedAtCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_AGENT_NOT_ASSIGNED_TO_ORDER');
+        assert.equal(err.statusCode, 403);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markArrivedAtCustomer throws 409 when delivery is in a terminal state', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'failed',
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+
+    await assert.rejects(
+      markArrivedAtCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_ALREADY_COMPLETED');
+        assert.equal(err.statusCode, 409);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markArrivedAtCustomer throws 409 when preceding state is invalid', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'picked_up', // should be en_route_to_customer
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+
+    await assert.rejects(
+      markArrivedAtCustomer(deliveryId, agentId),
+      (err: any) => {
+        assert.equal(err.errorCode, 'DELIVERY_INVALID_STATE_TRANSITION');
+        assert.equal(err.statusCode, 409);
+        return true;
+      }
+    );
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markDelivered transitions status to delivered successfully and updates order', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+    updateDeliveryAssignmentStatus: typeof repositoryModule.updateDeliveryAssignmentStatus;
+  };
+  const orderRepo = orderRepositoryModule as unknown as {
+    transitionOrderById: typeof orderRepositoryModule.transitionOrderById;
+  };
+
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+  const originalUpdate = repositoryModule.updateDeliveryAssignmentStatus;
+  const originalTransition = orderRepositoryModule.transitionOrderById;
+
+  const originalUpdateOneAgent = DeliveryAgentModel.updateOne;
+
+  let agentReleased = false;
+  let orderTransitioned = false;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'arrived_at_customer',
+    });
+
+    repo.findDeliveryAssignmentById = async () => delivery;
+    repo.updateDeliveryAssignmentStatus = async (_id: any, status: any, extra: any, timeline: any) => {
+      assert.equal(status, 'delivered');
+      assert.ok(extra.completedAt);
+      assert.ok(extra.deliveredAt);
+      assert.equal(timeline.toStatus, 'delivered');
+      return { ...delivery, deliveryStatus: 'delivered', ...extra } as any;
+    };
+
+    orderRepo.transitionOrderById = async (id: any, payload: any, timeline: any) => {
+      assert.equal(id, orderId.toString());
+      assert.equal(payload.orderStatus, 'delivered');
+      assert.equal(timeline.toStatus, 'delivered');
+      orderTransitioned = true;
+      return { _id: orderId } as any;
+    };
+
+    DeliveryAgentModel.updateOne = (async (filter: any, update: any) => {
+      assert.equal(filter._id.toString(), agentId.toString());
+      assert.equal(update.$set.currentAssignmentId, null);
+      agentReleased = true;
+      return { acknowledged: true } as any;
+    }) as any;
+
+    const result = await markDelivered(deliveryId, agentId, { verificationMethod: 'otp' });
+    assert.ok(result);
+    assert.equal(result.deliveryStatus, 'delivered');
+    assert.ok(orderTransitioned);
+    assert.ok(agentReleased);
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+    repo.updateDeliveryAssignmentStatus = originalUpdate;
+    orderRepo.transitionOrderById = originalTransition;
+    DeliveryAgentModel.updateOne = originalUpdateOneAgent;
+  }
+});
+
+test('markDelivered is idempotent and returns existing delivered document', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+  };
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'delivered',
+    });
+    repo.findDeliveryAssignmentById = async () => delivery;
+
+    const result = await markDelivered(deliveryId, agentId);
+    assert.ok(result);
+    assert.equal(result.deliveryStatus, 'delivered');
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+  }
+});
+
+test('markFailed transitions status to failed successfully and releases agent', async () => {
+  const repo = repositoryModule as unknown as {
+    findDeliveryAssignmentById: typeof repositoryModule.findDeliveryAssignmentById;
+    updateDeliveryAssignmentStatus: typeof repositoryModule.updateDeliveryAssignmentStatus;
+  };
+  const orderRepo = orderRepositoryModule as unknown as {
+    transitionOrderById: typeof orderRepositoryModule.transitionOrderById;
+  };
+
+  const originalFindById = repositoryModule.findDeliveryAssignmentById;
+  const originalUpdate = repositoryModule.updateDeliveryAssignmentStatus;
+  const originalTransition = orderRepositoryModule.transitionOrderById;
+
+  const originalUpdateOneAgent = DeliveryAgentModel.updateOne;
+
+  let agentReleased = false;
+  let orderTransitioned = false;
+
+  try {
+    const delivery = makeDeliveryDoc({
+      deliveryAgentId: agentId,
+      deliveryStatus: 'en_route_to_customer',
+    });
+
+    repo.findDeliveryAssignmentById = async () => delivery;
+    repo.updateDeliveryAssignmentStatus = async (_id: any, status: any, extra: any, timeline: any) => {
+      assert.equal(status, 'failed');
+      assert.ok(extra.failedAt);
+      assert.equal(extra.failureReason, 'Customer refused');
+      assert.equal(timeline.toStatus, 'failed');
+      return { ...delivery, deliveryStatus: 'failed', ...extra } as any;
+    };
+
+    orderRepo.transitionOrderById = async (id: any, payload: any, timeline: any) => {
+      assert.equal(id, orderId.toString());
+      assert.equal(payload.orderStatus, 'failed');
+      assert.equal(timeline.toStatus, 'failed');
+      orderTransitioned = true;
+      return { _id: orderId } as any;
+    };
+
+    DeliveryAgentModel.updateOne = (async (filter: any, update: any) => {
+      assert.equal(filter._id.toString(), agentId.toString());
+      assert.equal(update.$set.currentAssignmentId, null);
+      agentReleased = true;
+      return { acknowledged: true } as any;
+    }) as any;
+
+    const result = await markFailed(deliveryId, agentId, 'Customer refused');
+    assert.ok(result);
+    assert.equal(result.deliveryStatus, 'failed');
+    assert.ok(orderTransitioned);
+    assert.ok(agentReleased);
+  } finally {
+    repo.findDeliveryAssignmentById = originalFindById;
+    repo.updateDeliveryAssignmentStatus = originalUpdate;
+    orderRepo.transitionOrderById = originalTransition;
+    DeliveryAgentModel.updateOne = originalUpdateOneAgent;
+  }
+});

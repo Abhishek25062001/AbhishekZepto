@@ -10,6 +10,11 @@ const navigationLinks: NavLink[] = [
   { label: 'Users', to: '/users', permission: 'users:read' },
   { label: 'Orders', to: '/orders', permission: 'orders:read' },
   { label: 'Delivery Agents', to: '/delivery-agents', permission: 'delivery:read' },
+  {
+    label: 'Realtime Control Tower',
+    to: '/realtime-control-tower',
+    permission: 'realtime_control_tower:read',
+  },
   { label: 'Finance', to: '/finance', permission: 'finance:read' },
   { label: 'Support', to: '/support', permission: 'support:read' },
   { label: 'Settings', to: '/settings', permission: 'settings:read' },

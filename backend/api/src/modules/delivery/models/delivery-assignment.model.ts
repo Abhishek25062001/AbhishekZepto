@@ -3,6 +3,11 @@ import type { SchemaOptions } from 'mongoose';
 import { baseSchemaOptions } from '../../../database/base-schema-options';
 import { COLLECTION_NAMES } from '../../../database/constants/collection-names.constants';
 import { DELIVERY_STATUS_VALUES } from '../constants/delivery-status.constant';
+import {
+  DELIVERY_SLA_STATUS,
+  DELIVERY_SLA_STATUS_VALUES,
+  DELIVERY_SLA_STAGE_VALUES,
+} from '../constants/delivery-sla.constant';
 import type { IDeliveryAssignmentDocument, IDeliveryAssignmentModel } from '../types/delivery-assignment.types';
 
 const DeliveryTimelineEventSchema = new Schema(
@@ -79,9 +84,30 @@ const DeliveryAssignmentSchema = new Schema<IDeliveryAssignmentDocument>(
       type: Date,
       default: null,
     },
+    enRouteToCustomerAt: {
+      type: Date,
+      default: null,
+    },
+    arrivedAtCustomerAt: {
+      type: Date,
+      default: null,
+    },
     completedAt: {
       type: Date,
       default: null,
+    },
+    deliveredAt: {
+      type: Date,
+      default: null,
+    },
+    failedAt: {
+      type: Date,
+      default: null,
+    },
+    failureReason: {
+      type: String,
+      default: null,
+      trim: true,
     },
     cancelledAt: {
       type: Date,
@@ -95,6 +121,37 @@ const DeliveryAssignmentSchema = new Schema<IDeliveryAssignmentDocument>(
       type: [DeliveryTimelineEventSchema],
       default: [],
     },
+    slaStatus: {
+      type: String,
+      enum: DELIVERY_SLA_STATUS_VALUES,
+      required: true,
+      default: DELIVERY_SLA_STATUS.NOT_STARTED,
+    },
+    slaBreachedStage: {
+      type: String,
+      enum: DELIVERY_SLA_STAGE_VALUES,
+      default: null,
+    },
+    slaAssignmentDeadline: {
+      type: Date,
+      default: null,
+    },
+    slaPickupDeadline: {
+      type: Date,
+      default: null,
+    },
+    slaDropDeadline: {
+      type: Date,
+      default: null,
+    },
+    slaTotalDeadline: {
+      type: Date,
+      default: null,
+    },
+    slaBreachedAt: {
+      type: Date,
+      default: null,
+    },
   },
   baseSchemaOptions as SchemaOptions<IDeliveryAssignmentDocument>,
 );
@@ -105,6 +162,9 @@ const DeliveryAssignmentSchema = new Schema<IDeliveryAssignmentDocument>(
 
 // Unique index on orderId
 DeliveryAssignmentSchema.index({ orderId: 1 }, { unique: true });
+
+// SLA evaluation query: find active deliveries needing evaluation
+DeliveryAssignmentSchema.index({ slaStatus: 1 }, { sparse: true });
 
 // Index for query by deliveryAgentId and status (finding active/past agent assignments)
 DeliveryAssignmentSchema.index({ deliveryAgentId: 1, deliveryStatus: 1 });

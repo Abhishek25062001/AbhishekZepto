@@ -47,6 +47,10 @@ export const AUDIT_EVENTS = {
   STORE_PRODUCT_BULK_VISIBILITY_UPDATED: 'store_product.bulk_visibility_updated',
   STORE_PRODUCT_VENDOR_PRICE_UPDATED: 'store_product.vendor_price_updated',
   STORE_PRODUCT_VENDOR_AVAILABILITY_UPDATED: 'store_product.vendor_availability_updated',
+  PUSH_DEVICE_TOKEN_REGISTERED: 'push.device_token_registered',
+  PUSH_DEVICE_TOKEN_REVOKED: 'push.device_token_revoked',
+  PUSH_NOTIFICATION_SENT: 'push.notification_sent',
+  PUSH_NOTIFICATION_FAILED: 'push.notification_failed',
 } as const;
 
 export type AuditEvent = (typeof AUDIT_EVENTS)[keyof typeof AUDIT_EVENTS];

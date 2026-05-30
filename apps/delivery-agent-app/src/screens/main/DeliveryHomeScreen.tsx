@@ -20,6 +20,11 @@ import {
   useDeliveryProfileQuery,
   useUpdateAvailabilityMutation,
 } from '../../hooks/useDeliveryStatus';
+import { AssignmentCancelledAlert } from '../../modules/realtime-operations/components/AssignmentCancelledAlert';
+import { DeliveryRealtimeConnectionBanner } from '../../modules/realtime-operations/components/DeliveryRealtimeConnectionBanner';
+import { NewAssignmentAlert } from '../../modules/realtime-operations/components/NewAssignmentAlert';
+import { useDeliveryAssignmentRoom } from '../../modules/realtime-operations/hooks/useDeliveryAssignmentRoom';
+import { NotificationBell } from '../../modules/notification-center/components/NotificationBell';
 import { colors, radius, spacing, typography } from '../../theme';
 
 export function DeliveryHomeScreen() {
@@ -37,6 +42,8 @@ export function DeliveryHomeScreen() {
 
   const storeStatus = useDeliveryStore((state) => state.availabilityStatus);
   const storeAssignmentId = useDeliveryStore((state) => state.currentAssignmentId);
+  const storeDeliveryStatus = useDeliveryStore((state) => state.currentDeliveryStatus);
+  useDeliveryAssignmentRoom(storeAssignmentId);
 
   const [showIncompleteModal, setShowIncompleteModal] = useState(false);
 
@@ -122,10 +129,15 @@ export function DeliveryHomeScreen() {
         <RNText style={[styles.baseText, styles.appTitle]}>
           ⚡ Zepto Delivery
         </RNText>
+        <NotificationBell onPress={() => navigation.navigate('NotificationCenter')} />
         <View style={[styles.badge, { backgroundColor: statusColor }]}>
           <RNText style={styles.badgeText}>{statusLabel}</RNText>
         </View>
       </View>
+
+      <DeliveryRealtimeConnectionBanner />
+      <NewAssignmentAlert />
+      <AssignmentCancelledAlert />
 
       {/* Elegant Interactive Availability Toggle */}
       <TouchableOpacity
@@ -181,7 +193,122 @@ export function DeliveryHomeScreen() {
         </View>
       </TouchableOpacity>
 
+      {/* Active Assignment Card — shown when an assignment is in progress */}
+      {storeAssignmentId && (
+        <View style={styles.assignmentCard}>
+          <RNText style={[styles.baseText, styles.cardHeader]}>
+            🚚 Active Assignment
+          </RNText>
+          <View style={styles.assignmentRow}>
+            <RNText style={[styles.baseText, styles.detailLabel]}>
+              Assignment ID
+            </RNText>
+            <RNText style={[styles.baseText, styles.detailValue]}>
+              {storeAssignmentId.slice(-8).toUpperCase()}
+            </RNText>
+          </View>
+          <View style={styles.assignmentRow}>
+            <RNText style={[styles.baseText, styles.detailLabel]}>Status</RNText>
+            <RNText style={[styles.baseText, styles.assignmentStatus]}>
+              {storeDeliveryStatus
+                ? storeDeliveryStatus.replace(/_/g, ' ').toUpperCase()
+                : 'UNKNOWN'}
+            </RNText>
+          </View>
+
+          {/* Context-sensitive action button */}
+          {storeDeliveryStatus === 'en_route_to_store' && (
+            <TouchableOpacity
+              style={styles.assignmentActionBtn}
+              onPress={() =>
+                navigation.navigate('StoreArrival', {
+                  assignmentId: storeAssignmentId,
+                })
+              }
+            >
+              <RNText style={styles.assignmentActionText}>
+                🏪 I've Arrived at Store →
+              </RNText>
+            </TouchableOpacity>
+          )}
+
+          {storeDeliveryStatus === 'arrived_at_store' && (
+            <TouchableOpacity
+              style={[styles.assignmentActionBtn, styles.assignmentActionBtnGreen]}
+              onPress={() =>
+                navigation.navigate('PickupConfirmation', {
+                  assignmentId: storeAssignmentId,
+                })
+              }
+            >
+              <RNText style={styles.assignmentActionText}>
+                📦 Confirm Package Pickup →
+              </RNText>
+            </TouchableOpacity>
+          )}
+
+          {storeDeliveryStatus === 'picked_up' && (
+            <TouchableOpacity
+              style={[styles.assignmentActionBtn, styles.assignmentActionBtnPurple]}
+              onPress={() =>
+                navigation.navigate('ActiveDelivery', {
+                  assignmentId: storeAssignmentId,
+                })
+              }
+            >
+              <RNText style={styles.assignmentActionText}>
+                🚴 Depart Store & Start Navigation →
+              </RNText>
+            </TouchableOpacity>
+          )}
+
+          {storeDeliveryStatus === 'en_route_to_customer' && (
+            <TouchableOpacity
+              style={[styles.assignmentActionBtn, styles.assignmentActionBtnPurple]}
+              onPress={() =>
+                navigation.navigate('ActiveDelivery', {
+                  assignmentId: storeAssignmentId,
+                })
+              }
+            >
+              <RNText style={styles.assignmentActionText}>
+                🚴 View Active Route Progress →
+              </RNText>
+            </TouchableOpacity>
+          )}
+
+          {storeDeliveryStatus === 'arrived_at_customer' && (
+            <TouchableOpacity
+              style={[styles.assignmentActionBtn, styles.assignmentActionBtnPurple]}
+              onPress={() =>
+                navigation.navigate('CustomerArrival', {
+                  assignmentId: storeAssignmentId,
+                })
+              }
+            >
+              <RNText style={styles.assignmentActionText}>
+                🏡 Confirm Handover →
+              </RNText>
+            </TouchableOpacity>
+          )}
+
+          {storeDeliveryStatus &&
+            storeDeliveryStatus !== 'en_route_to_store' &&
+            storeDeliveryStatus !== 'arrived_at_store' &&
+            storeDeliveryStatus !== 'picked_up' &&
+            storeDeliveryStatus !== 'en_route_to_customer' &&
+            storeDeliveryStatus !== 'arrived_at_customer' && (
+              <View style={styles.assignmentInfoRow}>
+                <RNText style={[styles.baseText, styles.assignmentInfoText]}>
+                  Delivery progress will be shown in the next screen.
+                </RNText>
+              </View>
+            )}
+        </View>
+      )}
+
       {/* Profile Summary & Completeness Card */}
+
       <View style={styles.profileCard}>
         <RNText style={[styles.baseText, styles.cardHeader]}>
           👤 Driver Profile Checklist
@@ -631,5 +758,61 @@ const styles = StyleSheet.create({
   },
   modalActionButtonWrapper: {
     width: '100%',
+  },
+  // Active Assignment Card (Module 7)
+  assignmentCard: {
+    backgroundColor: 'rgba(31, 41, 55, 0.9)',
+    borderColor: '#D97706',
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    marginBottom: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    shadowColor: '#D97706',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 8,
+  },
+  assignmentRow: {
+    alignItems: 'center',
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingVertical: spacing.xs,
+  },
+  assignmentStatus: {
+    color: '#F59E0B',
+    fontSize: typography.small,
+    fontWeight: '700',
+  },
+  assignmentActionBtn: {
+    alignItems: 'center',
+    backgroundColor: 'rgba(245, 158, 11, 0.15)',
+    borderColor: '#F59E0B',
+    borderRadius: radius.md,
+    borderWidth: 1,
+    marginTop: spacing.md,
+    paddingVertical: spacing.md,
+  },
+  assignmentActionBtnGreen: {
+    backgroundColor: 'rgba(34, 197, 94, 0.15)',
+    borderColor: '#22C55E',
+  },
+  assignmentActionBtnPurple: {
+    backgroundColor: 'rgba(139, 92, 246, 0.15)',
+    borderColor: '#8B5CF6',
+  },
+  assignmentActionText: {
+    color: '#FFFFFF',
+    fontSize: typography.body,
+    fontWeight: '700',
+  },
+  assignmentInfoRow: {
+    marginTop: spacing.sm,
+    paddingVertical: spacing.xs,
+  },
+  assignmentInfoText: {
+    color: 'rgba(180, 195, 220, 0.6)',
+    fontSize: typography.small,
+    textAlign: 'center',
   },
 });

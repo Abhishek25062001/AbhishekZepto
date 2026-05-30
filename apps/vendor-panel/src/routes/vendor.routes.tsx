@@ -20,6 +20,7 @@ import { VendorActiveOrdersPage } from '../modules/orders/pages/VendorActiveOrde
 import { VendorIncomingOrderDetailPage } from '../modules/orders/pages/VendorIncomingOrderDetailPage';
 import { VendorOrderHistoryDetailPage } from '../modules/orders/pages/VendorOrderHistoryDetailPage';
 import { VendorOrderHistoryPage } from '../modules/orders/pages/VendorOrderHistoryPage';
+import { NotificationCenterPage } from '../modules/notification-center/pages/NotificationCenterPage';
 
 export const vendorRoutes = [
   {
@@ -46,6 +47,14 @@ export const vendorRoutes = [
         element: (
           <CanAccess fallback={<Navigate to="/orders" replace />} permission="vendor:read_store">
             <DashboardPage />
+          </CanAccess>
+        ),
+      },
+      {
+        path: '/notifications',
+        element: (
+          <CanAccess fallback={<Navigate to="/dashboard" replace />} permission="notifications:read_self">
+            <NotificationCenterPage />
           </CanAccess>
         ),
       },

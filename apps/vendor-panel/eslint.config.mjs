@@ -11,6 +11,8 @@ export default [
       'dist-store-catalog-test/**',
       'dist-store-inventory-test/**',
       'dist-vendor-orders-test/**',
+      'dist-notifications-test/**',
+      'dist-realtime-store-operations-test/**',
     ],
   },
   js.configs.recommended,

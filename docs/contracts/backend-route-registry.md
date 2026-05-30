@@ -353,8 +353,6 @@ Contract: `docs/contracts/phase-6-delivery-agent-profile-api.md`
 | GET | `/api/v1/delivery/profile` | Delivery Agent | IMPLEMENTED |
 | PATCH | `/api/v1/delivery/profile` | Delivery Agent | IMPLEMENTED |
 
-**Auth note:** Placeholder auth via `x-agent-id` header. Real JWT auth deferred to Module 5/6.
-
 ### Admin Surface
 
 | Method | Path | Actor | Status |
@@ -375,8 +373,6 @@ Contract: `docs/contracts/phase-6-rider-availability-api.md`
 | PATCH | `/api/v1/delivery/availability` | Delivery Agent | IMPLEMENTED |
 | GET | `/api/v1/delivery/status` | Delivery Agent | IMPLEMENTED |
 
-**Auth note:** Placeholder auth via `x-agent-id` header. Real JWT auth deferred to Module 5/6.
-
 ## Phase 6 Module 4 — Delivery Assignment Backend
 
 The manual administrative dispatch and pending queue endpoints are **IMPLEMENTED** (Phase 6 Module 4, 2026-05-21).
@@ -389,3 +385,130 @@ Contract: `docs/contracts/phase-6-delivery-assignment-api.md`
 |--------|------|-------|--------|
 | GET | `/api/v1/admin/deliveries/pending` | Admin | IMPLEMENTED |
 | POST | `/api/v1/admin/deliveries/:deliveryId/dispatch` | Admin | IMPLEMENTED |
+
+## Phase 6 Modules 6, 8 & 11 — Rider Active Assignment Workflows
+
+The active assignment transition endpoints for riders are **IMPLEMENTED** (Phase 6, 2026-05-28).
+
+### Delivery Agent Surface
+
+| Method | Path | Actor | Action | Status |
+|--------|------|-------|--------|--------|
+| POST | `/api/v1/delivery/assignments/:assignmentId/arrived-at-store` | Delivery Agent | Arrived at store | IMPLEMENTED |
+| POST | `/api/v1/delivery/assignments/:assignmentId/picked-up` | Delivery Agent | Goods picked up | IMPLEMENTED |
+| POST | `/api/v1/delivery/assignments/:assignmentId/en-route-to-customer` | Delivery Agent | Started transit | IMPLEMENTED |
+| POST | `/api/v1/delivery/assignments/:assignmentId/arrived-at-customer` | Delivery Agent | Reached building | IMPLEMENTED |
+| POST | `/api/v1/delivery/assignments/:assignmentId/delivered` | Delivery Agent | OTP verification handover | IMPLEMENTED |
+| POST | `/api/v1/delivery/assignments/:assignmentId/failed` | Delivery Agent | Unreachable/failed delivery | IMPLEMENTED |
+
+## Phase 6 Module 15 — Admin Dashboard — Delivery Operations
+
+The admin delivery monitoring and override endpoints are **IMPLEMENTED** (Phase 6 Module 15, 2026-05-29).
+
+Contract: `docs/contracts/phase-6-admin-delivery-operations-api.md`
+
+### Admin Surface
+
+| Method | Path | Actor | Permission | Status |
+|--------|------|-------|------------|--------|
+| GET | `/api/v1/admin/deliveries` | Admin | `delivery:monitor` | IMPLEMENTED |
+| GET | `/api/v1/admin/deliveries/:deliveryId` | Admin | `delivery:read` | IMPLEMENTED |
+| POST | `/api/v1/admin/deliveries/:deliveryId/override` | Admin | `delivery:update` | IMPLEMENTED |
+
+## Phase 6 Module 16 — Delivery SLA & Escalation
+
+The internal delivery SLA evaluation endpoint is **IMPLEMENTED** (Phase 6 Module 16, 2026-05-29).
+
+Contract: `docs/contracts/phase-6-delivery-sla-api.md`
+
+### Internal Surface
+
+| Method | Path | Actor | Secret / Header | Status |
+|--------|------|-------|-----------------|--------|
+| POST | `/api/v1/internal/delivery-sla/evaluate` | Internal Scheduler / Job | `x-internal-secret` | IMPLEMENTED |
+
+## Phase 7 Module 1 — Real-Time Architecture Foundation
+
+No REST routes are added by Phase 7 Module 1. Socket.IO namespaces are registered on the backend HTTP server and documented separately.
+
+Contracts:
+- `docs/contracts/realtime-events-registry.md`
+- `docs/contracts/realtime-authentication.md`
+
+### Socket.IO Namespaces
+
+| Namespace | Actor | Status |
+|-----------|-------|--------|
+| `/customer` | Customer | IMPLEMENTED |
+| `/delivery` | Delivery Agent | IMPLEMENTED |
+| `/vendor` | Vendor / Store User | IMPLEMENTED |
+| `/admin` | Admin | IMPLEMENTED |
+
+## Phase 7 Module 10 — Push Notification Backend
+
+The push notification device-token and admin log endpoints are **IMPLEMENTED** (Phase 7 Module 10, 2026-05-30).
+
+Contract: `docs/contracts/push-notification-api.md`
+
+### Customer Surface
+
+| Method | Path | Actor | Status |
+|--------|------|-------|--------|
+| POST | `/api/v1/customer/me/device-token` | Customer | IMPLEMENTED |
+| DELETE | `/api/v1/customer/me/device-token/:deviceId` | Customer | IMPLEMENTED |
+
+### Delivery Agent Surface
+
+| Method | Path | Actor | Status |
+|--------|------|-------|--------|
+| POST | `/api/v1/delivery/me/device-token` | Delivery Agent | IMPLEMENTED |
+| DELETE | `/api/v1/delivery/me/device-token/:deviceId` | Delivery Agent | IMPLEMENTED |
+
+### Admin Surface
+
+| Method | Path | Actor | Permission | Status |
+|--------|------|-------|------------|--------|
+| GET | `/api/v1/admin/push-notifications/logs` | Admin | `push_notifications:read` | IMPLEMENTED |
+| GET | `/api/v1/admin/push-notifications/logs/:logId` | Admin | `push_notifications:read` | IMPLEMENTED |
+
+## Phase 7 Module 12 — In-App Notification Center
+
+The in-app notification center endpoints are **IMPLEMENTED** (Phase 7 Module 12, 2026-05-30).
+
+Contract: `docs/contracts/in-app-notification-center-api.md`
+
+### Customer Surface
+
+| Method | Path | Actor | Permission | Status |
+|--------|------|-------|------------|--------|
+| GET | `/api/v1/customer/me/notifications` | Customer | `notifications:read_self` | IMPLEMENTED |
+| GET | `/api/v1/customer/me/notifications/unread-count` | Customer | `notifications:read_self` | IMPLEMENTED |
+| PATCH | `/api/v1/customer/me/notifications/:notificationId/read` | Customer | `notifications:update_self` | IMPLEMENTED |
+| PATCH | `/api/v1/customer/me/notifications/read-all` | Customer | `notifications:update_self` | IMPLEMENTED |
+
+### Delivery Agent Surface
+
+| Method | Path | Actor | Permission | Status |
+|--------|------|-------|------------|--------|
+| GET | `/api/v1/delivery/me/notifications` | Delivery Agent | `notifications:read_self` | IMPLEMENTED |
+| GET | `/api/v1/delivery/me/notifications/unread-count` | Delivery Agent | `notifications:read_self` | IMPLEMENTED |
+| PATCH | `/api/v1/delivery/me/notifications/:notificationId/read` | Delivery Agent | `notifications:update_self` | IMPLEMENTED |
+| PATCH | `/api/v1/delivery/me/notifications/read-all` | Delivery Agent | `notifications:update_self` | IMPLEMENTED |
+
+### Vendor Surface
+
+| Method | Path | Actor | Permission | Status |
+|--------|------|-------|------------|--------|
+| GET | `/api/v1/vendor/me/notifications` | Vendor User | `notifications:read_self` | IMPLEMENTED |
+| GET | `/api/v1/vendor/me/notifications/unread-count` | Vendor User | `notifications:read_self` | IMPLEMENTED |
+| PATCH | `/api/v1/vendor/me/notifications/:notificationId/read` | Vendor User | `notifications:update_self` | IMPLEMENTED |
+| PATCH | `/api/v1/vendor/me/notifications/read-all` | Vendor User | `notifications:update_self` | IMPLEMENTED |
+
+### Admin Surface
+
+| Method | Path | Actor | Permission | Status |
+|--------|------|-------|------------|--------|
+| GET | `/api/v1/admin/me/notifications` | Admin | `notifications:read_self` | IMPLEMENTED |
+| GET | `/api/v1/admin/me/notifications/unread-count` | Admin | `notifications:read_self` | IMPLEMENTED |
+| PATCH | `/api/v1/admin/me/notifications/:notificationId/read` | Admin | `notifications:update_self` | IMPLEMENTED |
+| PATCH | `/api/v1/admin/me/notifications/read-all` | Admin | `notifications:update_self` | IMPLEMENTED |

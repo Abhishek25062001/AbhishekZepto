@@ -29,6 +29,15 @@
     "test:customer-orders": "npm run build && node --test dist/modules/orders/utils/order-number.util.test.js dist/modules/orders/utils/order-snapshot.util.test.js dist/modules/orders/services/order-inventory-adjustment.service.test.js dist/modules/orders/services/order-cancellation-inventory.service.test.js dist/modules/orders/services/order-notification-placeholder.service.test.js dist/modules/orders/services/order-sla.service.test.js dist/modules/orders/services/order-sla-marking.service.test.js dist/jobs/order-sla-evaluation.job.test.js dist/modules/orders/services/order.service.test.js dist/modules/payment/services/payment.service.test.js dist/modules/orders/routes/customer-order.routes.test.js dist/modules/orders/routes/admin-order.routes.test.js",
     "test:customer-profile": "npm run build && node --test dist/modules/profile/services/profile.service.test.js dist/modules/profile/routes/customer-profile.routes.test.js",
     "test:delivery-agents": "npm run build && node --test dist/modules/delivery/services/delivery-agent.service.test.js dist/modules/delivery/routes/delivery-agent.routes.test.js dist/modules/delivery/services/delivery-assignment.service.test.js dist/modules/delivery/routes/delivery-assignment.routes.test.js",
+    "test:realtime": "npm run build && node --test dist/modules/realtime/__tests__/socket-auth.middleware.test.js dist/modules/realtime/__tests__/socket-room.service.test.js dist/modules/realtime/__tests__/realtime-emitter.service.test.js dist/tests/integration/realtime-customer-tracking.test.js dist/tests/integration/realtime-delivery-assignment.test.js dist/tests/integration/realtime-admin-sla.test.js",
+    "test:realtime-order": "npm run build && node --test dist/modules/realtime-order-updates/__tests__/order-realtime-payload.mapper.test.js dist/modules/realtime-order-updates/__tests__/order-realtime-emitter.service.test.js dist/modules/realtime-order-updates/__tests__/order-realtime.subscriber.test.js dist/tests/integration/realtime-vendor-order-room.test.js dist/tests/integration/realtime-admin-order-room.test.js",
+    "test:realtime-delivery-tracking": "npm run build && node --test dist/modules/realtime-delivery-tracking/__tests__/delivery-tracking-payload.mapper.test.js dist/modules/realtime-delivery-tracking/__tests__/delivery-tracking-realtime-emitter.service.test.js dist/modules/realtime-delivery-tracking/__tests__/delivery-tracking-realtime.subscriber.test.js dist/tests/integration/realtime-delivery-tracking-customer.test.js dist/tests/integration/realtime-delivery-tracking-admin.test.js dist/tests/integration/realtime-delivery-tracking-permission.test.js",
+    "test:push-notifications": "npm run build && node --test dist/modules/push-notifications/__tests__/device-token.service.test.js dist/modules/push-notifications/__tests__/push-notification.service.test.js dist/modules/push-notifications/__tests__/push-notification.subscriber.test.js dist/modules/push-notifications/__tests__/device-token.routes.test.js dist/modules/push-notifications/__tests__/push-notification-admin.routes.test.js",
+    "test:in-app-notifications": "npm run build && node --test dist/modules/in-app-notifications/__tests__/in-app-notification.service.test.js dist/modules/in-app-notifications/__tests__/in-app-notification.routes.test.js",
+    "test": "node scripts/run-tests.mjs",
+    "test:socket": "npm run build && node --test dist/modules/realtime/__tests__/socket-server.service.test.js dist/modules/realtime/__tests__/socket-auth.middleware.test.js dist/modules/realtime/__tests__/socket-room-name.util.test.js dist/tests/integration/socket-server-connection.test.js dist/tests/integration/socket-namespace-access.test.js",
+    "test:internal-events": "npm run build && node --test dist/modules/internal-events/__tests__/internal-event-bus.service.test.js dist/modules/internal-events/__tests__/delivery-event.publisher.test.js dist/modules/internal-events/__tests__/realtime-event.subscriber.test.js dist/modules/internal-events/__tests__/notification-event.subscriber.test.js",
+    "test:phase-7": "npm run build && node --test dist/tests/integration/phase-7-socket-auth.test.js dist/tests/integration/phase-7-room-authorization.test.js dist/tests/integration/phase-7-internal-events.test.js dist/tests/integration/phase-7-realtime-order-updates.test.js dist/tests/integration/phase-7-realtime-delivery-tracking.test.js dist/tests/integration/phase-7-push-notification.test.js dist/tests/integration/phase-7-in-app-notifications.test.js dist/tests/integration/phase-7-realtime-reliability.test.js dist/tests/integration/phase-7-admin-realtime-health.test.js dist/tests/security/phase-7-realtime-security.test.js dist/tests/performance/phase-7-realtime-smoke.test.js",
     "test:phase-4": "npm run test:customer-addresses && npm run test:customer-home && npm run test:customer-cart && npm run test:customer-checkout && npm run test:customer-payment && npm run test:customer-orders && npm run test:customer-profile",
     "test:phase-5": "npm run test:customer-orders",
     "test:categories": "npm run build && node --test dist/modules/catalog/categories/services/category.service.test.js dist/modules/catalog/categories/controllers/category.controller.test.js",
@@ -47,6 +56,7 @@
     "seed:dry": "ts-node src/database/seeds/index.ts --dry-run"
   },
   "dependencies": {
+    "@socket.io/redis-adapter": "^8.3.0",
     "@types/multer": "^2.1.0",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
@@ -59,6 +69,8 @@
     "pino": "^9.6.0",
     "pino-http": "^10.4.0",
     "razorpay": "^2.9.6",
+    "socket.io": "^4.8.3",
+    "socket.io-client": "^4.8.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.1",
     "zod": "^3.24.1"

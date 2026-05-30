@@ -1,0 +1,10 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.NotificationListItem = void 0;
+const jsx_runtime_1 = require("react/jsx-runtime");
+const notification_icon_util_1 = require("../utils/notification-icon.util");
+const notification_message_util_1 = require("../utils/notification-message.util");
+const notification_priority_label_util_1 = require("../utils/notification-priority-label.util");
+const notification_time_util_1 = require("../utils/notification-time.util");
+const NotificationListItem = ({ notification, onClick, }) => ((0, jsx_runtime_1.jsx)("li", { "aria-label": notification.title, "data-read": notification.isRead, children: (0, jsx_runtime_1.jsxs)("button", { onClick: () => onClick?.(notification), type: "button", children: [(0, jsx_runtime_1.jsx)("span", { "aria-hidden": "true", children: (0, notification_icon_util_1.getNotificationIconName)(notification.notificationType) }), (0, jsx_runtime_1.jsx)("strong", { children: notification.title }), (0, jsx_runtime_1.jsx)("span", { children: (0, notification_message_util_1.truncateNotificationMessage)(notification.message) }), (0, jsx_runtime_1.jsx)("small", { children: (0, notification_priority_label_util_1.getNotificationPriorityLabel)(notification.priority) }), (0, jsx_runtime_1.jsx)("time", { dateTime: notification.createdAt, children: (0, notification_time_util_1.formatNotificationRelativeTime)(notification.createdAt) })] }) }));
+exports.NotificationListItem = NotificationListItem;

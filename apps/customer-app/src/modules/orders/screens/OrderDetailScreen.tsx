@@ -1,11 +1,19 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
-import { useRoute } from '@react-navigation/native';
+import { useRoute, useNavigation } from '@react-navigation/native';
 import type { RouteProp } from '@react-navigation/native';
+import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
 
-import { Loader, ScreenWrapper, Text } from '../../../components/common';
+import { Button, Loader, ScreenWrapper, Text } from '../../../components/common';
 import type { MainStackParamList } from '../../../app/navigation.types';
 import { spacing } from '../../../theme';
+import { RealtimeConnectionBanner } from '../../realtime-order-experience/components/RealtimeConnectionBanner';
+import { RealtimeOrderStatusToast } from '../../realtime-order-experience/components/RealtimeOrderStatusToast';
+import { useRealtimeOrderEvents } from '../../realtime-order-experience/hooks/useRealtimeOrderEvents';
+import { useRealtimeOrderRoom } from '../../realtime-order-experience/hooks/useRealtimeOrderRoom';
+import { useRealtimeOrderStore } from '../../realtime-order-experience/store/realtime-order.store';
+import { CUSTOMER_REALTIME_ORDER_STATUS } from '../../realtime-order-experience/types/realtime-order.types';
+import type { CustomerRealtimeOrderStatus } from '../../realtime-order-experience/types/realtime-order.types';
 import { OrderAddressSnapshot } from '../components/OrderAddressSnapshot';
 import { OrderCancelAction } from '../components/OrderCancelAction';
 import { OrderCancellationNotice } from '../components/OrderCancellationNotice';
@@ -16,14 +24,58 @@ import { OrderStatusSummary } from '../components/OrderStatusSummary';
 import { OrderTotalsBreakdown } from '../components/OrderTotalsBreakdown';
 import { useOrderDetail } from '../hooks/useOrderDetail';
 import { useOrderLifecycle } from '../hooks/useOrderLifecycle';
+import type { OrderStatus } from '../types/order.types';
 
 type OrderDetailRouteProp = RouteProp<MainStackParamList, 'OrderDetail'>;
 
+const mapRealtimeStatusToOrderStatus = (
+  status: CustomerRealtimeOrderStatus,
+): OrderStatus | null => {
+  switch (status) {
+    case CUSTOMER_REALTIME_ORDER_STATUS.CREATED:
+      return 'placed';
+    case CUSTOMER_REALTIME_ORDER_STATUS.ACCEPTED:
+      return 'accepted';
+    case CUSTOMER_REALTIME_ORDER_STATUS.PACKED:
+      return 'packing';
+    case CUSTOMER_REALTIME_ORDER_STATUS.READY_FOR_PICKUP:
+      return 'ready_for_pickup';
+    case CUSTOMER_REALTIME_ORDER_STATUS.OUT_FOR_DELIVERY:
+      return 'shipped';
+    case CUSTOMER_REALTIME_ORDER_STATUS.DELIVERED:
+      return 'delivered';
+    case CUSTOMER_REALTIME_ORDER_STATUS.CANCELLED:
+      return 'cancelled';
+    case CUSTOMER_REALTIME_ORDER_STATUS.FAILED:
+      return 'failed';
+    default:
+      return null;
+  }
+};
+
 export function OrderDetailScreen() {
   const route = useRoute<OrderDetailRouteProp>();
+  const navigation = useNavigation<NativeStackNavigationProp<MainStackParamList>>();
   const orderId = route.params.orderId;
+  useRealtimeOrderRoom(orderId);
+  useRealtimeOrderEvents();
   const { order, isLoading, isError, errorMessage, refetch } = useOrderDetail(orderId);
   const lifecycle = useOrderLifecycle(orderId);
+  const latestRealtimeOrderEvent = useRealtimeOrderStore((state) =>
+    [...state.realtimeOrderEvents]
+      .reverse()
+      .find((event) => event.orderId === orderId),
+  );
+  const displayOrder = useMemo(() => {
+    if (!order || !latestRealtimeOrderEvent) {
+      return order;
+    }
+
+    const orderStatus = mapRealtimeStatusToOrderStatus(
+      latestRealtimeOrderEvent.orderStatus,
+    );
+    return orderStatus ? { ...order, orderStatus } : order;
+  }, [latestRealtimeOrderEvent, order]);
 
   if (isLoading) {
     return (
@@ -33,7 +85,7 @@ export function OrderDetailScreen() {
     );
   }
 
-  if (isError || !order) {
+  if (isError || !displayOrder) {
     return (
       <ScreenWrapper>
         <OrderErrorState
@@ -50,23 +102,36 @@ export function OrderDetailScreen() {
     <ScreenWrapper scrollable={false}>
       <ScrollView contentContainerStyle={styles.content}>
         <View style={styles.header}>
-          <Text variant="h2">{order.orderNumber}</Text>
+          <Text variant="h2">{displayOrder.orderNumber}</Text>
           <Text color="secondary" variant="small">
-            Placed {new Date(order.placedAt).toLocaleString()}
+            Placed {new Date(displayOrder.placedAt).toLocaleString()}
           </Text>
         </View>
 
-        <OrderStatusSummary order={order} />
+        <RealtimeConnectionBanner />
 
-        <OrderCancellationNotice order={order} />
+        <RealtimeOrderStatusToast orderId={orderId} />
 
-        <OrderCancelAction order={order} />
+        <OrderStatusSummary order={displayOrder} />
 
-        <OrderAddressSnapshot address={order.addressSnapshot} />
+        {(displayOrder.orderStatus === 'shipped' ||
+          displayOrder.orderStatus === 'delivered') && (
+          <Button
+            title="⚡ Track Live Delivery"
+            variant="primary"
+            onPress={() => navigation.navigate('DeliveryTracking', { orderId })}
+          />
+        )}
+
+        <OrderCancellationNotice order={displayOrder} />
+
+        <OrderCancelAction order={displayOrder} />
+
+        <OrderAddressSnapshot address={displayOrder.addressSnapshot} />
 
         <View style={styles.section}>
           <Text variant="h3">Items</Text>
-          {order.items.map((item) => (
+          {displayOrder.items.map((item) => (
             <OrderLineItem
               key={`${item.productId}-${item.variantId}-${item.storeProductId}`}
               item={item}
@@ -75,11 +140,11 @@ export function OrderDetailScreen() {
         </View>
 
         <OrderTotalsBreakdown
-          deliveryFeeAmount={order.deliveryFeeAmount}
-          discountAmount={order.discountAmount}
-          grandTotal={order.grandTotal}
-          subtotal={order.subtotal}
-          taxAmount={order.taxAmount}
+          deliveryFeeAmount={displayOrder.deliveryFeeAmount}
+          discountAmount={displayOrder.discountAmount}
+          grandTotal={displayOrder.grandTotal}
+          subtotal={displayOrder.subtotal}
+          taxAmount={displayOrder.taxAmount}
         />
 
         <OrderLifecycleTimeline

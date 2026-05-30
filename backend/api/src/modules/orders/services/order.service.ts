@@ -34,6 +34,16 @@ import {
   initializeDeliveryForOrder,
   runDispatchEngineForOrder,
 } from '../../delivery/services/delivery-assignment.service';
+import {
+  publishOrderAccepted,
+  publishOrderCancelled,
+  publishOrderCreated,
+  publishOrderPacked,
+  publishOrderReadyForPickup,
+} from '../../internal-events/publishers/order-event.publisher';
+import { findDeliveryAssignmentByOrderId } from '../../delivery/repositories/delivery-assignment.repository';
+import { findDeliveryAgentById } from '../../delivery/repositories/delivery-agent.repository';
+
 import type {
   AdminOrderActorContext,
   AdminOrderDetailResponse,
@@ -41,6 +51,7 @@ import type {
   AdminOrderStatusUpdateInput,
   AdminOrderTimelineResponse,
   CancelOrderInput,
+  CustomerDeliveryTrackingResponse,
   CustomerOrderLifecycleResponse,
   CustomerOrderStateResponse,
   ListAdminOrdersQuery,
@@ -58,6 +69,7 @@ import type {
   StoreOrderAcceptanceResponse,
   StoreOrderActorContext,
   StoreOrderDetailResponse,
+  VendorDeliveryStatusResponse,
   StoreOrderItemPickingInput,
   StoreOrderListItemResponse,
   StoreOrderPackingResponse,
@@ -594,6 +606,8 @@ export const placeOrderFromPayment = async (
       throw orderCreationFailedError({ reason: 'order_not_found_after_create' });
     }
 
+    publishOrderCreated(finalized);
+
     await writeAuditLog({
       eventType: ORDER_AUDIT_EVENTS.PLACED,
       actorId: new Types.ObjectId(customerId),
@@ -690,6 +704,98 @@ export const getOrderLifecycleForCustomer = async (
   }
 
   return toCustomerOrderLifecycleResponse(order);
+};
+
+export const getOrderDeliveryForCustomer = async (
+  customerId: string,
+  orderId: string,
+): Promise<CustomerDeliveryTrackingResponse> => {
+  const order = await findOrderById(orderId);
+
+  if (!order) {
+    throw orderNotFoundError();
+  }
+
+  if (order.customerId.toString() !== customerId) {
+    throw orderAccessForbiddenError();
+  }
+
+  const assignment = await findDeliveryAssignmentByOrderId(orderId);
+
+  if (!assignment) {
+    return null;
+  }
+
+  let riderProfile = null;
+  if (assignment.deliveryAgentId) {
+    const agent = await findDeliveryAgentById(assignment.deliveryAgentId.toString());
+    if (agent) {
+      riderProfile = {
+        name: agent.name,
+        phone: agent.phone,
+        vehicleType: agent.vehicleType,
+        vehicleNumber: agent.vehicleNumber,
+        profilePhotoUrl: agent.profilePhotoUrl,
+      };
+    }
+  }
+
+  return {
+    deliveryId: assignment._id.toString(),
+    deliveryStatus: assignment.deliveryStatus,
+    assignedAt: assignment.assignedAt?.toISOString() ?? null,
+    pickedUpAt: assignment.pickedUpAt?.toISOString() ?? null,
+    enRouteToCustomerAt: assignment.enRouteToCustomerAt?.toISOString() ?? null,
+    arrivedAtCustomerAt: assignment.arrivedAtCustomerAt?.toISOString() ?? null,
+    completedAt: assignment.completedAt?.toISOString() ?? null,
+    deliveredAt: assignment.deliveredAt?.toISOString() ?? null,
+    failedAt: assignment.failedAt?.toISOString() ?? null,
+    riderProfile,
+  };
+};
+
+export const getOrderDeliveryForVendor = async (
+  storeId: string,
+  orderId: string,
+): Promise<VendorDeliveryStatusResponse> => {
+  const order = await findOrderById(orderId);
+
+  if (!order) {
+    throw orderNotFoundError();
+  }
+
+  if (order.storeId.toString() !== storeId) {
+    throw orderAccessForbiddenError();
+  }
+
+  const assignment = await findDeliveryAssignmentByOrderId(orderId);
+
+  if (!assignment) {
+    return null;
+  }
+
+  let riderProfile = null;
+  if (assignment.deliveryAgentId) {
+    const agent = await findDeliveryAgentById(assignment.deliveryAgentId.toString());
+    if (agent) {
+      riderProfile = {
+        name: agent.name,
+        phone: agent.phone,
+        vehicleType: agent.vehicleType,
+        vehicleNumber: agent.vehicleNumber,
+        profilePhotoUrl: agent.profilePhotoUrl,
+      };
+    }
+  }
+
+  return {
+    deliveryId: assignment._id.toString(),
+    deliveryStatus: assignment.deliveryStatus,
+    assignedAt: assignment.assignedAt?.toISOString() ?? null,
+    arrivedAtStoreAt: assignment.arrivedAtStoreAt?.toISOString() ?? null,
+    pickedUpAt: assignment.pickedUpAt?.toISOString() ?? null,
+    riderProfile,
+  };
 };
 
 export const listOrdersForCustomer = async (
@@ -968,6 +1074,7 @@ export const cancelCustomerOrder = async (
     order: updated,
     timelineEvent,
   });
+  publishOrderCancelled(updated);
 
   return toOrderDetailResponse(updated);
 };
@@ -1065,6 +1172,7 @@ export const cancelStoreOrder = async (
     order: updated,
     timelineEvent,
   });
+  publishOrderCancelled(updated);
 
   return toOrderDetailResponse(updated);
 };
@@ -1169,6 +1277,7 @@ export const cancelAdminOrder = async (
     order: updated,
     timelineEvent,
   });
+  publishOrderCancelled(updated);
 
   return toOrderDetailResponse(updated);
 };
@@ -1253,6 +1362,7 @@ export const acceptStoreOrder = async (
     order: updated,
     timelineEvent,
   });
+  publishOrderAccepted(updated);
 
   return toStoreOrderAcceptanceResponse(updated);
 };
@@ -1345,6 +1455,7 @@ export const rejectStoreOrder = async (
     order: updated,
     timelineEvent,
   });
+  publishOrderCancelled(updated);
 
   return toStoreOrderAcceptanceResponse(updated);
 };
@@ -1787,6 +1898,7 @@ export const completeStoreOrderPacking = async (
     order: updated,
     timelineEvent,
   });
+  publishOrderPacked(updated);
 
   return toStoreOrderPackingResponse(updated);
 };
@@ -1858,6 +1970,7 @@ export const markStoreOrderReadyForPickup = async (
     order: updated,
     timelineEvent,
   });
+  publishOrderReadyForPickup(updated);
 
   // Try to initialize delivery and run matching engine dispatch
   try {

@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { mongoObjectIdValidator } from '../../../validators/common.validators';
 import { ORDER_PAYMENT_STATUS_VALUES } from '../constants/order-payment-status.constant';
 import { ORDER_SLA_STAGE_VALUES, ORDER_SLA_STATUS_VALUES } from '../constants/order-sla.constant';
-import { ORDER_STATUS_VALUES } from '../constants/order-status.constant';
+import { ORDER_STATUS, ORDER_STATUS_VALUES } from '../constants/order-status.constant';
 import { ORDER_STORE_STATUS_VALUES } from '../constants/order-store-status.constant';
 
 export const placeOrderBodyValidator = z.object({
@@ -64,8 +64,15 @@ export const cancelOrderBodyValidator = z.object({
   reason: z.string().trim().min(1).max(500),
 });
 
+const ADMIN_ORDER_STATUS_UPDATE_VALUES = [
+  ORDER_STATUS.ACCEPTED,
+  ORDER_STATUS.PICKING,
+  ORDER_STATUS.PACKING,
+  ORDER_STATUS.READY_FOR_PICKUP,
+] as const;
+
 export const adminOrderStatusUpdateBodyValidator = z.object({
-  status: z.enum(ORDER_STATUS_VALUES),
+  status: z.enum(ADMIN_ORDER_STATUS_UPDATE_VALUES),
   reason: z.string().trim().min(1).max(500).optional(),
 });
 

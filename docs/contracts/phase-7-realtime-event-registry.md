@@ -97,9 +97,9 @@ Expected replay event types mirror socket events above and require common fields
 
 - `eventId`
 - `eventName`
+- `payload`
 - `orderId`
 - `assignmentId`
 - `updatedAt`
 
-Implementation status: the replay API and `realtime_event_logs` persistence are not implemented in the current backend source.
-
+Implementation status: customer replay and acknowledgement are implemented through `GET /api/v1/customer/realtime/missed-events`, `POST /api/v1/customer/realtime/events/:eventId/ack`, and the `realtime_event_logs` persistence collection.

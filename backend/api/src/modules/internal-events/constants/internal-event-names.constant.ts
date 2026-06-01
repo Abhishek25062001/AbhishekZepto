@@ -17,6 +17,9 @@ export const INTERNAL_EVENT_NAMES = {
   DELIVERY_FAILED: 'delivery.failed',
 
   DELIVERY_SLA_BREACH_CREATED: 'delivery.sla_breach_created',
+
+  ADMIN_ORDER_FORCE_CANCELLED: 'admin.order_force_cancelled',
+  ADMIN_FORCE_ASSIGNMENT_CREATED: 'admin.force_assignment_created',
 } as const;
 
 export const INTERNAL_EVENT_NAME_VALUES = Object.values(INTERNAL_EVENT_NAMES);

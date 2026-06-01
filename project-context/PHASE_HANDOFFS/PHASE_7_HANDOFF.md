@@ -2,7 +2,7 @@
 
 ## Status
 
-Started. Modules 1 through 13 and Module 15 are complete for implemented Phase 7 surfaces. Module 16 — Phase 7 Integration & Review is blocked by missing realtime reliability/admin health APIs.
+Complete. Modules 1 through 13, Module 15, and Module 16 are complete for Phase 7 realtime, notification, reliability, and integration review surfaces.
 
 ## Source
 
@@ -217,14 +217,16 @@ Module 11 introduces Mobile Push Notification Integration:
 | 11 | Mobile Push Notification Integration | DONE |
 | 12 | In-App Notification Center | DONE |
 | 13 | Notification UI Across Apps | DONE |
-| 15 | Phase 7 Testing & Validation | COMPLETE_WITH_BLOCKERS |
-| 16 | Phase 7 Integration & Review | BLOCKED |
+| 15 | Phase 7 Testing & Validation | COMPLETE |
+| 16 | Phase 7 Integration & Review | COMPLETE |
 
-## Module 16 Blocking Issues
+## Module 16 Reliability Closeout
 
-- `GET /api/v1/customer/realtime/missed-events` is missing from backend source and OpenAPI.
-- `POST /api/v1/customer/realtime/events/:eventId/ack` is missing from backend source and OpenAPI.
-- `GET /api/v1/admin/realtime/health` is missing from backend source and OpenAPI.
+- `GET /api/v1/customer/realtime/missed-events` is implemented in backend source and OpenAPI.
+- `POST /api/v1/customer/realtime/events/:eventId/ack` is implemented in backend source and OpenAPI.
+- `GET /api/v1/admin/realtime/health` is implemented in backend source and OpenAPI.
+- Customer missed-event replay persists the original emitted payload in `realtime_event_logs.payload`.
+- Admin realtime health is protected by `realtime_control_tower:read`.
 
 ## API Endpoints Added
 
@@ -252,6 +254,12 @@ Phase 7 modules so far also register Socket.IO namespaces on the backend HTTP se
 - `/delivery`
 - `/vendor`
 - `/admin`
+
+Module 16 adds realtime reliability and health REST endpoints:
+
+- `GET /api/v1/customer/realtime/missed-events`
+- `POST /api/v1/customer/realtime/events/:eventId/ack`
+- `GET /api/v1/admin/realtime/health`
 
 ## DB Collections & Fields Added
 
@@ -283,6 +291,16 @@ Phase 7 modules so far also register Socket.IO namespaces on the backend HTTP se
   - `failureReason`
   - `providerMessageId`
   - timestamps
+- `realtime_event_logs`
+  - `eventId`
+  - `eventName`
+  - `recipientUserId`
+  - `appSurface`
+  - `deliveryStatus`
+  - `payload`
+  - `emittedAt`
+  - `acknowledgedAt`
+  - `expiresAt`
 
 ## Permissions Added
 
@@ -304,6 +322,9 @@ Socket authentication reuses existing JWT, session, role, permission, and scope 
 - `npm run typecheck -w backend/api` — PASS
 - `npm run lint -w backend/api` — PASS
 - `npm run test:customer-orders -w backend/api` — PASS
+- `npm run test -w backend/api -- phase-7` — PASS
+- `npm run test -w backend/api -- realtime` — PASS
+- `npm run test -w backend/api -- integration` — PASS
 - `npm run test:socket -w backend/api` — PASS
 - `npm run test:internal-events -w backend/api` — PASS
 - `npm run test:realtime-order -w backend/api` — PASS
@@ -337,11 +358,13 @@ Socket authentication reuses existing JWT, session, role, permission, and scope 
   - `/delivery/me/device-token/{deviceId}`
   - `/admin/push-notifications/logs`
   - `/admin/push-notifications/logs/{logId}`
+  - `/customer/realtime/missed-events`
+  - `/customer/realtime/events/{eventId}/ack`
+  - `/admin/realtime/health`
 
 ## Risks & Blockers
 
 - Redis realtime adapter remains intentionally disabled behind `REALTIME_REDIS_ENABLED=false`.
-- In-app notification center and additional realtime client surfaces are deferred to later Phase 7 modules.
 - Live Firebase delivery smoke testing remains manual until real Firebase service account credentials are configured.
 - Live mobile push delivery requires replacing placeholder `google-services.json`
   files with real Firebase project app configs.
@@ -352,4 +375,4 @@ Socket authentication reuses existing JWT, session, role, permission, and scope 
 
 ## Notes
 
-Earlier phase dependencies are complete and verified through Phase 6. Phase 7 Module 12 is unblocked.
+Earlier phase dependencies are complete and verified through Phase 6. Phase 7 is unblocked and ready for Phase 8.

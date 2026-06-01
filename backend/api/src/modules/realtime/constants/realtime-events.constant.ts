@@ -14,6 +14,10 @@ export const REALTIME_EVENTS = {
   ADMIN_DELIVERY_ASSIGNMENT_CREATED: 'admin.delivery_assignment_created',
   ADMIN_DELIVERY_SLA_BREACH_CREATED: 'admin.delivery_sla_breach_created',
   ADMIN_DELIVERY_STATUS_CHANGED: 'admin.delivery_status_changed',
+  ADMIN_LIVE_ORDER_UPDATED: 'admin.live_order_updated',
+  ADMIN_AGENT_STATUS_CHANGED: 'admin.agent_status_changed',
+  ADMIN_STORE_OPERATIONAL_CHANGED: 'admin.store_operational_changed',
+  ADMIN_SLA_ESCALATION_CREATED: 'admin.sla_escalation_created',
   NOTIFICATION_CREATED: 'notification.created',
 
   CONNECTION_AUTHENTICATED: 'connection.authenticated',
@@ -28,6 +32,7 @@ export const REALTIME_NAMESPACE = {
   DELIVERY: '/delivery',
   VENDOR: '/vendor',
   ADMIN: '/admin',
+  ADMIN_CONTROL: '/admin-control',
 } as const;
 
 export type RealtimeNamespace =

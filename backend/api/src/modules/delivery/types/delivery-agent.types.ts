@@ -33,6 +33,9 @@ export interface IDeliveryAgentBase {
   vehicleType: VehicleType;
   vehicleNumber: string | null;
   availabilityStatus: AvailabilityStatus;
+  forcedOfflineAt?: Date | null;
+  forcedOfflineReason?: string | null;
+  forcedOfflineBy?: Types.ObjectId | null;
   isVerified: boolean;
   isActive: boolean;
   isDeleted: boolean;

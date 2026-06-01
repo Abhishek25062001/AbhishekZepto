@@ -3,6 +3,9 @@ import { z } from 'zod';
 
 dotenv.config();
 
+const emptyStringToUndefined = (value: unknown): unknown =>
+  value === '' ? undefined : value;
+
 const envSchema = z.object({
   APP_ENV: z.enum(['development', 'staging', 'production', 'test']),
   APP_PORT: z.coerce.number().int().positive(),
@@ -32,9 +35,9 @@ const envSchema = z.object({
     .default('false')
     .transform((value) => value === 'true'),
   DELIVERY_LOCATION_EMIT_MIN_INTERVAL_SECONDS: z.coerce.number().int().positive().default(10),
-  FIREBASE_PROJECT_ID: z.string().min(1).optional(),
-  FIREBASE_CLIENT_EMAIL: z.string().email().optional(),
-  FIREBASE_PRIVATE_KEY: z.string().min(1).optional(),
+  FIREBASE_PROJECT_ID: z.preprocess(emptyStringToUndefined, z.string().min(1).optional()),
+  FIREBASE_CLIENT_EMAIL: z.preprocess(emptyStringToUndefined, z.string().email().optional()),
+  FIREBASE_PRIVATE_KEY: z.preprocess(emptyStringToUndefined, z.string().min(1).optional()),
   PUSH_NOTIFICATIONS_ENABLED: z
     .enum(['true', 'false'])
     .default('false')

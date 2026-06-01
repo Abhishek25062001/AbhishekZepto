@@ -20,6 +20,10 @@ import { deliveryPaths } from './delivery.paths';
 import { controlTowerPaths } from './control-tower.paths';
 import { pushNotificationPaths } from './push-notification.paths';
 import { inAppNotificationPaths } from './in-app-notification.paths';
+import { realtimePaths } from './realtime.paths';
+import { adminControlPaths } from './admin-control.paths';
+import { adminUserPaths } from './admin-user.paths';
+import { customerManagementPaths } from './customer-management.paths';
 
 export {
   ApiErrorResponseSchema,
@@ -40,6 +44,10 @@ export {
   controlTowerPaths,
   pushNotificationPaths,
   inAppNotificationPaths,
+  realtimePaths,
+  adminControlPaths,
+  adminUserPaths,
+  customerManagementPaths,
   SystemInfoResponseSchema,
   VersionResponseSchema,
 };
@@ -70,5 +78,9 @@ export const openApiDocument = {
     ...controlTowerPaths,
     ...pushNotificationPaths,
     ...inAppNotificationPaths,
+    ...realtimePaths,
+    ...adminControlPaths,
+    ...adminUserPaths,
+    ...customerManagementPaths,
   },
 };

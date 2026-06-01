@@ -51,6 +51,19 @@ const DeliveryAgentSchema = new Schema<IDeliveryAgentDocument>(
       required: true,
       default: AVAILABILITY_STATUS.OFFLINE,
     },
+    forcedOfflineAt: {
+      type: Date,
+      default: null,
+    },
+    forcedOfflineReason: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    forcedOfflineBy: {
+      type: Schema.Types.ObjectId,
+      default: null,
+    },
     isVerified: {
       type: Boolean,
       required: true,

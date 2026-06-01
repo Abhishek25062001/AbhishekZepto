@@ -17,8 +17,8 @@ type SmokeResult = {
 
 const requiredNamespaces: SmokeNamespace[] = ['customer', 'delivery', 'vendor', 'admin'];
 const timeoutMs = Number(process.env.PHASE_7_SMOKE_TIMEOUT_MS ?? 5000);
-const apiBaseUrl = process.env.PHASE_7_SMOKE_API_BASE_URL ?? 'http://localhost:5000/api/v1';
-const socketBaseUrl = process.env.PHASE_7_SMOKE_SOCKET_BASE_URL ?? 'http://localhost:5000';
+const apiBaseUrl = process.env.PHASE_7_SMOKE_API_BASE_URL ?? 'http://localhost:5001/api/v1';
+const socketBaseUrl = process.env.PHASE_7_SMOKE_SOCKET_BASE_URL ?? 'http://localhost:5001';
 
 const tokenEnvName = (namespace: SmokeNamespace): string =>
   `PHASE_7_SMOKE_${namespace.toUpperCase()}_TOKEN`;

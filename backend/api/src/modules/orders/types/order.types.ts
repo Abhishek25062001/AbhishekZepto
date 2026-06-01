@@ -66,6 +66,7 @@ export type OrderRecord = {
   rejectedAt: Date | null;
   rejectionReason: string | null;
   cancellationReason: string | null;
+  cancelReason?: string | null;
   cancelledAt: Date | null;
   cancelledBy: OrderCancellationActor | null;
   refundReviewRequired: boolean;
@@ -337,4 +338,3 @@ export type VendorDeliveryStatusResponse = {
   pickedUpAt: string | null;
   riderProfile: CustomerRiderProfileSnapshot | null;
 } | null;
-

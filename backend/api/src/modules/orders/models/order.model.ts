@@ -127,6 +127,7 @@ const OrderSchema = new Schema<OrderRecord>(
     rejectedAt: { type: Date, default: null },
     rejectionReason: { type: String, default: null, trim: true },
     cancellationReason: { type: String, default: null, trim: true },
+    cancelReason: { type: String, default: null, trim: true },
     cancelledAt: { type: Date, default: null },
     cancelledBy: { type: OrderCancellationActorSchema, default: null },
     refundReviewRequired: { type: Boolean, default: false },

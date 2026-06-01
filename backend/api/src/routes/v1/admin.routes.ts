@@ -17,6 +17,10 @@ import adminOrderRoutes from '../../modules/orders/routes/admin-order.routes';
 import controlTowerAdminRoutes from '../../modules/control-tower/routes/control-tower-admin.routes';
 import pushNotificationAdminRoutes from '../../modules/push-notifications/routes/push-notification-admin.routes';
 import adminNotificationRoutes from '../../modules/in-app-notifications/routes/admin-notification.routes';
+import adminRealtimeRoutes from '../../modules/realtime/routes/admin-realtime.routes';
+import adminControlRoutes from '../../modules/admin-control/routes/admin-control.routes';
+import adminUserManagementRoutes from '../../modules/admin-users/routes/admin-user.routes';
+import customerManagementRoutes from '../../modules/customer-management/routes/customer-management.routes';
 import deliveryAgentAdminRoutes from '../../modules/delivery/routes/delivery-agent-admin.routes';
 import deliveryAssignmentAdminRoutes from '../../modules/delivery/routes/delivery-assignment-admin.routes';
 import { authenticate } from '../../modules/auth/middlewares/authenticate.middleware';
@@ -54,6 +58,8 @@ router.get(
 );
 
 router.use('/roles', authenticate(), requireRole(adminRoles), roleAdminRoutes);
+router.use('/users', authenticate(), requireRole(adminRoles), adminUserManagementRoutes);
+router.use('/customers', authenticate(), requireRole(adminRoles), customerManagementRoutes);
 router.use('/users', authenticate(), requireRole(adminRoles), userPermissionAdminRoutes);
 router.use('/users', authenticate(), requireRole(adminRoles), userSessionAdminRoutes);
 router.use(
@@ -142,6 +148,20 @@ router.use(
   authenticate(),
   requireRole(adminRoles),
   adminNotificationRoutes,
+);
+
+router.use(
+  '/realtime',
+  authenticate(),
+  requireRole(adminRoles),
+  adminRealtimeRoutes,
+);
+
+router.use(
+  '/control',
+  authenticate(),
+  requireRole(adminRoles),
+  adminControlRoutes,
 );
 
 // ---------------------------------------------------------------------------

@@ -29,6 +29,10 @@ export type StoreRecord = {
   operatingDays: string[];
   isOpen: boolean;
   isAcceptingOrders: boolean;
+  storeOperationalStatus?: string | null;
+  forceClosedAt?: Date | null;
+  forceClosedReason?: string | null;
+  forceClosedBy?: Types.ObjectId | null;
   temporaryClosureReason: string | null;
   storeType: (typeof STORE_TYPE_VALUES)[number];
   fulfillmentType: (typeof FULFILLMENT_TYPE_VALUES)[number];
@@ -64,6 +68,10 @@ const StoreSchema = new Schema<StoreRecord>(
     operatingDays: { type: [String], default: [] },
     isOpen: { type: Boolean, default: true },
     isAcceptingOrders: { type: Boolean, default: true },
+    storeOperationalStatus: { type: String, default: null, trim: true },
+    forceClosedAt: { type: Date, default: null },
+    forceClosedReason: { type: String, default: null, trim: true },
+    forceClosedBy: { type: Schema.Types.ObjectId, default: null },
     temporaryClosureReason: { type: String, default: null, trim: true },
     storeType: { type: String, enum: STORE_TYPE_VALUES, required: true },
     fulfillmentType: { type: String, enum: FULFILLMENT_TYPE_VALUES, required: true },

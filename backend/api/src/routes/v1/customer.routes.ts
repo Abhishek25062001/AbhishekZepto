@@ -15,6 +15,7 @@ import customerHomeRoutes from '../../modules/home/routes/customer-home.routes';
 import customerProfileRoutes from '../../modules/profile/routes/customer-profile.routes';
 import customerDeviceTokenRoutes from '../../modules/push-notifications/routes/customer-device-token.routes';
 import customerNotificationRoutes from '../../modules/in-app-notifications/routes/customer-notification.routes';
+import customerRealtimeRoutes from '../../modules/realtime/routes/customer-realtime.routes';
 import { sendSuccessResponse } from '../../utils/api-response';
 
 const router = Router();
@@ -125,6 +126,13 @@ router.use(
   authenticate(),
   requireRole([AUTH_ROLE.CUSTOMER]),
   customerNotificationRoutes,
+);
+
+router.use(
+  '/realtime',
+  authenticate(),
+  requireRole([AUTH_ROLE.CUSTOMER]),
+  customerRealtimeRoutes,
 );
 
 router.get('/', (_req, res) => {

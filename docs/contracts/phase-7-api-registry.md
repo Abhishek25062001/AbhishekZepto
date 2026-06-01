@@ -37,13 +37,13 @@
 | `GET` | `/api/v1/admin/control-tower/snapshot` | Polling fallback for admin control tower snapshot. |
 | `GET` | `/api/v1/admin/control-tower/delivery-locations` | Polling fallback for active delivery locations. |
 
-## Required But Missing APIs
+## Previously Missing But Now Implemented APIs
 
 | Method | Path | Status |
 | --- | --- | --- |
-| `GET` | `/api/v1/customer/realtime/missed-events` | Missing from backend source and OpenAPI. |
-| `POST` | `/api/v1/customer/realtime/events/:eventId/ack` | Missing from backend source and OpenAPI. |
-| `GET` | `/api/v1/admin/realtime/health` | Missing from backend source and OpenAPI. |
+| `GET` | `/api/v1/customer/realtime/missed-events` | Implemented in backend source and OpenAPI. |
+| `POST` | `/api/v1/customer/realtime/events/:eventId/ack` | Implemented in backend source and OpenAPI. |
+| `GET` | `/api/v1/admin/realtime/health` | Implemented in backend source and OpenAPI. |
 
 ## DB Fields Reviewed
 
@@ -63,12 +63,12 @@
 - `in_app_notifications.isRead`
 - `in_app_notifications.readAt`
 - `in_app_notifications.createdAt`
-- Expected but missing: `realtime_event_logs.eventId`
-- Expected but missing: `realtime_event_logs.eventName`
-- Expected but missing: `realtime_event_logs.recipientUserId`
-- Expected but missing: `realtime_event_logs.appSurface`
-- Expected but missing: `realtime_event_logs.deliveryStatus`
-- Expected but missing: `realtime_event_logs.emittedAt`
-- Expected but missing: `realtime_event_logs.acknowledgedAt`
-- Expected but missing: `realtime_event_logs.expiresAt`
-
+- Implemented and Verified: `realtime_event_logs.eventId`
+- Implemented and Verified: `realtime_event_logs.eventName`
+- Implemented and Verified: `realtime_event_logs.recipientUserId`
+- Implemented and Verified: `realtime_event_logs.appSurface`
+- Implemented and Verified: `realtime_event_logs.deliveryStatus`
+- Implemented and Verified: `realtime_event_logs.payload`
+- Implemented and Verified: `realtime_event_logs.emittedAt`
+- Implemented and Verified: `realtime_event_logs.acknowledgedAt`
+- Implemented and Verified: `realtime_event_logs.expiresAt`

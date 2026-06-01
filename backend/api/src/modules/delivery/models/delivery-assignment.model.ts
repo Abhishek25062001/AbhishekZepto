@@ -72,8 +72,26 @@ const DeliveryAssignmentSchema = new Schema<IDeliveryAssignmentDocument>(
       required: true,
       default: 'pending_assignment',
     },
+    assignmentSource: {
+      type: String,
+      default: null,
+      trim: true,
+    },
     assignedAt: {
       type: Date,
+      default: null,
+    },
+    unassignedReason: {
+      type: String,
+      default: null,
+      trim: true,
+    },
+    unassignedAt: {
+      type: Date,
+      default: null,
+    },
+    unassignedBy: {
+      type: Schema.Types.ObjectId,
       default: null,
     },
     arrivedAtStoreAt: {
@@ -151,6 +169,24 @@ const DeliveryAssignmentSchema = new Schema<IDeliveryAssignmentDocument>(
     slaBreachedAt: {
       type: Date,
       default: null,
+    },
+    escalationLevel: {
+      type: Number,
+      default: null,
+      min: 0,
+    },
+    escalatedBy: {
+      type: Schema.Types.ObjectId,
+      default: null,
+    },
+    escalatedAt: {
+      type: Date,
+      default: null,
+    },
+    escalationReason: {
+      type: String,
+      default: null,
+      trim: true,
     },
   },
   baseSchemaOptions as SchemaOptions<IDeliveryAssignmentDocument>,

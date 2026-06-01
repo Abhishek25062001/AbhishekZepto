@@ -42,7 +42,11 @@ export interface IDeliveryAssignmentBase {
   cityId: Types.ObjectId;
   deliveryAgentId: Types.ObjectId | null;
   deliveryStatus: DeliveryStatus;
+  assignmentSource?: string | null;
   assignedAt: Date | null;
+  unassignedReason?: string | null;
+  unassignedAt?: Date | null;
+  unassignedBy?: Types.ObjectId | null;
   arrivedAtStoreAt: Date | null;
   pickedUpAt: Date | null;
   enRouteToCustomerAt: Date | null;
@@ -61,6 +65,10 @@ export interface IDeliveryAssignmentBase {
   slaDropDeadline: Date | null;
   slaTotalDeadline: Date | null;
   slaBreachedAt: Date | null;
+  escalationLevel?: number | null;
+  escalatedBy?: Types.ObjectId | null;
+  escalatedAt?: Date | null;
+  escalationReason?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -195,4 +203,3 @@ export interface AdminDeliveryDetailResponse extends DeliveryAssignmentResponse 
   slaDropDeadline: string | null;
   slaTotalDeadline: string | null;
 }
-

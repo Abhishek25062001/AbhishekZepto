@@ -36,6 +36,10 @@ export const COLLECTION_NAMES = {
   CARTS: 'carts',
   CHECKOUT_SESSIONS: 'checkout_sessions',
   PAYMENTS: 'payments',
+  REALTIME_EVENT_LOGS: 'realtime_event_logs',
+  ADMIN_CONTROL_SESSIONS: 'admin_control_sessions',
+  ADMIN_ACTION_AUDITS: 'admin_action_audits',
+  CUSTOMER_ADMIN_PROFILES: 'customer_admin_profiles',
 } as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[keyof typeof COLLECTION_NAMES];

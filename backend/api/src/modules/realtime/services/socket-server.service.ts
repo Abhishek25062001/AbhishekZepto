@@ -4,6 +4,7 @@ import { configureSocketRedisAdapter } from '../adapters/socket-redis.adapter';
 import { getSocketConfig } from '../config/socket.config';
 import { REALTIME_NAMESPACE } from '../constants/realtime-events.constant';
 import { registerSocketAdminGateway } from '../gateways/socket-admin.gateway';
+import { registerSocketAdminControlGateway } from '../gateways/socket-admin-control.gateway';
 import { registerSocketCustomerGateway } from '../gateways/socket-customer.gateway';
 import { registerSocketDeliveryGateway } from '../gateways/socket-delivery.gateway';
 import { registerSocketRootGateway } from '../gateways/socket-root.gateway';
@@ -35,6 +36,7 @@ export const initializeSocketServer = (httpServer: HttpServer): RealtimeServer =
   registerSocketDeliveryGateway(socketServer.of(REALTIME_NAMESPACE.DELIVERY));
   registerSocketVendorGateway(socketServer.of(REALTIME_NAMESPACE.VENDOR));
   registerSocketAdminGateway(socketServer.of(REALTIME_NAMESPACE.ADMIN));
+  registerSocketAdminControlGateway(socketServer.of(REALTIME_NAMESPACE.ADMIN_CONTROL));
 
   return socketServer;
 };

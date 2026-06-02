@@ -16,8 +16,12 @@ const navigationLinks: NavLink[] = [
     permission: 'realtime_control_tower:read',
   },
   { label: 'Finance', to: '/finance', permission: 'finance:read' },
+  { label: 'Analytics', to: '/analytics', permission: 'reports:read' },
+  { label: 'Exports', to: '/exports', permission: 'reports:export' },
   { label: 'Support', to: '/support', permission: 'support:read' },
+  { label: 'Audit Logs', to: '/audit-logs', permission: 'audit_logs:read' },
   { label: 'Settings', to: '/settings', permission: 'settings:read' },
+  { label: 'Platform Settings', to: '/settings/platform', permission: 'settings:read' },
 ];
 
 const catalogLinks: NavLink[] = [

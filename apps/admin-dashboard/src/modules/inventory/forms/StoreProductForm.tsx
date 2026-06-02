@@ -102,7 +102,7 @@ export function StoreProductForm({
           <option value="">Select variant</option>
           {(variantsQuery.data ?? []).map((variant) => (
             <option key={variant.id} value={variant.id}>
-              {variant.name} ({variant.sku})
+              {variant.variantName} ({variant.sku})
             </option>
           ))}
         </select>

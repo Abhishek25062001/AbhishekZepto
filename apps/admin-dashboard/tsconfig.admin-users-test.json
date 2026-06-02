@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-admin-users-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/admin-users/**/*.test.ts",
+    "src/modules/admin-users/**/*.test.tsx"
+  ]
+}

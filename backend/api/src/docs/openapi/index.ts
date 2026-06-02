@@ -24,6 +24,13 @@ import { realtimePaths } from './realtime.paths';
 import { adminControlPaths } from './admin-control.paths';
 import { adminUserPaths } from './admin-user.paths';
 import { customerManagementPaths } from './customer-management.paths';
+import { deliveryAgentManagementPaths } from './delivery-agent-management.paths';
+import { vendorStoreManagementPaths } from './vendor-store-management.paths';
+import { supportOperationsPaths } from './support-operations.paths';
+import { platformSettingsPaths } from './platform-settings.paths';
+import { auditLogSystemPaths } from './audit-log-system.paths';
+import { operationalAnalyticsPaths } from './operational-analytics.paths';
+import { adminDataExportPaths } from './admin-data-export.paths';
 
 export {
   ApiErrorResponseSchema,
@@ -48,6 +55,13 @@ export {
   adminControlPaths,
   adminUserPaths,
   customerManagementPaths,
+  deliveryAgentManagementPaths,
+  vendorStoreManagementPaths,
+  supportOperationsPaths,
+  platformSettingsPaths,
+  auditLogSystemPaths,
+  operationalAnalyticsPaths,
+  adminDataExportPaths,
   SystemInfoResponseSchema,
   VersionResponseSchema,
 };
@@ -82,5 +96,12 @@ export const openApiDocument = {
     ...adminControlPaths,
     ...adminUserPaths,
     ...customerManagementPaths,
+    ...deliveryAgentManagementPaths,
+    ...vendorStoreManagementPaths,
+    ...supportOperationsPaths,
+    ...platformSettingsPaths,
+    ...auditLogSystemPaths,
+    ...operationalAnalyticsPaths,
+    ...adminDataExportPaths,
   },
 };

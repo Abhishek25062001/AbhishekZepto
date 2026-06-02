@@ -14,10 +14,12 @@ export type PermissionResource =
   | 'payments'
   | 'finance'
   | 'support'
+  | 'reports'
   | 'push_notifications'
   | 'notifications'
   | 'realtime_control_tower'
-  | 'settings';
+  | 'settings'
+  | 'audit_logs';
 
 export type PermissionAction =
   | 'create'
@@ -26,6 +28,7 @@ export type PermissionAction =
   | 'delete'
   | 'approve'
   | 'manage'
+  | 'assign'
   | 'cancel'
   | 'update-status'
   | 'adjust'
@@ -33,6 +36,7 @@ export type PermissionAction =
   | 'read_self'
   | 'update_self'
   | 'read_store'
-  | 'monitor';
+  | 'monitor'
+  | 'export';
 
 export type PermissionCode = `${PermissionResource}:${PermissionAction}` | '*:*';

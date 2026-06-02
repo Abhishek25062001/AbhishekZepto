@@ -1,0 +1,16 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.canUploadMedia = exports.canApproveCatalog = exports.canDeleteCatalog = exports.canUpdateCatalog = exports.canCreateCatalog = exports.canReadCatalog = void 0;
+const permission_visibility_util_1 = require("../../../access-control/permission-visibility.util");
+const canReadCatalog = (permissions) => (0, permission_visibility_util_1.shouldRenderPermissionGatedContent)(permissions, 'catalog:read');
+exports.canReadCatalog = canReadCatalog;
+const canCreateCatalog = (permissions) => (0, permission_visibility_util_1.shouldRenderPermissionGatedContent)(permissions, 'catalog:create');
+exports.canCreateCatalog = canCreateCatalog;
+const canUpdateCatalog = (permissions) => (0, permission_visibility_util_1.shouldRenderPermissionGatedContent)(permissions, 'catalog:update');
+exports.canUpdateCatalog = canUpdateCatalog;
+const canDeleteCatalog = (permissions) => (0, permission_visibility_util_1.shouldRenderPermissionGatedContent)(permissions, 'catalog:delete');
+exports.canDeleteCatalog = canDeleteCatalog;
+const canApproveCatalog = (permissions) => (0, permission_visibility_util_1.shouldRenderPermissionGatedContent)(permissions, 'catalog:approve');
+exports.canApproveCatalog = canApproveCatalog;
+const canUploadMedia = (permissions) => (0, permission_visibility_util_1.shouldRenderPermissionGatedContent)(permissions, 'media:upload');
+exports.canUploadMedia = canUploadMedia;

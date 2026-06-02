@@ -6,6 +6,11 @@ import type {
   ProductListQuery,
   ProductResponse,
 } from '../types/product.types';
+import type {
+  ProductVariantFormValues,
+  ProductVariantListQuery,
+  ProductVariantResponse,
+} from '../types/product-variant.types';
 import { unwrapData, unwrapPaginated } from '../utils/catalog-api.util';
 
 const BASE = '/api/v1/admin/catalog/products';
@@ -55,17 +60,54 @@ export const updateAdminProductApprovalStatus = async (
   return unwrapData(response.data);
 };
 
-export type ProductVariantOption = {
-  id: string;
-  name: string;
-  sku: string;
-  status: string;
+export const getAdminProductVariants = async (
+  productId: string,
+  query: ProductVariantListQuery = {},
+) => {
+  const response = await apiClient.get<ApiSuccessResponse<ProductVariantResponse[]>>(
+    `${BASE}/${productId}/variants`,
+    { params: query },
+  );
+  return unwrapData(response.data);
 };
 
-export const getAdminProductVariants = async (productId: string) => {
-  const response = await apiClient.get<ApiSuccessResponse<ProductVariantOption[]>>(
+export const getAdminProductVariantsPage = async (
+  productId: string,
+  query: ProductVariantListQuery = {},
+) => {
+  const response = await apiClient.get<ApiSuccessResponse<ProductVariantResponse[]>>(
     `${BASE}/${productId}/variants`,
-    { params: { limit: 500 } },
+    { params: query },
+  );
+  return unwrapPaginated(response.data);
+};
+
+export const createAdminProductVariant = async (
+  productId: string,
+  payload: ProductVariantFormValues,
+) => {
+  const response = await apiClient.post<ApiSuccessResponse<ProductVariantResponse>>(
+    `${BASE}/${productId}/variants`,
+    payload,
+  );
+  return unwrapData(response.data);
+};
+
+export const updateAdminProductVariant = async (
+  productId: string,
+  variantId: string,
+  payload: Partial<ProductVariantFormValues>,
+) => {
+  const response = await apiClient.patch<ApiSuccessResponse<ProductVariantResponse>>(
+    `${BASE}/${productId}/variants/${variantId}`,
+    payload,
+  );
+  return unwrapData(response.data);
+};
+
+export const deleteAdminProductVariant = async (productId: string, variantId: string) => {
+  const response = await apiClient.delete<ApiSuccessResponse<ProductVariantResponse>>(
+    `${BASE}/${productId}/variants/${variantId}`,
   );
   return unwrapData(response.data);
 };

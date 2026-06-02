@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-delivery-agents-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/delivery-agents/**/*.test.ts",
+    "src/modules/delivery-agents/**/*.test.tsx"
+  ]
+}

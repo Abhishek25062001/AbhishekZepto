@@ -120,11 +120,114 @@ test('operations_admin seed includes current admin mutation permission gate', ()
       ),
     ),
   );
+  assert.ok(
+    operationsAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.AUDIT_LOGS, AUTH_PERMISSION_ACTION.READ),
+    ),
+  );
+  assert.ok(
+    operationsAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.REPORTS, AUTH_PERMISSION_ACTION.READ),
+    ),
+  );
+});
+
+test('reports permissions are seeded as read-only operational analytics access', () => {
+  const operationsAdmin = findRoleSeed(AUTH_ROLE.OPERATIONS_ADMIN);
+  const supportAdmin = findRoleSeed(AUTH_ROLE.SUPPORT_ADMIN);
+  const vendorOwner = findRoleSeed(AUTH_ROLE.VENDOR_OWNER);
+  const reportsReadPermission = createPermissionCode(
+    AUTH_PERMISSION_RESOURCE.REPORTS,
+    AUTH_PERMISSION_ACTION.READ,
+  );
+  const reportsManagePermission = createPermissionCode(
+    AUTH_PERMISSION_RESOURCE.REPORTS,
+    AUTH_PERMISSION_ACTION.MANAGE,
+  );
+
+  assert.ok(operationsAdmin.permissions.includes(reportsReadPermission));
+  assert.equal(operationsAdmin.permissions.includes(reportsManagePermission), false);
+  assert.equal(supportAdmin.permissions.includes(reportsReadPermission), false);
+  assert.equal(vendorOwner.permissions.includes(reportsReadPermission), false);
+});
+
+test('reports export permission is limited to operational export admins', () => {
+  const operationsAdmin = findRoleSeed(AUTH_ROLE.OPERATIONS_ADMIN);
+  const supportAdmin = findRoleSeed(AUTH_ROLE.SUPPORT_ADMIN);
+  const vendorOwner = findRoleSeed(AUTH_ROLE.VENDOR_OWNER);
+  const storeManager = findRoleSeed(AUTH_ROLE.STORE_MANAGER);
+  const reportsExportPermission = createPermissionCode(
+    AUTH_PERMISSION_RESOURCE.REPORTS,
+    AUTH_PERMISSION_ACTION.EXPORT,
+  );
+
+  assert.ok(operationsAdmin.permissions.includes(reportsExportPermission));
+  assert.equal(supportAdmin.permissions.includes(reportsExportPermission), false);
+  assert.equal(vendorOwner.permissions.includes(reportsExportPermission), false);
+  assert.equal(storeManager.permissions.includes(reportsExportPermission), false);
+});
+
+test('audit log permissions are seeded as read-only operational oversight', () => {
+  const operationsAdmin = findRoleSeed(AUTH_ROLE.OPERATIONS_ADMIN);
+  const supportAdmin = findRoleSeed(AUTH_ROLE.SUPPORT_ADMIN);
+  const vendorOwner = findRoleSeed(AUTH_ROLE.VENDOR_OWNER);
+  const auditLogReadPermission = createPermissionCode(
+    AUTH_PERMISSION_RESOURCE.AUDIT_LOGS,
+    AUTH_PERMISSION_ACTION.READ,
+  );
+  const auditLogManagePermission = createPermissionCode(
+    AUTH_PERMISSION_RESOURCE.AUDIT_LOGS,
+    AUTH_PERMISSION_ACTION.MANAGE,
+  );
+
+  assert.ok(operationsAdmin.permissions.includes(auditLogReadPermission));
+  assert.equal(operationsAdmin.permissions.includes(auditLogManagePermission), false);
+  assert.equal(supportAdmin.permissions.includes(auditLogReadPermission), false);
+  assert.equal(vendorOwner.permissions.includes(auditLogReadPermission), false);
+});
+
+test('platform settings permissions are seeded for admin settings access only', () => {
+  const operationsAdmin = findRoleSeed(AUTH_ROLE.OPERATIONS_ADMIN);
+  const supportAdmin = findRoleSeed(AUTH_ROLE.SUPPORT_ADMIN);
+  const vendorOwner = findRoleSeed(AUTH_ROLE.VENDOR_OWNER);
+  const settingsReadPermission = createPermissionCode(
+    AUTH_PERMISSION_RESOURCE.SETTINGS,
+    AUTH_PERMISSION_ACTION.READ,
+  );
+  const settingsManagePermission = createPermissionCode(
+    AUTH_PERMISSION_RESOURCE.SETTINGS,
+    AUTH_PERMISSION_ACTION.MANAGE,
+  );
+
+  assert.ok(supportAdmin.permissions.includes(settingsReadPermission));
+  assert.equal(supportAdmin.permissions.includes(settingsManagePermission), false);
+  assert.ok(operationsAdmin.permissions.includes(settingsManagePermission));
+  assert.ok(vendorOwner.permissions.includes(settingsManagePermission));
 });
 
 test('support_admin seed remains limited to support/read-oriented permissions', () => {
   const supportAdmin = findRoleSeed(AUTH_ROLE.SUPPORT_ADMIN);
 
+  assert.ok(
+    supportAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SUPPORT, AUTH_PERMISSION_ACTION.READ),
+    ),
+  );
+  assert.ok(
+    supportAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SUPPORT, AUTH_PERMISSION_ACTION.CREATE),
+    ),
+  );
+  assert.ok(
+    supportAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SUPPORT, AUTH_PERMISSION_ACTION.UPDATE),
+    ),
+  );
+  assert.ok(
+    supportAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.SUPPORT, AUTH_PERMISSION_ACTION.ASSIGN),
+    ),
+  );
   assert.ok(
     supportAdmin.permissions.includes(
       createPermissionCode(AUTH_PERMISSION_RESOURCE.USERS, AUTH_PERMISSION_ACTION.READ),

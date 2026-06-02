@@ -75,7 +75,9 @@ export function ProductListPage() {
       render: (row) => (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
           <Link to={`/catalog/products/${row.id}`}>View</Link>
-          <Link to={`/catalog/products/${row.id}/edit`}>Edit</Link>
+          <CanAccess permission="catalog:update">
+            <Link to={`/catalog/products/${row.id}/edit`}>Edit</Link>
+          </CanAccess>
           <CanAccess permission="catalog:approve">
             <Button size="sm" type="button" variant="outline" onClick={() => setApprovalTarget(row)}>
               Approval

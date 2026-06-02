@@ -1,6 +1,8 @@
 import { Navigate } from 'react-router-dom';
 
 import { CanAccess } from '../components/auth/CanAccess';
+import { AdminStoreDetailPage } from '../pages/stores/AdminStoreDetailPage';
+import { AdminStoresPage } from '../pages/stores/AdminStoresPage';
 import { CityCreatePage } from '../modules/stores/pages/cities/CityCreatePage';
 import { CityEditPage } from '../modules/stores/pages/cities/CityEditPage';
 import { CityListPage } from '../modules/stores/pages/cities/CityListPage';
@@ -8,9 +10,7 @@ import { ServiceAreaCreatePage } from '../modules/stores/pages/service-areas/Ser
 import { ServiceAreaEditPage } from '../modules/stores/pages/service-areas/ServiceAreaEditPage';
 import { ServiceAreaListPage } from '../modules/stores/pages/service-areas/ServiceAreaListPage';
 import { StoreCreatePage } from '../modules/stores/pages/stores/StoreCreatePage';
-import { StoreDetailPage } from '../modules/stores/pages/stores/StoreDetailPage';
 import { StoreEditPage } from '../modules/stores/pages/stores/StoreEditPage';
-import { StoreListPage } from '../modules/stores/pages/stores/StoreListPage';
 
 const locationsReadFallback = <Navigate replace to="/dashboard" />;
 const storesReadFallback = <Navigate replace to="/dashboard" />;
@@ -68,7 +68,7 @@ export const storeRoutes = [
     path: '/stores',
     element: (
       <CanAccess fallback={storesReadFallback} permission="stores:read">
-        <StoreListPage />
+        <AdminStoresPage />
       </CanAccess>
     ),
   },
@@ -84,7 +84,7 @@ export const storeRoutes = [
     path: '/stores/:storeId',
     element: (
       <CanAccess fallback={storesReadFallback} permission="stores:read">
-        <StoreDetailPage />
+        <AdminStoreDetailPage />
       </CanAccess>
     ),
   },

@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-vendor-stores-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/vendor-stores/**/*.test.ts",
+    "src/modules/vendor-stores/**/*.test.tsx"
+  ]
+}

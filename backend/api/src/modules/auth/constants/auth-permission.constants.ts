@@ -14,10 +14,12 @@ export const AUTH_PERMISSION_RESOURCE = {
   PAYMENTS: 'payments',
   FINANCE: 'finance',
   SUPPORT: 'support',
+  REPORTS: 'reports',
   PUSH_NOTIFICATIONS: 'push_notifications',
   NOTIFICATIONS: 'notifications',
   REALTIME_CONTROL_TOWER: 'realtime_control_tower',
   SETTINGS: 'settings',
+  AUDIT_LOGS: 'audit_logs',
 } as const;
 
 export const AUTH_PERMISSION_ACTION = {
@@ -28,6 +30,7 @@ export const AUTH_PERMISSION_ACTION = {
   APPROVE: 'approve',
   CANCEL: 'cancel',
   UPDATE_STATUS: 'update-status',
+  ASSIGN: 'assign',
   MANAGE: 'manage',
   READ_SELF: 'read_self',
   UPDATE_SELF: 'update_self',
@@ -35,6 +38,7 @@ export const AUTH_PERMISSION_ACTION = {
   BULK_UPDATE: 'bulk_update',
   ADJUST: 'adjust',
   UPLOAD: 'upload',
+  EXPORT: 'export',
 } as const;
 
 export const WILDCARD_PERMISSION = '*:*';

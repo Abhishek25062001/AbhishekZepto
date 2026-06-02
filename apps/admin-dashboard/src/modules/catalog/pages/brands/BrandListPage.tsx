@@ -44,7 +44,10 @@ export function BrandListPage() {
       key: 'id',
       render: (row) => (
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: 'var(--spacing-sm)' }}>
-          <Link to={`/catalog/brands/${row.id}/edit`}>Edit</Link>
+          <Link to={`/catalog/brands/${row.id}`}>View</Link>
+          <CanAccess permission="catalog:update">
+            <Link to={`/catalog/brands/${row.id}/edit`}>Edit</Link>
+          </CanAccess>
           <CanAccess permission="catalog:delete">
             <Button size="sm" type="button" variant="danger" onClick={() => setPendingDelete(row)}>
               Delete

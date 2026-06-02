@@ -13,6 +13,9 @@ export function SettingsPage() {
         <p>
           <Link to="/settings/sessions">Open sessions</Link>
         </p>
+        <p>
+          <Link to="/settings/platform">Open platform settings</Link>
+        </p>
       </Card>
     </>
   );

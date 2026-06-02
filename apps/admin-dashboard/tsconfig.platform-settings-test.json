@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-platform-settings-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/platform-settings/**/*.test.ts",
+    "src/modules/platform-settings/**/*.test.tsx"
+  ]
+}

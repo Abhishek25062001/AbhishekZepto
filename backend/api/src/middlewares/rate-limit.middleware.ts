@@ -6,9 +6,11 @@ import { HTTP_STATUS } from '../utils/http-status';
 
 const minutes = 60 * 1000;
 
+const isDevOrTest = process.env.APP_ENV === 'development' || process.env.APP_ENV === 'test';
+
 export const globalRateLimitMiddleware = rateLimit({
   legacyHeaders: false,
-  limit: 100,
+  limit: isDevOrTest ? 10000 : 100,
   standardHeaders: true,
   windowMs: 15 * minutes,
   handler: (req, res) => {
@@ -27,7 +29,7 @@ export const globalRateLimitMiddleware = rateLimit({
 
 export const authRateLimitMiddleware = rateLimit({
   legacyHeaders: false,
-  limit: process.env.APP_ENV === 'development' ? 100 : 5,
+  limit: isDevOrTest ? 10000 : 5,
   standardHeaders: true,
   windowMs: 5 * minutes,
   handler: (req, res) => {

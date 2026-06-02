@@ -40,6 +40,10 @@ export const COLLECTION_NAMES = {
   ADMIN_CONTROL_SESSIONS: 'admin_control_sessions',
   ADMIN_ACTION_AUDITS: 'admin_action_audits',
   CUSTOMER_ADMIN_PROFILES: 'customer_admin_profiles',
+  SUPPORT_TICKETS: 'support_tickets',
+  SUPPORT_TICKET_NOTES: 'support_ticket_notes',
+  PLATFORM_SETTINGS: 'platform_settings',
+  ADMIN_DATA_EXPORTS: 'admin_data_exports',
 } as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[keyof typeof COLLECTION_NAMES];

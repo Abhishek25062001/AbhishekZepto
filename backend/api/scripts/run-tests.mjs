@@ -9,6 +9,11 @@ const scriptBySelector = new Map([
   ['push-notifications', 'test:push-notifications'],
   ['realtime', 'test:realtime'],
   ['in-app-notifications', 'test:in-app-notifications'],
+  ['platform-settings', 'test:platform-settings'],
+  ['seed-role-permission-matrix', 'test:seed-matrix'],
+  ['audit-log-system', 'test:audit-log-system'],
+  ['operational-analytics', 'test:operational-analytics'],
+  ['admin-data-exports', 'test:admin-data-exports'],
 ]);
 
 const script = scriptBySelector.get(selector);

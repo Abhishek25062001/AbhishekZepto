@@ -1,0 +1,16 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "dist-operational-overview-test",
+    "noEmit": false,
+    "rootDir": "src",
+    "jsx": "react-jsx",
+    "types": ["node"]
+  },
+  "include": [
+    "src/modules/operational-overview/**/*.test.ts",
+    "src/modules/operational-overview/**/*.test.tsx"
+  ]
+}

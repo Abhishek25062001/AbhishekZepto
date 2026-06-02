@@ -21,6 +21,13 @@ import adminRealtimeRoutes from '../../modules/realtime/routes/admin-realtime.ro
 import adminControlRoutes from '../../modules/admin-control/routes/admin-control.routes';
 import adminUserManagementRoutes from '../../modules/admin-users/routes/admin-user.routes';
 import customerManagementRoutes from '../../modules/customer-management/routes/customer-management.routes';
+import deliveryAgentManagementRoutes from '../../modules/delivery-agent-management/routes/admin-delivery-agent.routes';
+import vendorStoreManagementRoutes from '../../modules/vendor-store-management/routes/admin-vendor-store.routes';
+import supportOperationsRoutes from '../../modules/support-operations/routes/support-operations.routes';
+import platformSettingsRoutes from '../../modules/platform-settings/routes/platform-settings.routes';
+import auditLogSystemRoutes from '../../modules/audit-log-system/routes/audit-log-system.routes';
+import operationalAnalyticsRoutes from '../../modules/operational-analytics/routes/operational-analytics.routes';
+import adminDataExportRoutes from '../../modules/admin-data-exports/routes/admin-data-export.routes';
 import deliveryAgentAdminRoutes from '../../modules/delivery/routes/delivery-agent-admin.routes';
 import deliveryAssignmentAdminRoutes from '../../modules/delivery/routes/delivery-assignment-admin.routes';
 import { authenticate } from '../../modules/auth/middlewares/authenticate.middleware';
@@ -60,6 +67,13 @@ router.get(
 router.use('/roles', authenticate(), requireRole(adminRoles), roleAdminRoutes);
 router.use('/users', authenticate(), requireRole(adminRoles), adminUserManagementRoutes);
 router.use('/customers', authenticate(), requireRole(adminRoles), customerManagementRoutes);
+router.use('/delivery-agents', authenticate(), requireRole(adminRoles), deliveryAgentManagementRoutes);
+router.use('/support', authenticate(), requireRole(adminRoles), supportOperationsRoutes);
+router.use('/settings', authenticate(), requireRole(adminRoles), platformSettingsRoutes);
+router.use('/audit-logs', authenticate(), requireRole(adminRoles), auditLogSystemRoutes);
+router.use('/analytics', authenticate(), requireRole(adminRoles), operationalAnalyticsRoutes);
+router.use('/data-exports', authenticate(), requireRole(adminRoles), adminDataExportRoutes);
+router.use('/', authenticate(), requireRole(adminRoles), vendorStoreManagementRoutes);
 router.use('/users', authenticate(), requireRole(adminRoles), userPermissionAdminRoutes);
 router.use('/users', authenticate(), requireRole(adminRoles), userSessionAdminRoutes);
 router.use(

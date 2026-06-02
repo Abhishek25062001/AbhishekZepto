@@ -76,6 +76,15 @@ support-team workflow access.
 Controls operational analytics, dashboard summaries, data exports, and reporting
 visibility.
 
+Module 18 introduces `reports:read` for read-only operational analytics backend
+access. It does not introduce report mutation, export, schedule, or manage
+permissions.
+
+Module 20 introduces `reports:export` for admin export request metadata
+creation and inspection. It does not introduce file generation, download
+streaming, scheduled exports, retry/cancel/delete workflows, or report-builder
+permissions.
+
 ### Settings
 
 Controls platform settings, city/store settings, feature flags, operational

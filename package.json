@@ -10,6 +10,10 @@
     "apps/admin-dashboard",
     "packages/shared"
   ],
+  "overrides": {
+    "react": "19.2.3",
+    "react-dom": "19.2.3"
+  },
   "scripts": {
     "dev:backend": "npm run dev -w backend/api",
     "dev:vendor": "npm run dev -w apps/vendor-panel",
@@ -32,5 +36,10 @@
     "typecheck": "npm run typecheck --workspaces",
     "lint": "npm run lint --workspaces",
     "format": "prettier --write ."
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3",
+    "engine.io-client": "~6.6.1",
+    "react-native": "^0.85.3"
   }
 }

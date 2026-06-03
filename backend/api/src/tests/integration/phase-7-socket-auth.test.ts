@@ -7,6 +7,7 @@ import { REALTIME_NAMESPACE } from '../../modules/realtime/constants/realtime-ev
 test('Phase 7 socket auth covers all realtime namespaces', () => {
   assert.deepEqual(Object.values(REALTIME_NAMESPACE).sort(), [
     '/admin',
+    '/admin-control',
     '/customer',
     '/delivery',
     '/vendor',

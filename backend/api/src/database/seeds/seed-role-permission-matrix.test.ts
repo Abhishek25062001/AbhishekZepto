@@ -66,6 +66,32 @@ test('operations_admin seed includes current admin mutation permission gate', ()
   );
   assert.ok(
     operationsAdmin.permissions.includes(
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.FINANCE_PAYMENTS,
+        AUTH_PERMISSION_ACTION.READ,
+      ),
+    ),
+  );
+  assert.ok(
+    operationsAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.FINANCE_LEDGER, AUTH_PERMISSION_ACTION.READ),
+    ),
+  );
+  assert.ok(
+    operationsAdmin.permissions.includes(
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.FINANCE_LEDGER,
+        AUTH_PERMISSION_ACTION.MANAGE_ACCOUNTS,
+      ),
+    ),
+  );
+  assert.ok(
+    operationsAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.FINANCE_LEDGER, AUTH_PERMISSION_ACTION.REVERSE),
+    ),
+  );
+  assert.ok(
+    operationsAdmin.permissions.includes(
       createPermissionCode(AUTH_PERMISSION_RESOURCE.CATALOG, AUTH_PERMISSION_ACTION.CREATE),
     ),
   );
@@ -252,6 +278,19 @@ test('support_admin seed remains limited to support/read-oriented permissions', 
       createPermissionCode(AUTH_PERMISSION_RESOURCE.FINANCE, AUTH_PERMISSION_ACTION.READ),
     ),
     false,
+  );
+  assert.ok(
+    supportAdmin.permissions.includes(
+      createPermissionCode(
+        AUTH_PERMISSION_RESOURCE.FINANCE_PAYMENTS,
+        AUTH_PERMISSION_ACTION.READ,
+      ),
+    ),
+  );
+  assert.ok(
+    supportAdmin.permissions.includes(
+      createPermissionCode(AUTH_PERMISSION_RESOURCE.FINANCE_LEDGER, AUTH_PERMISSION_ACTION.READ),
+    ),
   );
 });
 

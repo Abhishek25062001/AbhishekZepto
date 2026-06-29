@@ -22,3 +22,5 @@ export type {
   SystemInfoResponse,
   VersionInfoResponse,
 } from './public-api.types';
+export type * from './finance/payment-record.types';
+export type * from './finance/ledger.types';

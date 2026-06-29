@@ -15,10 +15,13 @@ import * as paymentRepositoryModule from '../repositories/payment.repository';
 import * as compensationModule from '../utils/payment-failure-compensation.util';
 import * as auditModule from '../../audit/services/audit-log.service';
 import * as orderServiceModule from '../../orders/services/order.service';
+import * as orderPaymentSyncModule from './order-payment-sync.service';
+import * as ledgerPostingModule from '../../finance/ledger/services/ledger-posting.service';
 import {
   createPaymentOrderForCustomer,
   verifyPaymentForCustomer,
 } from './payment.service';
+import { buildTestPaymentRecord } from '../__tests__/payment-test-fixtures';
 
 const checkoutRepository = checkoutRepositoryModule as unknown as {
   findCheckoutSessionByIdForCustomer: typeof checkoutRepositoryModule.findCheckoutSessionByIdForCustomer;
@@ -30,6 +33,7 @@ const paymentRepository = paymentRepositoryModule as unknown as {
   createPayment: typeof paymentRepositoryModule.createPayment;
   findPaymentByIdForCustomer: typeof paymentRepositoryModule.findPaymentByIdForCustomer;
   updatePaymentById: typeof paymentRepositoryModule.updatePaymentById;
+  updatePaymentLedgerMetadata: typeof paymentRepositoryModule.updatePaymentLedgerMetadata;
 };
 
 const gateway = gatewayModule as unknown as {
@@ -47,6 +51,14 @@ const auditLogService = auditModule as unknown as {
 
 const orderService = orderServiceModule as unknown as {
   placeOrderFromPayment: typeof orderServiceModule.placeOrderFromPayment;
+};
+
+const orderPaymentSync = orderPaymentSyncModule as unknown as {
+  markOrderPaymentPaid: typeof orderPaymentSyncModule.markOrderPaymentPaid;
+};
+
+const ledgerPosting = ledgerPostingModule as unknown as {
+  postPaymentReceived: typeof ledgerPostingModule.postPaymentReceived;
 };
 
 const envConfig = envModule as unknown as {
@@ -96,30 +108,18 @@ const buildSession = (): CheckoutSessionRecord & { _id: Types.ObjectId } => ({
   updatedAt: new Date(),
 });
 
-const buildPayment = (): PaymentRecord & { _id: Types.ObjectId } => ({
-  _id: paymentId,
-  customerId: new Types.ObjectId(customerId),
-  checkoutSessionId: sessionId,
-  orderId: null,
-  gateway: 'razorpay',
-  gatewayOrderId: 'order_test',
-  gatewayPaymentId: null,
-  amount: 25000,
-  currency: 'INR',
-  status: PAYMENT_STATUS.CREATED,
-  idempotencyKey: 'idem-1',
-  signatureVerified: false,
-  webhookReceivedAt: null,
-  failureCode: null,
-  metadata: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
+const buildPayment = (): PaymentRecord & { _id: Types.ObjectId } =>
+  buildTestPaymentRecord({
+    _id: paymentId,
+    customerId: new Types.ObjectId(customerId),
+    checkoutSessionId: sessionId,
+  });
 
 beforeEach(() => {
   auditLogService.writeAuditLog = async () => undefined;
   gateway.getRazorpayPublicKeyId = () => 'rzp_test_key';
   envConfig.getRazorpayKeySecret = () => 'test_secret';
+  orderPaymentSync.markOrderPaymentPaid = async () => undefined;
   orderService.placeOrderFromPayment = async () => ({
     orderId: new Types.ObjectId().toString(),
     orderNumber: 'ORD-TEST',
@@ -128,6 +128,13 @@ beforeEach(() => {
     currency: 'INR',
     placedAt: new Date().toISOString(),
   });
+  ledgerPosting.postPaymentReceived = async () => ({
+    success: true,
+    journalId: new Types.ObjectId().toString(),
+    journalCode: 'JRN-20260617-000001',
+    created: true,
+  });
+  paymentRepository.updatePaymentLedgerMetadata = async () => undefined;
 });
 
 afterEach(() => {
@@ -194,6 +201,44 @@ test('verifyPaymentForCustomer marks payment paid with valid signature', async (
 
   assert.equal(result.status, 'paid');
   assert.ok(result.orderId);
+});
+
+test('verifyPaymentForCustomer triggers ledger posting on successful verify', async () => {
+  const payment = buildPayment();
+  const orderId = payment.gatewayOrderId;
+  const razorpayPaymentId = 'pay_test';
+  const signature = crypto
+    .createHmac('sha256', 'test_secret')
+    .update(`${orderId}|${razorpayPaymentId}`)
+    .digest('hex');
+  let postingCalled = false;
+
+  paymentRepository.findPaymentByIdForCustomer = async () => payment;
+  checkoutRepository.findCheckoutSessionByIdForCustomer = async () => buildSession();
+  paymentRepository.updatePaymentById = async () => ({
+    ...payment,
+    status: PAYMENT_STATUS.PAID,
+    gatewayPaymentId: razorpayPaymentId,
+    signatureVerified: true,
+  });
+  ledgerPosting.postPaymentReceived = async () => {
+    postingCalled = true;
+    return {
+      success: true,
+      journalId: new Types.ObjectId().toString(),
+      journalCode: 'JRN-20260617-000001',
+      created: true,
+    };
+  };
+
+  await verifyPaymentForCustomer(customerId, {
+    paymentId: paymentId.toString(),
+    razorpayOrderId: orderId,
+    razorpayPaymentId,
+    razorpaySignature: signature,
+  });
+
+  assert.equal(postingCalled, true);
 });
 
 test('verifyPaymentForCustomer compensates on invalid signature', async () => {

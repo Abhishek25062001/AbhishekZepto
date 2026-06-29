@@ -14,6 +14,7 @@ const scriptBySelector = new Map([
   ['audit-log-system', 'test:audit-log-system'],
   ['operational-analytics', 'test:operational-analytics'],
   ['admin-data-exports', 'test:admin-data-exports'],
+  ['ledger', 'test:ledger'],
 ]);
 
 const script = scriptBySelector.get(selector);

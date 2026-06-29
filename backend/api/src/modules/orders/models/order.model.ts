@@ -2,6 +2,7 @@ import { model, Schema } from 'mongoose';
 import type { SchemaOptions } from 'mongoose';
 import { baseSchemaOptions } from '../../../database/base-schema-options';
 import { COLLECTION_NAMES } from '../../../database/constants/collection-names.constants';
+import { ORDER_FINANCE_STATUS, ORDER_FINANCE_STATUS_VALUES } from '../constants/order-finance-status.constant';
 import { ORDER_PAYMENT_STATUS, ORDER_PAYMENT_STATUS_VALUES } from '../constants/order-payment-status.constant';
 import { ORDER_ITEM_PICKING_STATUS, ORDER_ITEM_PICKING_STATUS_VALUES } from '../constants/order-item-picking-status.constant';
 import { ORDER_PACKING_STATUS_VALUES } from '../constants/order-packing-status.constant';
@@ -87,6 +88,19 @@ const OrderSchema = new Schema<OrderRecord>(
     storeId: { type: Schema.Types.ObjectId, required: true, index: true },
     checkoutSessionId: { type: Schema.Types.ObjectId, required: true },
     paymentId: { type: Schema.Types.ObjectId, required: true },
+    paymentRecordId: { type: Schema.Types.ObjectId, default: null, index: true },
+    paymentMethod: { type: String, default: null, trim: true },
+    paymentGateway: { type: String, default: null, trim: true },
+    platformFee: { type: Number, default: 0, min: 0 },
+    payableAmount: { type: Number, default: null, min: 0 },
+    financeStatus: {
+      type: String,
+      enum: ORDER_FINANCE_STATUS_VALUES,
+      default: ORDER_FINANCE_STATUS.PAID,
+    },
+    paidAt: { type: Date, default: null, index: true },
+    paymentFailedAt: { type: Date, default: null },
+    refundCompletedAt: { type: Date, default: null },
     cartId: { type: Schema.Types.ObjectId, required: true },
     addressSnapshot: { type: OrderAddressSnapshotSchema, required: true },
     items: { type: [OrderLineItemSchema], default: [] },
@@ -156,5 +170,7 @@ OrderSchema.index({ storeId: 1, packingStatus: 1, placedAt: -1 });
 OrderSchema.index({ slaStatus: 1, slaBreachedStage: 1 });
 OrderSchema.index({ storeId: 1, slaStatus: 1, createdAt: -1 });
 OrderSchema.index({ paymentId: 1 }, { unique: true });
+OrderSchema.index({ paymentStatus: 1 });
+OrderSchema.index({ financeStatus: 1 });
 
 export const OrderModel = model<OrderRecord>(COLLECTION_NAMES.ORDERS, OrderSchema);

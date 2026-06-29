@@ -9,6 +9,10 @@ import * as paymentRepositoryModule from '../repositories/payment.repository';
 import * as compensationModule from '../utils/payment-failure-compensation.util';
 import * as auditModule from '../../audit/services/audit-log.service';
 import { handleRazorpayWebhookEvent } from './payment-webhook.service';
+import { buildTestPaymentRecord } from '../__tests__/payment-test-fixtures';
+import * as orderServiceModule from '../../orders/services/order.service';
+import * as orderPaymentSyncModule from './order-payment-sync.service';
+import * as ledgerPostingModule from '../../finance/ledger/services/ledger-posting.service';
 
 const checkoutRepository = checkoutRepositoryModule as unknown as {
   findCheckoutSessionByIdForCustomer: typeof checkoutRepositoryModule.findCheckoutSessionByIdForCustomer;
@@ -17,6 +21,9 @@ const checkoutRepository = checkoutRepositoryModule as unknown as {
 const paymentRepository = paymentRepositoryModule as unknown as {
   findPaymentByGatewayOrderId: typeof paymentRepositoryModule.findPaymentByGatewayOrderId;
   updatePaymentByGatewayOrderId: typeof paymentRepositoryModule.updatePaymentByGatewayOrderId;
+  hasWebhookEventId: typeof paymentRepositoryModule.hasWebhookEventId;
+  appendWebhookEventId: typeof paymentRepositoryModule.appendWebhookEventId;
+  updatePaymentLedgerMetadata: typeof paymentRepositoryModule.updatePaymentLedgerMetadata;
 };
 
 const compensation = compensationModule as unknown as {
@@ -27,32 +34,57 @@ const auditLogService = auditModule as unknown as {
   writeAuditLog: typeof auditModule.writeAuditLog;
 };
 
+const orderService = orderServiceModule as unknown as {
+  placeOrderFromPayment: typeof orderServiceModule.placeOrderFromPayment;
+};
+
+const orderPaymentSync = orderPaymentSyncModule as unknown as {
+  markOrderPaymentPaid: typeof orderPaymentSyncModule.markOrderPaymentPaid;
+  markOrderPaymentFailed: typeof orderPaymentSyncModule.markOrderPaymentFailed;
+};
+
+const ledgerPosting = ledgerPostingModule as unknown as {
+  postPaymentReceived: typeof ledgerPostingModule.postPaymentReceived;
+};
+
 const customerId = new Types.ObjectId();
 const sessionId = new Types.ObjectId();
 const paymentId = new Types.ObjectId();
 
-const buildPayment = (status: PaymentRecord['status']): PaymentRecord & { _id: Types.ObjectId } => ({
-  _id: paymentId,
-  customerId,
-  checkoutSessionId: sessionId,
-  orderId: null,
-  gateway: 'razorpay',
-  gatewayOrderId: 'order_wh',
-  gatewayPaymentId: null,
-  amount: 10000,
-  currency: 'INR',
-  status,
-  idempotencyKey: 'idem-wh',
-  signatureVerified: status === PAYMENT_STATUS.PAID,
-  webhookReceivedAt: null,
-  failureCode: null,
-  metadata: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
+const buildPayment = (status: PaymentRecord['status']): PaymentRecord & { _id: Types.ObjectId } =>
+  buildTestPaymentRecord({
+    _id: paymentId,
+    customerId,
+    checkoutSessionId: sessionId,
+    gatewayOrderId: 'order_wh',
+    idempotencyKey: 'idem-wh',
+    amount: 10000,
+    payableAmount: 10000,
+    status,
+    signatureVerified: status === PAYMENT_STATUS.PAID,
+  });
 
 beforeEach(() => {
   auditLogService.writeAuditLog = async () => undefined;
+  paymentRepository.hasWebhookEventId = async () => false;
+  paymentRepository.appendWebhookEventId = async () => undefined;
+  orderService.placeOrderFromPayment = async () => ({
+    orderId: new Types.ObjectId().toString(),
+    orderNumber: 'ORD-WH',
+    orderStatus: 'placed',
+    grandTotal: 100,
+    currency: 'INR',
+    placedAt: new Date().toISOString(),
+  });
+  orderPaymentSync.markOrderPaymentPaid = async () => undefined;
+  orderPaymentSync.markOrderPaymentFailed = async () => undefined;
+  ledgerPosting.postPaymentReceived = async () => ({
+    success: true,
+    journalId: new Types.ObjectId().toString(),
+    journalCode: 'JRN-20260617-000001',
+    created: true,
+  });
+  paymentRepository.updatePaymentLedgerMetadata = async () => undefined;
 });
 
 test('handleRazorpayWebhookEvent marks payment captured', async () => {

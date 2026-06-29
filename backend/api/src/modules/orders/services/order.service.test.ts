@@ -7,6 +7,7 @@ import { CHECKOUT_SESSION_STATUS } from '../../checkout/constants/checkout-sessi
 import type { CheckoutSessionRecord } from '../../checkout/types/checkout.types';
 import { PAYMENT_STATUS } from '../../payment/constants/payment-status.constant';
 import type { PaymentRecord } from '../../payment/types/payment.types';
+import { buildTestPaymentRecord } from '../../payment/__tests__/payment-test-fixtures';
 import * as checkoutRepositoryModule from '../../checkout/repositories/checkout-session.repository';
 import * as checkoutLockModule from '../../checkout/utils/checkout-inventory-lock.util';
 import * as cartClearModule from '../utils/order-cart-clear.util';
@@ -157,25 +158,16 @@ const buildSession = (): CheckoutSessionRecord & { _id: Types.ObjectId } => ({
   updatedAt: new Date(),
 });
 
-const buildPayment = (): PaymentRecord & { _id: Types.ObjectId } => ({
-  _id: paymentId,
-  customerId: new Types.ObjectId(customerId),
-  checkoutSessionId: sessionId,
-  orderId: null,
-  gateway: 'razorpay',
-  gatewayOrderId: 'order_test',
-  gatewayPaymentId: 'pay_test',
-  amount: 25000,
-  currency: 'INR',
-  status: PAYMENT_STATUS.PAID,
-  idempotencyKey: 'idem',
-  signatureVerified: true,
-  webhookReceivedAt: null,
-  failureCode: null,
-  metadata: null,
-  createdAt: new Date(),
-  updatedAt: new Date(),
-});
+const buildPayment = (): PaymentRecord & { _id: Types.ObjectId } =>
+  buildTestPaymentRecord({
+    _id: paymentId,
+    customerId: new Types.ObjectId(customerId),
+    checkoutSessionId: sessionId,
+    gatewayPaymentId: 'pay_test',
+    status: PAYMENT_STATUS.PAID,
+    signatureVerified: true,
+    idempotencyKey: 'idem',
+  });
 
 const buildOrder = () => ({
   _id: orderId,
@@ -184,6 +176,15 @@ const buildOrder = () => ({
   storeId,
   checkoutSessionId: sessionId,
   paymentId: paymentId,
+  paymentRecordId: null,
+  paymentMethod: null,
+  paymentGateway: null,
+  platformFee: 0,
+  payableAmount: 250,
+  financeStatus: null,
+  paidAt: null,
+  paymentFailedAt: null,
+  refundCompletedAt: null,
   cartId: new Types.ObjectId(),
   addressSnapshot: buildSession().addressSnapshot,
   items: [],

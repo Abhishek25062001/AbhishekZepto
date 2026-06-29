@@ -11,6 +11,9 @@ const PaymentSchema = new Schema<PaymentRecord>(
     customerId: { type: Schema.Types.ObjectId, required: true, index: true },
     checkoutSessionId: { type: Schema.Types.ObjectId, required: true },
     orderId: { type: Schema.Types.ObjectId, default: null },
+    storeId: { type: Schema.Types.ObjectId, default: null, index: true },
+    vendorId: { type: Schema.Types.ObjectId, default: null, index: true },
+    cityId: { type: Schema.Types.ObjectId, default: null, index: true },
     gateway: {
       type: String,
       enum: PAYMENT_GATEWAY_VALUES,
@@ -18,8 +21,12 @@ const PaymentSchema = new Schema<PaymentRecord>(
     },
     gatewayOrderId: { type: String, required: true, trim: true },
     gatewayPaymentId: { type: String, default: null, trim: true },
+    gatewayStatus: { type: String, default: null, trim: true },
+    paymentMethod: { type: String, default: null, trim: true },
     amount: { type: Number, required: true, min: 1 },
+    payableAmount: { type: Number, default: null, min: 0 },
     currency: { type: String, required: true, trim: true, default: 'INR' },
+    refundedAmount: { type: Number, default: 0, min: 0 },
     status: {
       type: String,
       enum: PAYMENT_STATUS_VALUES,
@@ -28,7 +35,10 @@ const PaymentSchema = new Schema<PaymentRecord>(
     idempotencyKey: { type: String, required: true, trim: true },
     signatureVerified: { type: Boolean, default: false },
     webhookReceivedAt: { type: Date, default: null },
+    webhookEventIds: { type: [String], default: [] },
     failureCode: { type: String, default: null, trim: true },
+    paidAt: { type: Date, default: null },
+    failedAt: { type: Date, default: null },
     metadata: { type: Schema.Types.Mixed, default: null },
   },
   baseSchemaOptions as SchemaOptions<PaymentRecord>,
@@ -36,6 +46,8 @@ const PaymentSchema = new Schema<PaymentRecord>(
 
 PaymentSchema.index({ gatewayOrderId: 1 }, { unique: true });
 PaymentSchema.index({ idempotencyKey: 1 }, { unique: true, sparse: true });
-PaymentSchema.index({ checkoutSessionId: 1 });
+PaymentSchema.index({ customerId: 1, createdAt: -1 });
+PaymentSchema.index({ status: 1, createdAt: -1 });
+PaymentSchema.index({ gatewayPaymentId: 1 }, { unique: true, sparse: true });
 
 export const PaymentModel = model<PaymentRecord>(COLLECTION_NAMES.PAYMENTS, PaymentSchema);

@@ -512,3 +512,61 @@ Contract: `docs/contracts/in-app-notification-center-api.md`
 | GET | `/api/v1/admin/me/notifications/unread-count` | Admin | `notifications:read_self` | IMPLEMENTED |
 | PATCH | `/api/v1/admin/me/notifications/:notificationId/read` | Admin | `notifications:update_self` | IMPLEMENTED |
 | PATCH | `/api/v1/admin/me/notifications/read-all` | Admin | `notifications:update_self` | IMPLEMENTED |
+
+## Phase 9 Finance Routes (PLANNED)
+
+Module 1 documents planned finance endpoints only. Phase 4 payment baseline remains
+IMPLEMENTED. Contract: `phase-9-finance-api-surface.md`.
+
+### Customer Finance
+
+| Method | Path | Module | Contract | Status |
+|--------|------|--------|----------|--------|
+| GET | `/api/v1/customer/payments/:paymentId` | 9 | `phase-9-payment-records-api.md` | IMPLEMENTED |
+| POST | `/api/v1/customer/payments/:paymentId/verify` | 9 | `phase-9-payment-records-api.md` | IMPLEMENTED |
+| POST | `/api/v1/customer/refunds` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/customer/refunds` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/customer/refunds/:refundId` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+
+### Delivery Finance
+
+| Method | Path | Module | Contract | Status |
+|--------|------|--------|----------|--------|
+| GET | `/api/v1/delivery/earnings` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/delivery/earnings/:earningId` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+
+### Admin Finance
+
+| Method | Path | Module | Contract | Status |
+|--------|------|--------|----------|--------|
+| GET | `/api/v1/admin/finance/payments` | 9 | `phase-9-payment-records-api.md` | IMPLEMENTED |
+| GET | `/api/v1/admin/finance/payments/:paymentId` | 9 | `phase-9-payment-records-api.md` | IMPLEMENTED |
+| GET | `/api/v1/admin/finance/ledger/accounts` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| POST | `/api/v1/admin/finance/ledger/accounts` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| GET | `/api/v1/admin/finance/ledger/accounts/:accountId` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| PATCH | `/api/v1/admin/finance/ledger/accounts/:accountId` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| DELETE | `/api/v1/admin/finance/ledger/accounts/:accountId` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| GET | `/api/v1/admin/finance/ledger/accounts/:accountId/lines` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| GET | `/api/v1/admin/finance/ledger/journals` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| GET | `/api/v1/admin/finance/ledger/journals/:journalId` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| POST | `/api/v1/admin/finance/ledger/journals/:journalId/reverse` | 9 | `ledger-foundation-api.md` | IMPLEMENTED |
+| GET | `/api/v1/admin/finance/refunds` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/admin/finance/refunds/:refundId` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/refunds/:refundId/approve` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/refunds/:refundId/reject` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/refunds/:refundId/process` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/admin/finance/vendor-settlements` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/admin/finance/vendor-settlements/:settlementId` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/vendor-settlements/generate` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/vendor-settlements/:settlementId/approve` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/vendor-settlements/:settlementId/mark-paid-placeholder` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/admin/finance/delivery-earnings` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| GET | `/api/v1/admin/finance/delivery-earnings/:earningId` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/delivery-earnings/:earningId/approve` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+| POST | `/api/v1/admin/finance/delivery-earnings/:earningId/adjust` | 9 | `phase-9-finance-api-surface.md` | PLANNED |
+
+### Public Finance Webhooks
+
+| Method | Path | Module | Contract | Status |
+|--------|------|--------|----------|--------|
+| POST | `/api/v1/public/webhooks/payments/razorpay` | 9 | `phase-9-payment-records-api.md` | IMPLEMENTED |

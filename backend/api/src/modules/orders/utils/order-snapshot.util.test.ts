@@ -17,16 +17,26 @@ test('buildOrderPayloadFromCheckoutSession maps checkout snapshot to order', () 
       customerId,
       checkoutSessionId: sessionId,
       orderId: null,
+      storeId,
+      vendorId: null,
+      cityId: null,
       gateway: 'razorpay',
       gatewayOrderId: 'order_x',
       gatewayPaymentId: 'pay_x',
+      gatewayStatus: null,
+      paymentMethod: null,
       amount: 25000,
+      payableAmount: 25000,
       currency: 'INR',
+      refundedAmount: 0,
       status: 'paid',
       idempotencyKey: 'idem',
       signatureVerified: true,
       webhookReceivedAt: null,
+      webhookEventIds: [],
       failureCode: null,
+      paidAt: new Date(),
+      failedAt: null,
       metadata: null,
       createdAt: new Date(),
       updatedAt: new Date(),
@@ -85,4 +95,6 @@ test('buildOrderPayloadFromCheckoutSession maps checkout snapshot to order', () 
   assert.equal(payload.grandTotal, 250);
   assert.equal(payload.items.length, 1);
   assert.equal(payload.orderNumber, 'ORD-TEST-001');
+  assert.equal(payload.paymentRecordId?.toString(), paymentId.toString());
+  assert.equal(payload.financeStatus, 'paid');
 });

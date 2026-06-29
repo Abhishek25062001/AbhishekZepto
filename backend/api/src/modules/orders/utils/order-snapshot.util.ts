@@ -3,6 +3,7 @@ import type { CheckoutSessionRecord } from '../../checkout/types/checkout.types'
 import type { PaymentRecord } from '../../payment/types/payment.types';
 import { fromPaise } from '../../payment/utils/payment-amount.util';
 import type { OrderLineItem, OrderRecord } from '../types/order.types';
+import { ORDER_FINANCE_STATUS } from '../constants/order-finance-status.constant';
 import { ORDER_ITEM_PICKING_STATUS } from '../constants/order-item-picking-status.constant';
 import { ORDER_PAYMENT_STATUS } from '../constants/order-payment-status.constant';
 import { ORDER_SLA_STATUS } from '../constants/order-sla.constant';
@@ -43,6 +44,15 @@ export const buildOrderPayloadFromCheckoutSession = (input: {
     storeId: session.storeId,
     checkoutSessionId: new Types.ObjectId(session._id.toString()),
     paymentId: new Types.ObjectId(payment._id.toString()),
+    paymentRecordId: new Types.ObjectId(payment._id.toString()),
+    paymentMethod: payment.paymentMethod,
+    paymentGateway: payment.gateway,
+    platformFee: 0,
+    payableAmount: summary.grandTotal,
+    financeStatus: ORDER_FINANCE_STATUS.PAID,
+    paidAt: placedAt,
+    paymentFailedAt: null,
+    refundCompletedAt: null,
     cartId: session.cartId,
     addressSnapshot: session.addressSnapshot,
     items,

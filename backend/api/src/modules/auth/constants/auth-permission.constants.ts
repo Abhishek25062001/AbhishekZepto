@@ -13,6 +13,8 @@ export const AUTH_PERMISSION_RESOURCE = {
   STORE_PRODUCTS: 'store_products',
   PAYMENTS: 'payments',
   FINANCE: 'finance',
+  FINANCE_PAYMENTS: 'finance:payments',
+  FINANCE_LEDGER: 'finance:ledger',
   SUPPORT: 'support',
   REPORTS: 'reports',
   PUSH_NOTIFICATIONS: 'push_notifications',
@@ -39,6 +41,9 @@ export const AUTH_PERMISSION_ACTION = {
   ADJUST: 'adjust',
   UPLOAD: 'upload',
   EXPORT: 'export',
+  MANAGE_ACCOUNTS: 'manage_accounts',
+  REVERSE: 'reverse',
+  MANUAL_ADJUSTMENT: 'manual_adjustment',
 } as const;
 
 export const WILDCARD_PERMISSION = '*:*';

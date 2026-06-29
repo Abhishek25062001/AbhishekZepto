@@ -3,7 +3,9 @@ import { test } from 'node:test';
 import paymentRoutes from './payment.routes';
 import {
   createPaymentOrderBodyValidator,
+  paymentIdParamsValidator,
   verifyPaymentBodyValidator,
+  verifyPaymentByIdBodyValidator,
 } from '../validators/payment.validators';
 
 const listRoutes = (
@@ -26,6 +28,8 @@ test('payment routes expose expected endpoints', () => {
   assert.deepEqual(routes, [
     { path: '/create-order', methods: ['post'] },
     { path: '/verify', methods: ['post'] },
+    { path: '/:paymentId/verify', methods: ['post'] },
+    { path: '/:paymentId', methods: ['get'] },
   ]);
 });
 
@@ -35,4 +39,18 @@ test('createPaymentOrderBodyValidator requires checkoutSessionId and idempotency
 
 test('verifyPaymentBodyValidator requires payment fields', () => {
   assert.throws(() => verifyPaymentBodyValidator.parse({ paymentId: '65f0a0000000000000000001' }));
+});
+
+test('verifyPaymentByIdBodyValidator accepts gateway field names', () => {
+  const parsed = verifyPaymentByIdBodyValidator.parse({
+    gatewayOrderId: 'order_1',
+    gatewayPaymentId: 'pay_1',
+    gatewaySignature: 'sig_1',
+  });
+
+  assert.equal(parsed.gatewayOrderId, 'order_1');
+});
+
+test('paymentIdParamsValidator requires valid ObjectId', () => {
+  assert.throws(() => paymentIdParamsValidator.parse({ paymentId: 'bad-id' }));
 });

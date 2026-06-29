@@ -1,5 +1,6 @@
 import type { Types } from 'mongoose';
 import type { CheckoutAddressSnapshot } from '../../checkout/types/checkout.types';
+import type { OrderFinanceStatus } from '../constants/order-finance-status.constant';
 import type { OrderPaymentStatus } from '../constants/order-payment-status.constant';
 import type { OrderItemPickingStatus } from '../constants/order-item-picking-status.constant';
 import type { OrderPackingStatus } from '../constants/order-packing-status.constant';
@@ -46,6 +47,15 @@ export type OrderRecord = {
   storeId: Types.ObjectId;
   checkoutSessionId: Types.ObjectId;
   paymentId: Types.ObjectId;
+  paymentRecordId: Types.ObjectId | null;
+  paymentMethod: string | null;
+  paymentGateway: string | null;
+  platformFee: number;
+  payableAmount: number | null;
+  financeStatus: OrderFinanceStatus | null;
+  paidAt: Date | null;
+  paymentFailedAt: Date | null;
+  refundCompletedAt: Date | null;
   cartId: Types.ObjectId;
   addressSnapshot: CheckoutAddressSnapshot;
   items: OrderLineItem[];

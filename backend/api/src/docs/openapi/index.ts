@@ -31,6 +31,8 @@ import { platformSettingsPaths } from './platform-settings.paths';
 import { auditLogSystemPaths } from './audit-log-system.paths';
 import { operationalAnalyticsPaths } from './operational-analytics.paths';
 import { adminDataExportPaths } from './admin-data-export.paths';
+import { paymentRecordsPaths } from './payment-records.paths';
+import { ledgerFoundationPaths } from './ledger-foundation.paths';
 
 export {
   ApiErrorResponseSchema,
@@ -62,6 +64,8 @@ export {
   auditLogSystemPaths,
   operationalAnalyticsPaths,
   adminDataExportPaths,
+  paymentRecordsPaths,
+  ledgerFoundationPaths,
   SystemInfoResponseSchema,
   VersionResponseSchema,
 };
@@ -103,5 +107,7 @@ export const openApiDocument = {
     ...auditLogSystemPaths,
     ...operationalAnalyticsPaths,
     ...adminDataExportPaths,
+    ...paymentRecordsPaths,
+    ...ledgerFoundationPaths,
   },
 };

@@ -44,6 +44,9 @@ export const COLLECTION_NAMES = {
   SUPPORT_TICKET_NOTES: 'support_ticket_notes',
   PLATFORM_SETTINGS: 'platform_settings',
   ADMIN_DATA_EXPORTS: 'admin_data_exports',
+  LEDGER_ACCOUNTS: 'ledger_accounts',
+  LEDGER_JOURNAL_ENTRIES: 'ledger_journal_entries',
+  LEDGER_TRANSACTION_LINES: 'ledger_transaction_lines',
 } as const;
 
 export type CollectionName = (typeof COLLECTION_NAMES)[keyof typeof COLLECTION_NAMES];

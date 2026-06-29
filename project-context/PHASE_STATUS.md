@@ -57,7 +57,31 @@ Current next phase: Phase 6.
 
 Latest handoff: `docs/handoffs/phase-5-integration-review-complete.md`
 
-## Phase 6–12
+## Phase 6: Delivery Operations
+
+Status: **complete** — Modules 1–19 closed (2026-05-29).
+
+Handoff: `project-context/PHASE_HANDOFFS/PHASE_6_HANDOFF.md`
+
+## Phase 7: Real-Time Tracking & Notifications
+
+Status: **complete** — Modules 1–16 closed (2026-05-30).
+
+Handoff: `project-context/PHASE_HANDOFFS/PHASE_7_HANDOFF.md`
+
+## Phase 8: Admin Control & Operational Oversight
+
+Status: **complete** — Modules 2–23 closed (integration review PASS).
+
+Handoff: `project-context/PHASE_HANDOFFS/PHASE_8_HANDOFF.md`
+
+## Phase 9: Payments, Refunds & Settlements
+
+Status: **in progress** — Module 1 complete (2026-06-17).
+
+Handoff: `project-context/PHASE_HANDOFFS/PHASE_9_HANDOFF.md`
+
+## Phase 10–12
 
 Status: not started.
 

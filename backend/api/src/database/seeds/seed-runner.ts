@@ -10,6 +10,7 @@ import { seedInventory } from './seed-inventory';
 import { seedStoreProducts } from './seed-store-products';
 import { seedStores } from './seed-stores';
 import { seedCatalog } from './seed-catalog';
+import { seedLedgerAccounts } from './seed-ledger-accounts';
 
 export type SeedRunnerOptions = {
   dryRun?: boolean;
@@ -18,6 +19,7 @@ export type SeedRunnerOptions = {
 export const runSeeds = async ({ dryRun = false }: SeedRunnerOptions = {}): Promise<void> => {
   await seedDefaultSettings(dryRun);
   await seedRoles(dryRun);
+  await seedLedgerAccounts(dryRun);
   await seedAuthIdentities(dryRun);
   await seedTenantAccessTests(dryRun);
   await seedSuperAdmin(dryRun);

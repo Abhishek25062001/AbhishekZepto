@@ -7,14 +7,21 @@ import { PAYMENT_STATUS } from '../constants/payment-status.constant';
 import { createRazorpayOrder, getRazorpayPublicKeyId } from '../gateways/razorpay.gateway';
 import {
   createPayment,
+  findPaymentById,
   findPaymentByIdempotencyKey,
   findPaymentByIdForCustomer,
+  listPaymentRecords,
   updatePaymentById,
 } from '../repositories/payment.repository';
 import type {
+  AdminPaymentActor,
+  AdminPaymentResponse,
   CreatePaymentOrderInput,
   CreatePaymentOrderResponse,
+  CustomerPaymentResponse,
   PaymentAuditContext,
+  PaymentListQuery,
+  VerifyPaymentByIdBody,
   VerifyPaymentInput,
   VerifyPaymentResponse,
 } from '../types/payment.types';
@@ -26,16 +33,25 @@ import {
 import { compensateFailedPayment } from '../utils/payment-failure-compensation.util';
 import {
   paymentAmountMismatchError,
+  paymentAdminScopeInvalidError,
+  paymentCustomerScopeInvalidError,
   paymentNotFoundError,
+  paymentRecordNotFoundError,
   paymentVerificationFailedError,
 } from '../utils/payment-error.mapper';
 import {
+  toAdminPaymentResponse,
   toCreatePaymentOrderResponse,
+  toCustomerPaymentResponse,
   toVerifyPaymentResponse,
 } from '../utils/payment-response.mapper';
 import { verifyRazorpayPaymentSignature } from '../utils/razorpay-signature.util';
 import { getRazorpayKeySecret } from '../../../config/env';
 import { placeOrderFromPayment } from '../../orders/services/order.service';
+import { markOrderPaymentPaid } from './order-payment-sync.service';
+import { WILDCARD_PERMISSION } from '../../auth/constants/auth-permission.constants';
+import { postPaymentReceived } from '../../finance/ledger/services/ledger-posting.service';
+import { updatePaymentLedgerMetadata } from '../repositories/payment.repository';
 
 export const createPaymentOrderForCustomer = async (
   customerId: string,
@@ -71,16 +87,24 @@ export const createPaymentOrderForCustomer = async (
     customerId: new Types.ObjectId(customerId),
     checkoutSessionId: new Types.ObjectId(session._id.toString()),
     orderId: null,
+    storeId: session.storeId ?? null,
+    vendorId: null,
+    cityId: null,
     gateway: PAYMENT_GATEWAY.RAZORPAY,
     gatewayOrderId: razorpayOrder.id,
     gatewayPaymentId: null,
     amount: amountPaise,
+    payableAmount: amountPaise,
     currency: razorpayOrder.currency,
+    refundedAmount: 0,
+    webhookEventIds: [],
     status: PAYMENT_STATUS.CREATED,
     idempotencyKey: input.idempotencyKey,
     signatureVerified: false,
     webhookReceivedAt: null,
     failureCode: null,
+    paidAt: null,
+    failedAt: null,
     metadata: null,
   });
 
@@ -184,6 +208,8 @@ export const verifyPaymentForCustomer = async (
     gatewayPaymentId: input.razorpayPaymentId,
     signatureVerified: true,
     failureCode: null,
+    paidAt: new Date(),
+    failedAt: null,
   });
 
   if (!updated) {
@@ -217,5 +243,126 @@ export const verifyPaymentForCustomer = async (
     audit,
   );
 
+  if (placement.orderId) {
+    await markOrderPaymentPaid({
+      orderId: placement.orderId,
+      paymentId: updated._id.toString(),
+      paymentGateway: updated.gateway,
+      payableAmount: updated.payableAmount ?? updated.amount,
+    });
+  }
+
+  const ledgerPosting = await postPaymentReceived({
+    paymentId: updated._id.toString(),
+    actorId: customerId,
+    audit,
+  });
+
+  if (ledgerPosting.success && ledgerPosting.journalId) {
+    await updatePaymentLedgerMetadata(updated._id.toString(), ledgerPosting.journalId);
+  }
+
   return toVerifyPaymentResponse(updated, placement.orderId);
+};
+
+const assertAdminPaymentScope = (
+  payment: { storeId?: Types.ObjectId | null; cityId?: Types.ObjectId | null },
+  actor: AdminPaymentActor,
+): void => {
+  if (actor.permissions.includes(WILDCARD_PERMISSION)) {
+    return;
+  }
+
+  if (actor.cityId && payment.cityId && actor.cityId !== payment.cityId.toString()) {
+    throw paymentAdminScopeInvalidError();
+  }
+
+  if (actor.storeId && payment.storeId && actor.storeId !== payment.storeId.toString()) {
+    throw paymentAdminScopeInvalidError();
+  }
+};
+
+const applyAdminScopeToQuery = (
+  query: PaymentListQuery,
+  actor: AdminPaymentActor,
+): PaymentListQuery => {
+  if (actor.permissions.includes(WILDCARD_PERMISSION)) {
+    return query;
+  }
+
+  return {
+    ...query,
+    cityId: actor.cityId ?? query.cityId,
+    storeId: actor.storeId ?? query.storeId,
+  };
+};
+
+export const getCustomerPaymentById = async (
+  customerId: string,
+  paymentId: string,
+): Promise<CustomerPaymentResponse> => {
+  const payment = await findPaymentByIdForCustomer(paymentId, customerId);
+
+  if (!payment) {
+    const exists = await findPaymentById(paymentId);
+    if (exists) {
+      throw paymentCustomerScopeInvalidError();
+    }
+    throw paymentRecordNotFoundError();
+  }
+
+  return toCustomerPaymentResponse(payment);
+};
+
+export const verifyPaymentByIdForCustomer = async (
+  customerId: string,
+  paymentId: string,
+  body: VerifyPaymentByIdBody,
+  audit?: PaymentAuditContext,
+): Promise<VerifyPaymentResponse> => {
+  return verifyPaymentForCustomer(
+    customerId,
+    {
+      paymentId,
+      razorpayOrderId: body.gatewayOrderId ?? body.razorpayOrderId ?? '',
+      razorpayPaymentId: body.gatewayPaymentId ?? body.razorpayPaymentId ?? '',
+      razorpaySignature: body.gatewaySignature ?? body.razorpaySignature ?? '',
+    },
+    audit,
+  );
+};
+
+export const listAdminPayments = async (
+  query: PaymentListQuery,
+  actor: AdminPaymentActor,
+): Promise<{
+  payments: AdminPaymentResponse[];
+  total: number;
+  page: number;
+  limit: number;
+}> => {
+  const scopedQuery = applyAdminScopeToQuery(query, actor);
+  const result = await listPaymentRecords(scopedQuery);
+
+  return {
+    payments: result.payments.map(toAdminPaymentResponse),
+    total: result.total,
+    page: result.page,
+    limit: result.limit,
+  };
+};
+
+export const getAdminPaymentById = async (
+  paymentId: string,
+  actor: AdminPaymentActor,
+): Promise<AdminPaymentResponse> => {
+  const payment = await findPaymentById(paymentId);
+
+  if (!payment) {
+    throw paymentRecordNotFoundError();
+  }
+
+  assertAdminPaymentScope(payment, actor);
+
+  return toAdminPaymentResponse(payment);
 };

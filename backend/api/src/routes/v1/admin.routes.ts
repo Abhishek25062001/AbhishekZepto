@@ -28,6 +28,8 @@ import platformSettingsRoutes from '../../modules/platform-settings/routes/platf
 import auditLogSystemRoutes from '../../modules/audit-log-system/routes/audit-log-system.routes';
 import operationalAnalyticsRoutes from '../../modules/operational-analytics/routes/operational-analytics.routes';
 import adminDataExportRoutes from '../../modules/admin-data-exports/routes/admin-data-export.routes';
+import paymentAdminRoutes from '../../modules/payment/routes/payment-admin.routes';
+import { ledgerAdminRoutes } from '../../modules/finance/ledger';
 import deliveryAgentAdminRoutes from '../../modules/delivery/routes/delivery-agent-admin.routes';
 import deliveryAssignmentAdminRoutes from '../../modules/delivery/routes/delivery-assignment-admin.routes';
 import { authenticate } from '../../modules/auth/middlewares/authenticate.middleware';
@@ -200,6 +202,20 @@ router.use(
   authenticate(),
   requireRole(adminRoles),
   deliveryAssignmentAdminRoutes,
+);
+
+router.use(
+  '/finance/payments',
+  authenticate(),
+  requireRole(adminRoles),
+  paymentAdminRoutes,
+);
+
+router.use(
+  '/finance/ledger',
+  authenticate(),
+  requireRole(adminRoles),
+  ledgerAdminRoutes,
 );
 
 router.get('/', (_req, res) => {

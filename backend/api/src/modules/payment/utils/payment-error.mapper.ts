@@ -43,3 +43,31 @@ export const paymentGatewayError = (details?: Record<string, unknown>): AppError
     errorCode: toErrorCode(PAYMENT_ERROR_CODES.PAYMENT_GATEWAY_ERROR),
     details: details ?? {},
   });
+
+export const paymentRecordNotFoundError = (): AppError =>
+  new AppError({
+    message: 'Payment record not found',
+    statusCode: HTTP_STATUS.NOT_FOUND,
+    errorCode: toErrorCode(PAYMENT_ERROR_CODES.PAYMENT_RECORD_NOT_FOUND),
+  });
+
+export const paymentCustomerScopeInvalidError = (): AppError =>
+  new AppError({
+    message: 'Payment does not belong to this customer',
+    statusCode: HTTP_STATUS.FORBIDDEN,
+    errorCode: toErrorCode(PAYMENT_ERROR_CODES.PAYMENT_CUSTOMER_SCOPE_INVALID),
+  });
+
+export const paymentAdminScopeInvalidError = (): AppError =>
+  new AppError({
+    message: 'Payment is outside admin scope',
+    statusCode: HTTP_STATUS.FORBIDDEN,
+    errorCode: toErrorCode(PAYMENT_ERROR_CODES.PAYMENT_ADMIN_SCOPE_INVALID),
+  });
+
+export const paymentWebhookSignatureInvalidError = (): AppError =>
+  new AppError({
+    message: 'Payment webhook signature is invalid',
+    statusCode: HTTP_STATUS.UNAUTHORIZED,
+    errorCode: toErrorCode(PAYMENT_ERROR_CODES.PAYMENT_WEBHOOK_SIGNATURE_INVALID),
+  });
